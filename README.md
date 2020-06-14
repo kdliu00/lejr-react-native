@@ -1,2 +1,2 @@
-# lejr-official
-Utility app that helps roommates share living costs.
+## Lejr
+The official repository for Lejr.
