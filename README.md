@@ -1,2 +1,2 @@
 ## Lejr
-The official repository for Lejr.
+This version of Lejr is built with React Native.
