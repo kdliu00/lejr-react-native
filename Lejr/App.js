@@ -3,12 +3,14 @@ import { StyleSheet, Text, View } from "react-native";
 import firebase from "firebase";
 import { firebaseConfig } from "./config";
 
-firebase.initializeApp(firebaseConfig);
+if (firebase.apps.length == 0) {
+  firebase.initializeApp(firebaseConfig);
+}
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+      <Text>Hello!</Text>
     </View>
   );
 }
