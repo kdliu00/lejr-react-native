@@ -8,9 +8,11 @@ if (firebase.apps.length == 0) {
 }
 
 export default function App() {
+  let x = 1;
+  console.log("App started!");
   return (
     <View style={styles.container}>
-      <Text>Hello!</Text>
+      <Text>Hello World!</Text>
     </View>
   );
 }
