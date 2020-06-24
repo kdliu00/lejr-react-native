@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, SafeAreaView } from "react-native";
 import firebase from "firebase";
 import { firebaseConfig } from "./config";
 
@@ -11,9 +11,9 @@ export default function App() {
   let x = 1;
   console.log("App started!");
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text>Hello World!</Text>
-    </View>
+    </SafeAreaView>
   );
 }
 

@@ -8,6 +8,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@react-native-community/hooks": "^2.6.0",
     "expo": "^37.0.12",
     "firebase": "7.9.0",
     "google-auth-library": "^6.0.2",
