@@ -13,6 +13,10 @@ if (firebase.apps.length === 0) {
   firebase.initializeApp();
 }
 
+firebase.apps.forEach(app => {
+  console.log('App name: ', app.name);
+});
+
 const Stack = createStackNavigator();
 
 export default function App() {

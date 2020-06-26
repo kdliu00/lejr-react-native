@@ -1,18 +1,25 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {View, StyleSheet, ActivityIndicator} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 
-class LoadingScreen extends Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+export default function LoadingScreen() {
+  const navigation = useNavigation();
+
+  auth().onAuthStateChanged(user => {
+    if (user) {
+      navigation.navigate('DashboardScreen');
+    } else {
+      navigation.navigate('LoginScreen');
+    }
+  });
+
+  return (
+    <View style={styles.container}>
+      <ActivityIndicator size="large" />
+    </View>
+  );
 }
-export default LoadingScreen;
 
 const styles = StyleSheet.create({
   container: {
