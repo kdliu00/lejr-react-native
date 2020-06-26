@@ -1,4 +1,4 @@
-package com.lejr;
+package com.kdlg.lejr;
 
 import com.facebook.react.ReactActivity;
 

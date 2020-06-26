@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "746843927000",
+    "firebase_url": "https://lejr-fa6e3.firebaseio.com",
+    "project_id": "lejr-fa6e3",
+    "storage_bucket": "lejr-fa6e3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:746843927000:android:2a5724dbc69400b0efc2ad",
+        "android_client_info": {
+          "package_name": "com.kdlg.lejr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "746843927000-1kd2tbmtr59ba41i9k4bk2gr8252jhau.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyGQz7Yskika5fwGvCjKb72XYDDe8_4Zs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "746843927000-1kd2tbmtr59ba41i9k4bk2gr8252jhau.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "746843927000-njpaqjb56bsl16lrdk3t45krlin8a0ve.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.lejr"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

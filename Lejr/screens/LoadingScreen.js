@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
 import {View, StyleSheet, ActivityIndicator} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-
-const navigation = useNavigation();
+import auth from '@react-native-firebase/auth';
 
 class LoadingScreen extends Component {
   render() {
