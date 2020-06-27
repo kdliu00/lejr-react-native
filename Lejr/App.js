@@ -8,6 +8,7 @@ import firebase from '@react-native-firebase/app';
 import LoadingScreen from './screens/LoadingScreen';
 import LoginScreen from './screens/LoginScreen';
 import DashboardScreen from './screens/DashboardScreen';
+import EmailLoginScreen from './screens/EmailLoginScreen';
 
 if (firebase.apps.length === 0) {
   firebase.initializeApp();
@@ -22,9 +23,12 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="LoadingScreen">
+      <Stack.Navigator
+        initialRouteName="LoadingScreen"
+        screenOptions={{headerShown: false}}>
         <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
+        <Stack.Screen name="EmailLoginScreen" component={EmailLoginScreen} />
         <Stack.Screen name="DashboardScreen" component={DashboardScreen} />
       </Stack.Navigator>
     </NavigationContainer>
