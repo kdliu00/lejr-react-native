@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>746843927000-6biufia12op03j4ma7522it3s81nim8b.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.746843927000-6biufia12op03j4ma7522it3s81nim8b</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCo-Oy6HAfPatONj_iB_YLWAzV0bRrVHx4</string>
+	<key>GCM_SENDER_ID</key>
+	<string>746843927000</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.kdlg.lejr</string>
+	<key>PROJECT_ID</key>
+	<string>lejr-fa6e3</string>
+	<key>STORAGE_BUCKET</key>
+	<string>lejr-fa6e3.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:746843927000:ios:1e4c7cdaa8b1da44efc2ad</string>
+	<key>DATABASE_URL</key>
+	<string>https://lejr-fa6e3.firebaseio.com</string>
+</dict>
+</plist>
