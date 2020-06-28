@@ -93,6 +93,7 @@ export default function EmailLogin({route, navigation}) {
                     .catch(error =>
                       onValidationError(
                         error.message,
+                        setIsSubmitting,
                         validationSchema,
                         email,
                         setEmailError,
@@ -124,6 +125,7 @@ export default function EmailLogin({route, navigation}) {
                     .catch(error =>
                       onValidationError(
                         error.message,
+                        setIsSubmitting,
                         validationSchema,
                         email,
                         setEmailError,
@@ -166,7 +168,7 @@ export default function EmailLogin({route, navigation}) {
             placeholder="password"
             onChangeText={text => {
               setPassword(text);
-              validatePassword(validationSchema, text, setConfirmPasswordError);
+              validatePassword(validationSchema, text, setPasswordError);
             }}
             onSubmitEditing={() => {
               if (showConfirm) {
@@ -262,6 +264,7 @@ function onEmailLoginError(error, setIsSubmitting) {
 
 function onValidationError(
   message,
+  setIsSubmitting,
   validationSchema,
   email,
   setEmailError,
@@ -278,6 +281,7 @@ function onValidationError(
     confirmPassword,
     setConfirmPasswordError,
   );
+  setIsSubmitting(false);
 }
 
 function validateEmail(validationSchema, text, setEmailError) {
@@ -340,7 +344,7 @@ const InputField = ({refToPass, isSubmitting, fieldError, ...rest}) => {
         autoCorrect={false}
         blurOnSubmit={false}
         returnKeyType="done"
-        editable={isSubmitting}
+        editable={!isSubmitting}
         {...rest}
       />
     </InputFieldWrapper>
