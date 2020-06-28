@@ -146,10 +146,10 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('C:\\Users\\crazy\\Projects\\lejr-react-native\\Lejr\\android-bundle.jks')
-            storePassword 'com.kdlg.lejr'
-            keyAlias 'key0'
-            keyPassword 'com.kdlg.lejr'
+            storeFile file('C:\\Users\\crazy\\.android\\debug.keystore')
+            storePassword 'android'
+            keyAlias 'AndroidDebugKey'
+            keyPassword 'android'
         }
     }
     buildTypes {

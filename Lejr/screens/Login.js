@@ -87,12 +87,21 @@ export default function Login({navigation}) {
 function onLoginError(error) {
   var errorCode = error.userInfo.code;
   var message = error.userInfo.message;
+  var alertTitle = '<INSERT ALERT TITLE>';
 
   console.warn(errorCode);
 
-  if (errorCode === 'account-exists-with-different-credential') {
-    Alert.alert('Login Error', message);
+  switch (errorCode) {
+    case 'account-exists-with-different-credential':
+      alertTitle = 'Account Already Exists';
+      break;
+
+    default:
+      alertTitle = 'Login Error';
+      break;
   }
+
+  Alert.alert(alertTitle, message);
 }
 
 async function onGoogleButtonPress() {
