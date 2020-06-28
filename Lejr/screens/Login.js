@@ -36,7 +36,7 @@ export default function Login({navigation}) {
                 .catch(error => onLoginError(error))
                 .then(
                   () => console.log('Signed in with Google!'),
-                  () => console.log('Sign in with Google failed!'),
+                  () => console.warn('Sign in with Google failed!'),
                 );
             }}
             color="dodgerblue"
@@ -51,7 +51,7 @@ export default function Login({navigation}) {
                 .catch(error => onLoginError(error))
                 .then(
                   () => console.log('Signed in with Facebook!'),
-                  () => console.log('Sign in with Facebook failed!'),
+                  () => console.warn('Sign in with Facebook failed!'),
                 );
             }}
             color="blue"

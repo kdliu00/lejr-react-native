@@ -9,8 +9,15 @@ import {
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {Alert} from 'react-native';
+import * as yup from 'yup';
 
 var isSubmitting = false;
+
+var fieldErrorMessages = {
+  email: '',
+  password: '',
+  confirmPassword: '',
+};
 
 export default function EmailLogin({route, navigation}) {
   console.log('Arrived at EmailLogin!');
@@ -20,6 +27,35 @@ export default function EmailLogin({route, navigation}) {
   const [email, onEditEmail] = React.useState();
   const [password, onEditPassword] = React.useState();
   const [confirmPassword, onEditConfirmPassword] = React.useState();
+
+  const validationSchema = yup.object().shape({
+    email: yup
+      .string()
+      .label('Email')
+      .email()
+      .required(),
+    password: yup.lazy(() => {
+      if (showConfirm) {
+        return yup
+          .string()
+          .label('Password')
+          .required()
+          .min(8, 'Password too short');
+      } else {
+        return yup
+          .string()
+          .label('Password')
+          .required();
+      }
+    }),
+    confirmPassword: yup
+      .string()
+      .required()
+      .label('Confirm password')
+      .test('passwords-match', 'Passwords must match', function(value) {
+        return this.parent.password === value;
+      }),
+  });
 
   return (
     <View style={styles.container}>
@@ -39,7 +75,13 @@ export default function EmailLogin({route, navigation}) {
               title="Sign Up"
               onPress={() => {
                 console.log('Signing up with email!');
-                onSignUp(email, password);
+                isSubmitting = true;
+                validatedSignUp(
+                  validationSchema,
+                  email,
+                  password,
+                  confirmPassword,
+                );
               }}
             />
           </View>
@@ -49,7 +91,8 @@ export default function EmailLogin({route, navigation}) {
               title="Sign In"
               onPress={() => {
                 console.log('Signing in with email!');
-                onSignIn(email, password);
+                isSubmitting = true;
+                validatedSignIn(validationSchema, email, password);
               }}
             />
           </View>
@@ -57,21 +100,47 @@ export default function EmailLogin({route, navigation}) {
       </View>
       <View style={styles.loginFields}>
         <InputField
+          fieldKey="email"
           placeholder="username@email.com"
-          onChangeText={text => onEditEmail(text)}
+          onChangeText={text => {
+            onEditEmail(text);
+            validationSchema
+              .validateAt('email', {email: email})
+              .catch(error => {
+                fieldErrorMessages.email = error.message;
+              });
+          }}
           value={email}
           autoFocus
         />
         <InputField
+          fieldKey="password"
           placeholder="password"
-          onChangeText={text => onEditPassword(text)}
+          onChangeText={text => {
+            onEditPassword(text);
+            validationSchema
+              .validateAt('password', {password: password})
+              .catch(error => {
+                fieldErrorMessages.password = error.message;
+              });
+          }}
           value={password}
           secureTextEntry
         />
         {showConfirm && (
           <InputField
+            fieldKey="confirmPassword"
             placeholder="confirm password"
-            onChangeText={text => onEditConfirmPassword(text)}
+            onChangeText={text => {
+              onEditConfirmPassword(text);
+              validationSchema
+                .validateAt('confirmPassword', {
+                  confirmPassword: confirmPassword,
+                })
+                .catch(error => {
+                  fieldErrorMessages.confirmPassword = error.message;
+                });
+            }}
             value={confirmPassword}
             secureTextEntry
           />
@@ -81,7 +150,39 @@ export default function EmailLogin({route, navigation}) {
   );
 }
 
-async function onSignUp(email, password) {
+function validatedSignUp(validationSchema, email, password, confirmPassword) {
+  validationSchema
+    .validate({
+      email: email,
+      password: password,
+      confirmPassword: confirmPassword,
+    })
+    .then(valid => {
+      if (valid) {
+        signUp(email, password);
+      } else {
+        isSubmitting = false;
+      }
+    });
+}
+
+function validatedSignIn(validationSchema, email, password) {
+  validationSchema
+    .validate({
+      email: email,
+      password: password,
+      confirmPassword: password,
+    })
+    .then(valid => {
+      if (valid) {
+        signIn(email, password);
+      } else {
+        isSubmitting = false;
+      }
+    });
+}
+
+function signUp(email, password) {
   auth()
     .createUserWithEmailAndPassword(email, password)
     .catch(error => {
@@ -92,12 +193,12 @@ async function onSignUp(email, password) {
         console.log('Signed up with email!');
       },
       () => {
-        console.log('Sign up with email failed!');
+        console.warn('Sign up with email failed!');
       },
     );
 }
 
-async function onSignIn(email, password) {
+function signIn(email, password) {
   auth()
     .signInWithEmailAndPassword(email, password)
     .catch(error => {
@@ -108,7 +209,7 @@ async function onSignIn(email, password) {
         console.log('Signed in with email!');
       },
       () => {
-        console.log('Sign in with email failed!');
+        console.warn('Sign in with email failed!');
       },
     );
 }
@@ -128,7 +229,7 @@ function onEmailLoginError(error) {
       break;
 
     default:
-      alertTitle = 'Error';
+      alertTitle = 'Email Login Error';
       break;
   }
   console.warn(errorCode);
@@ -137,16 +238,16 @@ function onEmailLoginError(error) {
   isSubmitting = false;
 }
 
-const InputFieldWrapper = ({children}) => (
+const InputFieldWrapper = ({fieldKey, children}) => (
   <View style={styles.textInputWrapper}>
-    <Text style={styles.errorText}>This field is required</Text>
+    <Text style={styles.errorText}>{fieldErrorMessages[fieldKey]}</Text>
     {children}
   </View>
 );
 
-const InputField = ({...rest}) => {
+const InputField = ({fieldKey, ...rest}) => {
   return (
-    <InputFieldWrapper>
+    <InputFieldWrapper fieldKey={fieldKey}>
       <TextInput
         style={styles.textInput}
         clearButtonMode="always"
