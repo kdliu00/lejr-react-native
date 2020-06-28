@@ -5,10 +5,10 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import firebase from '@react-native-firebase/app';
 
-import LoadingScreen from './screens/LoadingScreen';
-import LoginScreen from './screens/LoginScreen';
-import DashboardScreen from './screens/DashboardScreen';
-import EmailLoginScreen from './screens/EmailLoginScreen';
+import Loading from './screens/Loading';
+import Login from './screens/Login';
+import Dashboard from './screens/Dashboard';
+import EmailLoginScreen from './screens/EmailLogin';
 
 if (firebase.apps.length === 0) {
   firebase.initializeApp();
@@ -21,15 +21,16 @@ firebase.apps.forEach(app => {
 const Stack = createStackNavigator();
 
 export default function App() {
+  console.log('Arrived at App!');
   return (
-    <NavigationContainer>
+    <NavigationContainer independent="true">
       <Stack.Navigator
-        initialRouteName="LoadingScreen"
+        initialRouteName="Loading"
         screenOptions={{headerShown: false}}>
-        <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
-        <Stack.Screen name="LoginScreen" component={LoginScreen} />
-        <Stack.Screen name="EmailLoginScreen" component={EmailLoginScreen} />
-        <Stack.Screen name="DashboardScreen" component={DashboardScreen} />
+        <Stack.Screen name="Loading" component={Loading} />
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="EmailLogin" component={EmailLoginScreen} />
+        <Stack.Screen name="Dashboard" component={Dashboard} />
       </Stack.Navigator>
     </NavigationContainer>
   );

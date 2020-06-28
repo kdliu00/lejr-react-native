@@ -1,15 +1,12 @@
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
 
-export default function EmailLoginScreen() {
-  const navigation = useNavigation();
-
-  navigation.navigate('LoginScreen');
+export default function Settings({navigation}) {
+  console.log('Arrived at Settings!');
 
   return (
     <View style={styles.container}>
-      <Text>EmailLoginScreen</Text>
+      <Text>Settings</Text>
     </View>
   );
 }

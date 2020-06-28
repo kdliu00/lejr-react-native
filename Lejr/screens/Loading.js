@@ -1,16 +1,15 @@
 import React from 'react';
 import {SafeAreaView, StyleSheet, ActivityIndicator} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 
-export default function LoadingScreen() {
-  const navigation = useNavigation();
+export default function Loading({navigation}) {
+  console.log('Arrived at Loading!');
 
   auth().onAuthStateChanged(user => {
     if (user) {
-      navigation.navigate('DashboardScreen');
+      navigation.navigate('Dashboard');
     } else {
-      navigation.navigate('LoginScreen');
+      navigation.navigate('Login');
     }
   });
 

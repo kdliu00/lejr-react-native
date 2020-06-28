@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Lejr</string>
+    <string name="facebook_app_id">654381721815244</string>
+    <string name="fb_login_protocol_scheme">fb654381721815244</string>
 </resources>

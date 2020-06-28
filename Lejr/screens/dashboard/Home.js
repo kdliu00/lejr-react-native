@@ -1,10 +1,12 @@
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 
-export default function DashboardScreen() {
+export default function Home({navigation}) {
+  console.log('Arrived at Home!');
+
   return (
     <View style={styles.container}>
-      <Text>DashboardScreen</Text>
+      <Text>Home</Text>
     </View>
   );
 }
