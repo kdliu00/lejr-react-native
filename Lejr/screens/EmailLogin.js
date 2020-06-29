@@ -342,6 +342,8 @@ const InputField = ({refToPass, isSubmitting, fieldError, ...rest}) => {
         style={styles.textInput}
         clearButtonMode="always"
         autoCorrect={false}
+        autoCapitalize={false}
+        enablesReturnKeyAutomatically={true}
         blurOnSubmit={false}
         returnKeyType="done"
         editable={!isSubmitting}

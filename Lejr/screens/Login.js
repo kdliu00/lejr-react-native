@@ -7,7 +7,9 @@ import {Alert} from 'react-native';
 
 GoogleSignin.configure({
   webClientId:
-    '746843927000-1kd2tbmtr59ba41i9k4bk2gr8252jhau.apps.googleusercontent.com',
+    Platform.OS === 'ios'
+      ? '746843927000-6biufia12op03j4ma7522it3s81nim8b.apps.googleusercontent.com'
+      : '746843927000-1kd2tbmtr59ba41i9k4bk2gr8252jhau.apps.googleusercontent.com',
 });
 
 export default function Login({navigation}) {
@@ -64,7 +66,7 @@ export default function Login({navigation}) {
               onPress={() => {
                 console.log('Going to Apple login!');
               }}
-              color="silver"
+              color="darkgray"
             />
           </View>
         )}

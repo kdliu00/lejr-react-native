@@ -25,6 +25,7 @@ static void InitializeFlipper(UIApplication *application) {
 #endif
 
 @import Firebase;
+@import GoogleSignIn;
 
 @implementation AppDelegate
 
