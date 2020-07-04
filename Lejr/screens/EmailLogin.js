@@ -1,17 +1,9 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Button,
-  TextInput,
-  ActivityIndicator,
-  TouchableWithoutFeedback,
-  Keyboard,
-} from 'react-native';
+import {StyleSheet, TouchableWithoutFeedback, Keyboard} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {Alert} from 'react-native';
 import * as yup from 'yup';
+import {Layout, Text, Button, Input, Spinner} from '@ui-kitten/components';
 
 export default function EmailLogin({route, navigation}) {
   const {showConfirm} = route.params;
@@ -67,85 +59,81 @@ export default function EmailLogin({route, navigation}) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={styles.container}>
-        <View style={styles.bottom}>
+      <Layout style={styles.container}>
+        <Layout style={styles.bottomContainer}>
           <Button
-            title="Go Back"
             color="darkgray"
             onPress={() => navigation.navigate('Login')}
-          />
-        </View>
-        <View style={styles.loginButtons}>
+            appearance="outline"
+            disabled={isSubmitting}>
+            Go Back
+          </Button>
           {isSubmitting ? (
-            <ActivityIndicator />
+            <Spinner size="small" />
           ) : showConfirm ? (
-            <View style={styles.button}>
-              <Button
-                title="Sign Up"
-                onPress={() => {
-                  console.log('Signing up with email!');
-                  validationSchema
-                    .validate({
-                      email: email,
-                      password: password,
-                      confirmPassword: confirmPassword,
-                    })
-                    .catch(error =>
-                      onValidationError(
-                        error.message,
-                        setIsSubmitting,
-                        validationSchema,
-                        email,
-                        setEmailError,
-                        password,
-                        setPasswordError,
-                        confirmPassword,
-                        setConfirmPasswordError,
-                      ),
-                    )
-                    .then(valid => {
-                      if (valid) {
-                        signUp(email, password, setIsSubmitting);
-                      }
-                    });
-                }}
-              />
-            </View>
+            <Button
+              onPress={() => {
+                console.log('Signing up with email!');
+                validationSchema
+                  .validate({
+                    email: email,
+                    password: password,
+                    confirmPassword: confirmPassword,
+                  })
+                  .catch(error =>
+                    onValidationError(
+                      error.message,
+                      setIsSubmitting,
+                      validationSchema,
+                      email,
+                      setEmailError,
+                      password,
+                      setPasswordError,
+                      confirmPassword,
+                      setConfirmPasswordError,
+                    ),
+                  )
+                  .then(valid => {
+                    if (valid) {
+                      signUp(email, password, setIsSubmitting);
+                    }
+                  });
+              }}>
+              Sign Up
+            </Button>
           ) : (
-            <View style={styles.button}>
-              <Button
-                title="Sign In"
-                onPress={() => {
-                  console.log('Signing in with email!');
-                  validationSchema
-                    .validate({
-                      email: email,
-                      password: password,
-                    })
-                    .catch(error =>
-                      onValidationError(
-                        error.message,
-                        setIsSubmitting,
-                        validationSchema,
-                        email,
-                        setEmailError,
-                        password,
-                        setPasswordError,
-                        confirmPassword,
-                        setConfirmPasswordError,
-                      ),
-                    )
-                    .then(valid => {
-                      if (valid) {
-                        signIn(email, password, setIsSubmitting);
-                      }
-                    });
-                }}
-              />
-            </View>
+            <Button
+              onPress={() => {
+                console.log('Signing in with email!');
+                validationSchema
+                  .validate({
+                    email: email,
+                    password: password,
+                  })
+                  .catch(error =>
+                    onValidationError(
+                      error.message,
+                      setIsSubmitting,
+                      validationSchema,
+                      email,
+                      setEmailError,
+                      password,
+                      setPasswordError,
+                      confirmPassword,
+                      setConfirmPasswordError,
+                    ),
+                  )
+                  .then(valid => {
+                    if (valid) {
+                      signIn(email, password, setIsSubmitting);
+                    }
+                  });
+              }}>
+              Sign In
+            </Button>
           )}
-        </View>
-        <View style={styles.loginFields}>
+        </Layout>
+        <Layout style={styles.loginFields}>
           <InputField
             fieldError={emailError}
             isSubmitting={isSubmitting}
@@ -173,6 +161,8 @@ export default function EmailLogin({route, navigation}) {
             onSubmitEditing={() => {
               if (showConfirm) {
                 confirmPasswordRef.current.focus();
+              } else {
+                Keyboard.dismiss();
               }
             }}
             value={password}
@@ -192,12 +182,15 @@ export default function EmailLogin({route, navigation}) {
                   setConfirmPasswordError,
                 );
               }}
+              onSubmitEditing={() => {
+                Keyboard.dismiss();
+              }}
               value={confirmPassword}
               secureTextEntry
             />
           )}
-        </View>
-      </View>
+        </Layout>
+      </Layout>
     </TouchableWithoutFeedback>
   );
 }
@@ -328,25 +321,26 @@ function validateConfirmPassword(
 }
 
 const InputFieldWrapper = ({fieldError, children}) => (
-  <View style={styles.textInputWrapper}>
+  <Layout style={styles.textInputWrapper}>
     <Text style={styles.errorText}>{fieldError}</Text>
     {children}
-  </View>
+  </Layout>
 );
 
-const InputField = ({refToPass, isSubmitting, fieldError, ...rest}) => {
+const InputField = ({refToPass, isSubmitting, fieldError, value, ...rest}) => {
   return (
     <InputFieldWrapper fieldError={fieldError}>
-      <TextInput
+      <Input
         ref={refToPass}
         style={styles.textInput}
         clearButtonMode="always"
         autoCorrect={false}
-        autoCapitalize={false}
+        autoCapitalize="none"
         enablesReturnKeyAutomatically={true}
         blurOnSubmit={false}
         returnKeyType="done"
         editable={!isSubmitting}
+        status={fieldError ? 'danger' : value ? 'success' : 'basic'}
         {...rest}
       />
     </InputFieldWrapper>
@@ -356,45 +350,27 @@ const InputField = ({refToPass, isSubmitting, fieldError, ...rest}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     flexDirection: 'column-reverse',
   },
   loginFields: {
     alignItems: 'center',
-    justifyContent: 'space-around',
-    // backgroundColor: 'red',
-    alignSelf: 'stretch',
     flexDirection: 'column',
   },
   textInput: {
-    borderColor: 'gray',
-    borderBottomWidth: 1,
     width: '100%',
     height: 36,
-    marginTop: -10,
-    paddingBottom: -5,
+    marginTop: 3,
   },
   textInputWrapper: {
-    width: '80%',
-    marginTop: 20,
+    width: '65%',
+    marginTop: 15,
   },
-  loginButtons: {
-    height: '20%',
+  bottomContainer: {
+    height: '25%',
     alignItems: 'center',
     justifyContent: 'space-around',
-    // backgroundColor: 'orange',
-    flexDirection: 'row',
-  },
-  button: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  bottom: {
-    height: '15%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    // backgroundColor: 'blue',
+    flexDirection: 'column-reverse',
+    margin: 30,
   },
   errorText: {
     color: 'red',

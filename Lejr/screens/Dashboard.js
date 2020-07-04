@@ -1,24 +1,35 @@
-import React from 'react';
+import React, {Children} from 'react';
 import {StyleSheet} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {BottomNavigation, BottomNavigationTab} from '@ui-kitten/components';
 
 import Home from './dashboard/Home';
 import Settings from './dashboard/Settings';
 
-const Tab = createBottomTabNavigator();
+const {Navigator, Screen} = createBottomTabNavigator();
 
 export default function Dashboard() {
   console.log('Arrived at Dashboard!');
   return (
-    <NavigationContainer independent="true">
-      <Tab.Navigator initialRouteName="Home">
-        <Tab.Screen name="Home" component={Home} />
-        <Tab.Screen name="Settings" component={Settings} />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <TabNavigator initialRouteName="Home" screenOptions={{header: null}} />
   );
 }
+
+const BottomTabBar = ({navigation, state}) => (
+  <BottomNavigation
+    selectedIndex={state.index}
+    onSelect={index => navigation.navigate(state.routeNames[index])}>
+    <BottomNavigationTab title="Home" />
+    <BottomNavigationTab title="Settings" />
+  </BottomNavigation>
+);
+
+const TabNavigator = () => (
+  <Navigator tabBar={props => <BottomTabBar {...props} />}>
+    <Screen name="Home" component={Home} />
+    <Screen name="Settings" component={Settings} />
+  </Navigator>
+);
 
 const styles = StyleSheet.create({
   container: {

@@ -1,9 +1,10 @@
 import React from 'react';
-import {View, StyleSheet, Button, Platform} from 'react-native';
+import {StyleSheet, Platform} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-community/google-signin';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import {Alert} from 'react-native';
+import {Layout, Button, Spinner} from '@ui-kitten/components';
 
 GoogleSignin.configure({
   webClientId:
@@ -15,74 +16,94 @@ GoogleSignin.configure({
 export default function Login({navigation}) {
   console.log('Arrived at Login!');
 
+  const [isLoggingIn, setIsLoggingIn] = React.useState(false);
+
   return (
-    <View style={styles.container}>
-      <View style={styles.bottomPad} />
-      <View style={styles.loginItems}>
-        <View style={styles.button}>
+    <Layout style={styles.container}>
+      <Layout style={styles.marginOnly} />
+      <Layout style={styles.loginItems}>
+        <Layout style={styles.button}>
           <Button
-            title="Sign in with email"
             onPress={() => {
               console.log('Going to email login!');
               navigation.navigate('EmailLogin', {showConfirm: false});
             }}
-            color="orange"
-          />
-        </View>
-        <View style={styles.button}>
+            disabled={isLoggingIn}
+            color="orange">
+            Sign in with email
+          </Button>
+        </Layout>
+        <Layout style={styles.button}>
           <Button
-            title="Sign in with Google"
             onPress={() => {
               console.log('Going to Google login!');
+              setIsLoggingIn(true);
               onGoogleButtonPress()
-                .catch(error => onLoginError(error))
+                .catch(error => {
+                  onLoginError(error);
+                  setIsLoggingIn(false);
+                })
                 .then(
                   () => console.log('Signed in with Google!'),
                   () => console.warn('Sign in with Google failed!'),
-                );
+                )
+                .finally(() => setIsLoggingIn(false));
             }}
-            color="dodgerblue"
-          />
-        </View>
-        <View style={styles.button}>
+            disabled={isLoggingIn}
+            color="dodgerblue">
+            Sign in with Google
+          </Button>
+        </Layout>
+        <Layout style={styles.button}>
           <Button
-            title="Sign in with Facebook"
             onPress={() => {
               console.log('Going to Facebook login!');
+              setIsLoggingIn(true);
               onFacebookButtonPress()
-                .catch(error => onLoginError(error))
+                .catch(error => {
+                  onLoginError(error);
+                  setIsLoggingIn(false);
+                })
                 .then(
                   () => console.log('Signed in with Facebook!'),
                   () => console.warn('Sign in with Facebook failed!'),
-                );
+                )
+                .finally(() => setIsLoggingIn(false));
             }}
-            color="blue"
-          />
-        </View>
+            disabled={isLoggingIn}
+            color="blue">
+            Sign in with Facebook
+          </Button>
+        </Layout>
         {Platform.OS === 'ios' && (
-          <View style={styles.button}>
+          <Layout style={styles.button}>
             <Button
-              title="Sign in with Apple"
               onPress={() => {
                 console.log('Going to Apple login!');
               }}
-              color="darkgray"
-            />
-          </View>
+              disabled={isLoggingIn}
+              color="darkgray">
+              Sign in with Apple
+            </Button>
+          </Layout>
         )}
-        <View style={styles.button} />
-        <View style={styles.button}>
+        <Layout style={styles.button} />
+        <Layout style={styles.button}>
           <Button
-            title="Create an account"
             onPress={() => {
-              console.log('Going to email login!');
+              console.log('Going to create an account!');
               navigation.navigate('EmailLogin', {showConfirm: true});
             }}
-            color="green"
-          />
-        </View>
-      </View>
-    </View>
+            disabled={isLoggingIn}
+            appearance="outline">
+            Create an account
+          </Button>
+        </Layout>
+      </Layout>
+      <Layout style={styles.marginOnly}>
+        {isLoggingIn && <Spinner size="large" />}
+      </Layout>
+    </Layout>
   );
 }
 
@@ -150,8 +171,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'column-reverse',
   },
-  bottomPad: {
-    height: '10%',
+  marginOnly: {
+    margin: 40,
   },
   loginItems: {
     alignItems: 'center',
@@ -160,6 +181,5 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'space-around',
   },
 });

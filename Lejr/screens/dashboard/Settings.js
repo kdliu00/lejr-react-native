@@ -1,13 +1,14 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {StyleSheet} from 'react-native';
+import {Layout, Text} from '@ui-kitten/components';
 
 export default function Settings({navigation}) {
   console.log('Arrived at Settings!');
 
   return (
-    <View style={styles.container}>
+    <Layout style={styles.container}>
       <Text>Settings</Text>
-    </View>
+    </Layout>
   );
 }
 
