@@ -23,10 +23,10 @@ export default function Login({navigation}) {
   const [IsLoggingIn, SetIsLoggingIn] = React.useState(false);
 
   return (
-    <Layout style={styles.container}>
-      <Layout style={styles.marginOnly} />
-      <Layout style={styles.loginItems}>
-        <Layout style={styles.button}>
+    <Layout style={Styles.container}>
+      <Layout style={Styles.marginOnly} />
+      <Layout style={Styles.loginItems}>
+        <Layout style={Styles.button}>
           <Button
             accessoryLeft={EmailIcon}
             onPress={() => {
@@ -37,7 +37,7 @@ export default function Login({navigation}) {
             Sign in with email
           </Button>
         </Layout>
-        <Layout style={styles.button}>
+        <Layout style={Styles.button}>
           <Button
             accessoryLeft={GoogleIcon}
             onPress={() => {
@@ -58,7 +58,7 @@ export default function Login({navigation}) {
             Sign in with Google
           </Button>
         </Layout>
-        <Layout style={styles.button}>
+        <Layout style={Styles.button}>
           <Button
             accessoryLeft={FacebookIcon}
             onPress={() => {
@@ -80,7 +80,7 @@ export default function Login({navigation}) {
           </Button>
         </Layout>
         {Platform.OS === 'ios' && (
-          <Layout style={styles.button}>
+          <Layout style={Styles.button}>
             <Button
               onPress={() => {
                 console.log('Going to Apple login!');
@@ -90,8 +90,8 @@ export default function Login({navigation}) {
             </Button>
           </Layout>
         )}
-        <Layout style={styles.button} />
-        <Layout style={styles.button}>
+        <Layout style={Styles.button} />
+        <Layout style={Styles.button}>
           <Button
             onPress={() => {
               console.log('Going to create an account!');
@@ -103,7 +103,7 @@ export default function Login({navigation}) {
           </Button>
         </Layout>
       </Layout>
-      <Layout style={styles.marginOnly}>
+      <Layout style={Styles.marginOnly}>
         {IsLoggingIn && <Spinner size="large" />}
       </Layout>
     </Layout>
@@ -168,7 +168,7 @@ async function onFacebookButtonPress() {
   return auth().signInWithCredential(facebookCredential);
 }
 
-const styles = StyleSheet.create({
+const Styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',

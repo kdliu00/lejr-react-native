@@ -15,15 +15,15 @@ export default function Loading({navigation}) {
   });
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Layout style={styles.container}>
+    <SafeAreaView style={Styles.container}>
+      <Layout style={Styles.container}>
         <Spinner size="large" />
       </Layout>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
+const Styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',

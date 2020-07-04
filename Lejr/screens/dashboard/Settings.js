@@ -6,13 +6,13 @@ export default function Settings({navigation}) {
   console.log('Arrived at Settings!');
 
   return (
-    <Layout style={styles.container}>
+    <Layout style={Styles.container}>
       <Text>Settings</Text>
     </Layout>
   );
 }
 
-const styles = StyleSheet.create({
+const Styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',

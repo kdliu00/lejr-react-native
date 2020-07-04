@@ -7,7 +7,7 @@ export default function Home({navigation}) {
   console.log('Arrived at Home!');
 
   return (
-    <Layout style={styles.container}>
+    <Layout style={Styles.container}>
       <Button
         appearance="outline"
         onPress={() => {
@@ -21,7 +21,7 @@ export default function Home({navigation}) {
   );
 }
 
-const styles = StyleSheet.create({
+const Styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',

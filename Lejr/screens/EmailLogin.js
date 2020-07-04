@@ -59,8 +59,8 @@ export default function EmailLogin({route, navigation}) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <Layout style={styles.container}>
-        <Layout style={styles.bottomContainer}>
+      <Layout style={Styles.container}>
+        <Layout style={Styles.bottomContainer}>
           <Button
             color="darkgray"
             onPress={() => navigation.navigate('Login')}
@@ -113,7 +113,7 @@ export default function EmailLogin({route, navigation}) {
             </Button>
           )}
         </Layout>
-        <Layout style={styles.loginFields}>
+        <Layout style={Styles.loginFields}>
           <InputField
             fieldError={EmailError}
             isSubmitting={IsSubmitting}
@@ -240,8 +240,8 @@ function onEmailLoginError(error, setIsSubmitting) {
 }
 
 const InputFieldWrapper = ({fieldError, children}) => (
-  <Layout style={styles.textInputWrapper}>
-    <Text style={styles.errorText}>{fieldError}</Text>
+  <Layout style={Styles.textInputWrapper}>
+    <Text style={Styles.errorText}>{fieldError}</Text>
     {children}
   </Layout>
 );
@@ -276,7 +276,7 @@ const InputField = ({
     <InputFieldWrapper fieldError={fieldError}>
       <Input
         ref={refToPass}
-        style={styles.textInput}
+        style={Styles.textInput}
         clearButtonMode="always"
         autoCorrect={false}
         enablesReturnKeyAutomatically={true}
@@ -289,7 +289,7 @@ const InputField = ({
   );
 };
 
-const styles = StyleSheet.create({
+const Styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column-reverse',

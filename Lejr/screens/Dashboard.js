@@ -1,12 +1,18 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {BottomNavigation, BottomNavigationTab} from '@ui-kitten/components';
+import {
+  BottomNavigation,
+  BottomNavigationTab,
+  Icon,
+} from '@ui-kitten/components';
 
 import Home from './dashboard/Home';
 import Settings from './dashboard/Settings';
 
 const {Navigator, Screen} = createBottomTabNavigator();
+
+const HomeIcon = props => <Icon name="home-outline" {...props} />;
+const SettingsIcon = props => <Icon name="settings-2-outline" {...props} />;
 
 export default function Dashboard() {
   console.log('Arrived at Dashboard!');
@@ -19,8 +25,8 @@ const BottomTabBar = ({navigation, state}) => (
   <BottomNavigation
     selectedIndex={state.index}
     onSelect={index => navigation.navigate(state.routeNames[index])}>
-    <BottomNavigationTab title="Home" />
-    <BottomNavigationTab title="Settings" />
+    <BottomNavigationTab icon={HomeIcon} />
+    <BottomNavigationTab icon={SettingsIcon} />
   </BottomNavigation>
 );
 
@@ -30,11 +36,3 @@ const TabNavigator = () => (
     <Screen name="Settings" component={Settings} />
   </Navigator>
 );
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
