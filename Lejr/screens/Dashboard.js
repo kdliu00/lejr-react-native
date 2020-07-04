@@ -1,4 +1,4 @@
-import React, {Children} from 'react';
+import React from 'react';
 import {StyleSheet} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {BottomNavigation, BottomNavigationTab} from '@ui-kitten/components';

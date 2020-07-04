@@ -14,11 +14,13 @@ GoogleSignin.configure({
 });
 
 const FacebookIcon = props => <Icon name="facebook" {...props} />;
+const GoogleIcon = props => <Icon name="google" {...props} />;
+const EmailIcon = props => <Icon name="email" {...props} />;
 
 export default function Login({navigation}) {
   console.log('Arrived at Login!');
 
-  const [isLoggingIn, setIsLoggingIn] = React.useState(false);
+  const [IsLoggingIn, SetIsLoggingIn] = React.useState(false);
 
   return (
     <Layout style={styles.container}>
@@ -26,33 +28,33 @@ export default function Login({navigation}) {
       <Layout style={styles.loginItems}>
         <Layout style={styles.button}>
           <Button
+            accessoryLeft={EmailIcon}
             onPress={() => {
               console.log('Going to email login!');
               navigation.navigate('EmailLogin', {showConfirm: false});
             }}
-            disabled={isLoggingIn}
-            color="orange">
+            disabled={IsLoggingIn}>
             Sign in with email
           </Button>
         </Layout>
         <Layout style={styles.button}>
           <Button
+            accessoryLeft={GoogleIcon}
             onPress={() => {
               console.log('Going to Google login!');
-              setIsLoggingIn(true);
+              SetIsLoggingIn(true);
               onGoogleButtonPress()
                 .catch(error => {
                   onLoginError(error);
-                  setIsLoggingIn(false);
+                  SetIsLoggingIn(false);
                 })
                 .then(
                   () => console.log('Signed in with Google!'),
                   () => console.warn('Sign in with Google failed!'),
                 )
-                .finally(() => setIsLoggingIn(false));
+                .finally(() => SetIsLoggingIn(false));
             }}
-            disabled={isLoggingIn}
-            color="dodgerblue">
+            disabled={IsLoggingIn}>
             Sign in with Google
           </Button>
         </Layout>
@@ -61,20 +63,19 @@ export default function Login({navigation}) {
             accessoryLeft={FacebookIcon}
             onPress={() => {
               console.log('Going to Facebook login!');
-              setIsLoggingIn(true);
+              SetIsLoggingIn(true);
               onFacebookButtonPress()
                 .catch(error => {
                   onLoginError(error);
-                  setIsLoggingIn(false);
+                  SetIsLoggingIn(false);
                 })
                 .then(
                   () => console.log('Signed in with Facebook!'),
                   () => console.warn('Sign in with Facebook failed!'),
                 )
-                .finally(() => setIsLoggingIn(false));
+                .finally(() => SetIsLoggingIn(false));
             }}
-            disabled={isLoggingIn}
-            color="blue">
+            disabled={IsLoggingIn}>
             Sign in with Facebook
           </Button>
         </Layout>
@@ -84,8 +85,7 @@ export default function Login({navigation}) {
               onPress={() => {
                 console.log('Going to Apple login!');
               }}
-              disabled={isLoggingIn}
-              color="darkgray">
+              disabled={IsLoggingIn}>
               Sign in with Apple
             </Button>
           </Layout>
@@ -97,14 +97,14 @@ export default function Login({navigation}) {
               console.log('Going to create an account!');
               navigation.navigate('EmailLogin', {showConfirm: true});
             }}
-            disabled={isLoggingIn}
+            disabled={IsLoggingIn}
             appearance="outline">
             Create an account
           </Button>
         </Layout>
       </Layout>
       <Layout style={styles.marginOnly}>
-        {isLoggingIn && <Spinner size="large" />}
+        {IsLoggingIn && <Spinner size="large" />}
       </Layout>
     </Layout>
   );

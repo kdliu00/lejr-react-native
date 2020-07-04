@@ -6,20 +6,20 @@ import * as yup from 'yup';
 import {Layout, Text, Button, Input, Spinner} from '@ui-kitten/components';
 
 export default function EmailLogin({route, navigation}) {
-  const {showConfirm} = route.params;
+  const {showConfirm: ShowConfirm} = route.params;
 
-  const [email, setEmail] = React.useState();
-  const [password, setPassword] = React.useState();
-  const [confirmPassword, setConfirmPassword] = React.useState();
+  const [Email, SetEmail] = React.useState('');
+  const [Password, SetPassword] = React.useState('');
+  const [ConfirmPassword, SetConfirmPassword] = React.useState('');
 
-  const validationSchema = yup.object().shape({
+  const ValidationSchema = yup.object().shape({
     email: yup
       .string()
       .label('Email')
       .email()
       .required(),
     password: yup.lazy(() => {
-      if (showConfirm) {
+      if (ShowConfirm) {
         return yup
           .string()
           .label('Password')
@@ -33,13 +33,13 @@ export default function EmailLogin({route, navigation}) {
       }
     }),
     confirmPassword: yup.lazy(() => {
-      if (showConfirm) {
+      if (ShowConfirm) {
         return yup
           .string()
           .required()
           .label('Confirm password')
           .test('passwords-match', 'Passwords must match', function(value) {
-            return password === value;
+            return Password === value;
           });
       } else {
         return yup.string();
@@ -47,15 +47,15 @@ export default function EmailLogin({route, navigation}) {
     }),
   });
 
-  const [emailError, setEmailError] = React.useState();
-  const [passwordError, setPasswordError] = React.useState();
-  const [confirmPasswordError, setConfirmPasswordError] = React.useState();
+  const [EmailError, SetEmailError] = React.useState();
+  const [PasswordError, SetPasswordError] = React.useState();
+  const [ConfirmPasswordError, SetConfirmPasswordError] = React.useState();
 
-  const [isSubmitting, setIsSubmitting] = React.useState();
+  const [IsSubmitting, SetIsSubmitting] = React.useState();
 
-  const emailRef = React.createRef();
-  const passwordRef = React.createRef();
-  const confirmPasswordRef = React.createRef();
+  const EmailRef = React.createRef();
+  const PasswordRef = React.createRef();
+  const ConfirmPasswordRef = React.createRef();
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -65,37 +65,30 @@ export default function EmailLogin({route, navigation}) {
             color="darkgray"
             onPress={() => navigation.navigate('Login')}
             appearance="outline"
-            disabled={isSubmitting}>
+            disabled={IsSubmitting}>
             Go Back
           </Button>
-          {isSubmitting ? (
+          {IsSubmitting ? (
             <Spinner size="small" />
-          ) : showConfirm ? (
+          ) : ShowConfirm ? (
             <Button
               onPress={() => {
                 console.log('Signing up with email!');
-                validationSchema
-                  .validate({
-                    email: email,
-                    password: password,
-                    confirmPassword: confirmPassword,
-                  })
+                ValidationSchema.validate({
+                  email: Email,
+                  password: Password,
+                  confirmPassword: ConfirmPassword,
+                })
                   .catch(error =>
-                    onValidationError(
-                      error.message,
-                      setIsSubmitting,
-                      validationSchema,
-                      email,
-                      setEmailError,
-                      password,
-                      setPasswordError,
-                      confirmPassword,
-                      setConfirmPasswordError,
-                    ),
+                    onValidationError(error, [
+                      [EmailRef, Email],
+                      [PasswordRef, Password],
+                      [ConfirmPasswordRef, ConfirmPassword],
+                    ]),
                   )
                   .then(valid => {
                     if (valid) {
-                      signUp(email, password, setIsSubmitting);
+                      signUp(Email, Password, SetIsSubmitting);
                     }
                   });
               }}>
@@ -105,27 +98,14 @@ export default function EmailLogin({route, navigation}) {
             <Button
               onPress={() => {
                 console.log('Signing in with email!');
-                validationSchema
-                  .validate({
-                    email: email,
-                    password: password,
-                  })
-                  .catch(error =>
-                    onValidationError(
-                      error.message,
-                      setIsSubmitting,
-                      validationSchema,
-                      email,
-                      setEmailError,
-                      password,
-                      setPasswordError,
-                      confirmPassword,
-                      setConfirmPasswordError,
-                    ),
-                  )
+                ValidationSchema.validate({
+                  email: Email,
+                  password: Password,
+                })
+                  // .catch(error => onValidationError(error))
                   .then(valid => {
                     if (valid) {
-                      signIn(email, password, setIsSubmitting);
+                      signIn(Email, Password, SetIsSubmitting);
                     }
                   });
               }}>
@@ -135,57 +115,56 @@ export default function EmailLogin({route, navigation}) {
         </Layout>
         <Layout style={styles.loginFields}>
           <InputField
-            fieldError={emailError}
-            isSubmitting={isSubmitting}
-            refToPass={emailRef}
+            fieldError={EmailError}
+            isSubmitting={IsSubmitting}
+            refToPass={EmailRef}
+            validationSchema={ValidationSchema}
+            fieldKey="email"
+            fieldParams={text => ({email: text})}
+            setField={SetEmail}
+            setFieldError={SetEmailError}
             placeholder="username@email.com"
-            onChangeText={text => {
-              setEmail(text);
-              validateEmail(validationSchema, text, setEmailError);
-            }}
             onSubmitEditing={() => {
-              passwordRef.current.focus();
+              PasswordRef.current.focus();
             }}
-            value={email}
+            value={Email}
             autoFocus
           />
           <InputField
-            fieldError={passwordError}
-            isSubmitting={isSubmitting}
-            refToPass={passwordRef}
+            fieldError={PasswordError}
+            isSubmitting={IsSubmitting}
+            refToPass={PasswordRef}
+            validationSchema={ValidationSchema}
+            fieldKey="password"
+            fieldParams={text => ({password: text})}
+            setField={SetPassword}
+            setFieldError={SetPasswordError}
             placeholder="password"
-            onChangeText={text => {
-              setPassword(text);
-              validatePassword(validationSchema, text, setPasswordError);
-            }}
             onSubmitEditing={() => {
-              if (showConfirm) {
-                confirmPasswordRef.current.focus();
+              if (ShowConfirm) {
+                ConfirmPasswordRef.current.focus();
               } else {
                 Keyboard.dismiss();
               }
             }}
-            value={password}
+            value={Password}
             secureTextEntry
           />
-          {showConfirm && (
+          {ShowConfirm && (
             <InputField
-              fieldError={confirmPasswordError}
-              isSubmitting={isSubmitting}
-              refToPass={confirmPasswordRef}
+              fieldError={ConfirmPasswordError}
+              isSubmitting={IsSubmitting}
+              refToPass={ConfirmPasswordRef}
+              validationSchema={ValidationSchema}
+              fieldKey="confirmPassword"
+              fieldParams={text => ({confirmPassword: text})}
+              setField={SetConfirmPassword}
+              setFieldError={SetConfirmPasswordError}
               placeholder="confirm password"
-              onChangeText={text => {
-                setConfirmPassword(text);
-                validateConfirmPassword(
-                  validationSchema,
-                  text,
-                  setConfirmPasswordError,
-                );
-              }}
               onSubmitEditing={() => {
                 Keyboard.dismiss();
               }}
-              value={confirmPassword}
+              value={ConfirmPassword}
               secureTextEntry
             />
           )}
@@ -231,6 +210,11 @@ function signIn(email, password, setIsSubmitting) {
     );
 }
 
+function onValidationError(error, fieldRefs) {
+  console.warn(error.message);
+  fieldRefs.forEach(ref => ref[0].current.props.onChangeText(ref[1]));
+}
+
 function onEmailLoginError(error, setIsSubmitting) {
   var errorCode = error.userInfo.code;
   var message = error.userInfo.message;
@@ -255,71 +239,6 @@ function onEmailLoginError(error, setIsSubmitting) {
   setIsSubmitting(false);
 }
 
-function onValidationError(
-  message,
-  setIsSubmitting,
-  validationSchema,
-  email,
-  setEmailError,
-  password,
-  setPasswordError,
-  confirmPassword,
-  setConfirmPasswordError,
-) {
-  console.warn(message);
-  validateEmail(validationSchema, email, setEmailError);
-  validatePassword(validationSchema, password, setPasswordError);
-  validateConfirmPassword(
-    validationSchema,
-    confirmPassword,
-    setConfirmPasswordError,
-  );
-  setIsSubmitting(false);
-}
-
-function validateEmail(validationSchema, text, setEmailError) {
-  validationSchema
-    .validateAt('email', {email: text})
-    .catch(error => {
-      setEmailError(error.message);
-    })
-    .then(valid => {
-      if (valid) {
-        setEmailError('');
-      }
-    });
-}
-
-function validatePassword(validationSchema, text, setPasswordError) {
-  validationSchema
-    .validateAt('password', {password: text})
-    .catch(error => {
-      setPasswordError(error.message);
-    })
-    .then(valid => {
-      if (valid) {
-        setPasswordError('');
-      }
-    });
-}
-
-function validateConfirmPassword(
-  validationSchema,
-  text,
-  setConfirmPasswordError,
-) {
-  validationSchema
-    .validateAt('confirmPassword', {confirmPassword: text})
-    .catch(error => {
-      setConfirmPasswordError(error.message);
-    })
-    .then(valid => {
-      if (valid) {
-        setConfirmPasswordError('');
-      }
-    });
-}
-
 const InputFieldWrapper = ({fieldError, children}) => (
   <Layout style={styles.textInputWrapper}>
     <Text style={styles.errorText}>{fieldError}</Text>
@@ -327,7 +246,32 @@ const InputFieldWrapper = ({fieldError, children}) => (
   </Layout>
 );
 
-const InputField = ({refToPass, isSubmitting, fieldError, value, ...rest}) => {
+const InputField = ({
+  refToPass,
+  isSubmitting,
+  fieldError,
+  validationSchema,
+  fieldKey,
+  fieldParams,
+  setField,
+  setFieldError,
+  value,
+  ...rest
+}) => {
+  function validateField(text) {
+    setField(text);
+    validationSchema
+      .validateAt(fieldKey, fieldParams(text))
+      .catch(error => {
+        setFieldError(error.message);
+      })
+      .then(valid => {
+        if (valid) {
+          setFieldError('');
+        }
+      });
+  }
+
   return (
     <InputFieldWrapper fieldError={fieldError}>
       <Input
@@ -335,12 +279,10 @@ const InputField = ({refToPass, isSubmitting, fieldError, value, ...rest}) => {
         style={styles.textInput}
         clearButtonMode="always"
         autoCorrect={false}
-        autoCapitalize="none"
         enablesReturnKeyAutomatically={true}
-        blurOnSubmit={false}
-        returnKeyType="done"
         editable={!isSubmitting}
         status={fieldError ? 'danger' : value ? 'success' : 'basic'}
+        onChangeText={text => validateField(text)}
         {...rest}
       />
     </InputFieldWrapper>
