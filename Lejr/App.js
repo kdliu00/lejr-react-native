@@ -36,7 +36,7 @@ export default function App() {
         <NavigationContainer>
           <Stack.Navigator
             initialRouteName="Loading"
-            screenOptions={{headerShown: false}}>
+            screenOptions={{headerShown: false, gestureEnabled: false}}>
             <Stack.Screen name="Loading" component={Loading} />
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="EmailLogin" component={EmailLoginScreen} />

@@ -1,5 +1,10 @@
 import React from 'react';
-import {StyleSheet, TouchableWithoutFeedback, Keyboard} from 'react-native';
+import {
+  StyleSheet,
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Keyboard,
+} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {Alert} from 'react-native';
 import * as yup from 'yup';
@@ -58,119 +63,121 @@ export default function EmailLogin({route, navigation}) {
   const ConfirmPasswordRef = React.createRef();
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <Layout style={Styles.container}>
-        <Layout style={Styles.bottomContainer}>
-          <Button
-            color="darkgray"
-            onPress={() => navigation.navigate('Login')}
-            appearance="outline"
-            disabled={IsSubmitting}>
-            Go Back
-          </Button>
-          {IsSubmitting ? (
-            <Spinner size="small" />
-          ) : ShowConfirm ? (
+    <KeyboardAvoidingView behavior="padding" style={Styles.container}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <Layout style={Styles.container}>
+          <Layout style={Styles.bottomContainer}>
             <Button
-              onPress={() => {
-                console.log('Signing up with email!');
-                ValidationSchema.validate({
-                  email: Email,
-                  password: Password,
-                  confirmPassword: ConfirmPassword,
-                })
-                  .catch(error =>
-                    onValidationError(error, [
-                      [EmailRef, Email],
-                      [PasswordRef, Password],
-                      [ConfirmPasswordRef, ConfirmPassword],
-                    ]),
-                  )
-                  .then(valid => {
-                    if (valid) {
-                      signUp(Email, Password, SetIsSubmitting);
-                    }
-                  });
-              }}>
-              Sign Up
+              color="darkgray"
+              onPress={() => navigation.navigate('Login')}
+              appearance="outline"
+              disabled={IsSubmitting}>
+              Go Back
             </Button>
-          ) : (
-            <Button
-              onPress={() => {
-                console.log('Signing in with email!');
-                ValidationSchema.validate({
-                  email: Email,
-                  password: Password,
-                })
-                  // .catch(error => onValidationError(error))
-                  .then(valid => {
-                    if (valid) {
-                      signIn(Email, Password, SetIsSubmitting);
-                    }
-                  });
-              }}>
-              Sign In
-            </Button>
-          )}
-        </Layout>
-        <Layout style={Styles.loginFields}>
-          <InputField
-            fieldError={EmailError}
-            isSubmitting={IsSubmitting}
-            refToPass={EmailRef}
-            validationSchema={ValidationSchema}
-            fieldKey="email"
-            fieldParams={text => ({email: text})}
-            setField={SetEmail}
-            setFieldError={SetEmailError}
-            placeholder="username@email.com"
-            onSubmitEditing={() => {
-              PasswordRef.current.focus();
-            }}
-            value={Email}
-            autoFocus
-          />
-          <InputField
-            fieldError={PasswordError}
-            isSubmitting={IsSubmitting}
-            refToPass={PasswordRef}
-            validationSchema={ValidationSchema}
-            fieldKey="password"
-            fieldParams={text => ({password: text})}
-            setField={SetPassword}
-            setFieldError={SetPasswordError}
-            placeholder="password"
-            onSubmitEditing={() => {
-              if (ShowConfirm) {
-                ConfirmPasswordRef.current.focus();
-              } else {
-                Keyboard.dismiss();
-              }
-            }}
-            value={Password}
-            secureTextEntry
-          />
-          {ShowConfirm && (
+            {IsSubmitting ? (
+              <Spinner size="small" />
+            ) : ShowConfirm ? (
+              <Button
+                onPress={() => {
+                  console.log('Signing up with email!');
+                  ValidationSchema.validate({
+                    email: Email,
+                    password: Password,
+                    confirmPassword: ConfirmPassword,
+                  })
+                    .catch(error =>
+                      onValidationError(error, [
+                        [EmailRef, Email],
+                        [PasswordRef, Password],
+                        [ConfirmPasswordRef, ConfirmPassword],
+                      ]),
+                    )
+                    .then(valid => {
+                      if (valid) {
+                        signUp(Email, Password, SetIsSubmitting);
+                      }
+                    });
+                }}>
+                Sign Up
+              </Button>
+            ) : (
+              <Button
+                onPress={() => {
+                  console.log('Signing in with email!');
+                  ValidationSchema.validate({
+                    email: Email,
+                    password: Password,
+                  })
+                    // .catch(error => onValidationError(error))
+                    .then(valid => {
+                      if (valid) {
+                        signIn(Email, Password, SetIsSubmitting);
+                      }
+                    });
+                }}>
+                Sign In
+              </Button>
+            )}
+          </Layout>
+          <Layout style={Styles.loginFields}>
             <InputField
-              fieldError={ConfirmPasswordError}
+              fieldError={EmailError}
               isSubmitting={IsSubmitting}
-              refToPass={ConfirmPasswordRef}
+              refToPass={EmailRef}
               validationSchema={ValidationSchema}
-              fieldKey="confirmPassword"
-              fieldParams={text => ({confirmPassword: text})}
-              setField={SetConfirmPassword}
-              setFieldError={SetConfirmPasswordError}
-              placeholder="confirm password"
+              fieldKey="email"
+              fieldParams={text => ({email: text})}
+              setField={SetEmail}
+              setFieldError={SetEmailError}
+              placeholder="username@email.com"
               onSubmitEditing={() => {
-                Keyboard.dismiss();
+                PasswordRef.current.focus();
               }}
-              value={ConfirmPassword}
+              value={Email}
+              autoFocus
+            />
+            <InputField
+              fieldError={PasswordError}
+              isSubmitting={IsSubmitting}
+              refToPass={PasswordRef}
+              validationSchema={ValidationSchema}
+              fieldKey="password"
+              fieldParams={text => ({password: text})}
+              setField={SetPassword}
+              setFieldError={SetPasswordError}
+              placeholder="password"
+              onSubmitEditing={() => {
+                if (ShowConfirm) {
+                  ConfirmPasswordRef.current.focus();
+                } else {
+                  Keyboard.dismiss();
+                }
+              }}
+              value={Password}
               secureTextEntry
             />
-          )}
+            {ShowConfirm && (
+              <InputField
+                fieldError={ConfirmPasswordError}
+                isSubmitting={IsSubmitting}
+                refToPass={ConfirmPasswordRef}
+                validationSchema={ValidationSchema}
+                fieldKey="confirmPassword"
+                fieldParams={text => ({confirmPassword: text})}
+                setField={SetConfirmPassword}
+                setFieldError={SetConfirmPasswordError}
+                placeholder="confirm password"
+                onSubmitEditing={() => {
+                  Keyboard.dismiss();
+                }}
+                value={ConfirmPassword}
+                secureTextEntry
+              />
+            )}
+          </Layout>
         </Layout>
-      </Layout>
-    </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -279,6 +286,7 @@ const InputField = ({
         style={Styles.textInput}
         clearButtonMode="always"
         autoCorrect={false}
+        autoCapitalize="none"
         enablesReturnKeyAutomatically={true}
         editable={!isSubmitting}
         status={fieldError ? 'danger' : value ? 'success' : 'basic'}
