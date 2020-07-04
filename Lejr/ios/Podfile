@@ -85,6 +85,11 @@ target 'Lejr' do
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
+  # Third party deps podspec link
+  pod 'react-native-camera', path: '../node_modules/react-native-camera', subspecs: [
+    'TextDetector'
+  ]
+
   target 'LejrTests' do
     inherit! :complete
     # Pods for testing
