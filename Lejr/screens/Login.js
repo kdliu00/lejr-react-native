@@ -4,7 +4,7 @@ import auth from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-community/google-signin';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import {Alert} from 'react-native';
-import {Layout, Button, Spinner} from '@ui-kitten/components';
+import {Layout, Button, Spinner, Icon} from '@ui-kitten/components';
 
 GoogleSignin.configure({
   webClientId:
@@ -12,6 +12,8 @@ GoogleSignin.configure({
       ? '746843927000-6biufia12op03j4ma7522it3s81nim8b.apps.googleusercontent.com'
       : '746843927000-1kd2tbmtr59ba41i9k4bk2gr8252jhau.apps.googleusercontent.com',
 });
+
+const FacebookIcon = props => <Icon name="facebook" {...props} />;
 
 export default function Login({navigation}) {
   console.log('Arrived at Login!');
@@ -56,6 +58,7 @@ export default function Login({navigation}) {
         </Layout>
         <Layout style={styles.button}>
           <Button
+            accessoryLeft={FacebookIcon}
             onPress={() => {
               console.log('Going to Facebook login!');
               setIsLoggingIn(true);
