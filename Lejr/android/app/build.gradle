@@ -198,7 +198,6 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.google.firebase:firebase-analytics:17.2.2'
     implementation 'com.facebook.android:facebook-android-sdk:[5,6)'
-    implementation 'com.github.yalantis:ucrop:2.2.5-native'
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'
