@@ -4,6 +4,7 @@ import {
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Keyboard,
+  Platform,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {Alert} from 'react-native';
@@ -63,7 +64,9 @@ export default function EmailLogin({route, navigation}) {
   const ConfirmPasswordRef = React.createRef();
 
   return (
-    <KeyboardAvoidingView behavior="padding" style={Styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={Styles.container}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <Layout style={Styles.container}>
           <Layout style={Styles.bottomContainer}>
