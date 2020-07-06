@@ -1,4 +1,5 @@
 import React from 'react';
+import {KeyboardAvoidingView, StyleSheet, Platform} from 'react-native';
 import 'react-native-gesture-handler';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -10,7 +11,8 @@ import {EvaIconsPack} from '@ui-kitten/eva-icons';
 import Loading from './screens/Loading';
 import Login from './screens/Login';
 import Dashboard from './screens/Dashboard';
-import EmailLoginScreen from './screens/EmailLogin';
+import EmailLogin from './screens/EmailLogin';
+import CreateAccount from './screens/CreateAccount';
 
 import {default as theme} from './eva-theme.json';
 
@@ -30,7 +32,9 @@ export default function App() {
   console.log('Arrived at App!');
 
   return (
-    <>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={Styles.container}>
       <IconRegistry icons={EvaIconsPack} />
       <ApplicationProvider {...eva} theme={{...eva.light, ...theme}}>
         <NavigationContainer>
@@ -39,11 +43,19 @@ export default function App() {
             screenOptions={{headerShown: false, gestureEnabled: false}}>
             <Stack.Screen name="Loading" component={Loading} />
             <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="EmailLogin" component={EmailLoginScreen} />
+            <Stack.Screen name="EmailLogin" component={EmailLogin} />
+            <Stack.Screen name="CreateAccount" component={CreateAccount} />
             <Stack.Screen name="Dashboard" component={Dashboard} />
           </Stack.Navigator>
         </NavigationContainer>
       </ApplicationProvider>
-    </>
+    </KeyboardAvoidingView>
   );
 }
+
+const Styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'column-reverse',
+  },
+});

@@ -14,7 +14,9 @@ import FromImage from './dashboard/FromImage';
 const {Navigator, Screen} = createBottomTabNavigator();
 
 const HomeIcon = props => <Icon name="home-outline" {...props} />;
-const ContributionIcon = props => <Icon name="plus-outline" {...props} />;
+const ContributionIcon = props => (
+  <Icon name="shopping-cart-outline" {...props} />
+);
 const CameraIcon = props => <Icon name="camera-outline" {...props} />;
 const SettingsIcon = props => <Icon name="settings-2-outline" {...props} />;
 

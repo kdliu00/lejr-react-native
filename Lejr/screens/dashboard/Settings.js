@@ -1,13 +1,22 @@
 import React from 'react';
 import {StyleSheet} from 'react-native';
-import {Layout, Text} from '@ui-kitten/components';
+import auth from '@react-native-firebase/auth';
+import {Layout, Button} from '@ui-kitten/components';
 
 export default function Settings({navigation}) {
   console.log('Arrived at Settings!');
 
   return (
     <Layout style={Styles.container}>
-      <Text>Settings</Text>
+      <Button
+        appearance="outline"
+        onPress={() => {
+          auth()
+            .signOut()
+            .then(() => console.log('User signed out!'));
+        }}>
+        Sign Out
+      </Button>
     </Layout>
   );
 }

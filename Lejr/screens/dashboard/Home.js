@@ -1,22 +1,26 @@
 import React from 'react';
 import {StyleSheet} from 'react-native';
-import auth from '@react-native-firebase/auth';
-import {Layout, Button} from '@ui-kitten/components';
+import {Layout, List, Text} from '@ui-kitten/components';
+import {ContributionCard} from '../../util/ContributionUI';
+import UserData from '../../util/LocalData';
+
+// Array of objects with at least properties 'memo', 'total', and 'totalSplit'
+// const VirtualReceiptData = UserData.userGroupObjects[0].virtualReceipts;
 
 export default function Home({navigation}) {
   console.log('Arrived at Home!');
 
   return (
     <Layout style={Styles.container}>
-      <Button
-        appearance="outline"
-        onPress={() => {
-          auth()
-            .signOut()
-            .then(() => console.log('User signed out!'));
-        }}>
-        Sign Out
-      </Button>
+      <Layout style={Styles.header}>
+        <Text category="h5">Group name</Text>
+      </Layout>
+      <List
+        style={Styles.list}
+        contentContainerStyle={Styles.contentContainer}
+        // data={VirtualReceiptData}
+        renderItem={ContributionCard}
+      />
     </Layout>
   );
 }
@@ -24,7 +28,19 @@ export default function Home({navigation}) {
 const Styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
+    flexDirection: 'column',
     justifyContent: 'center',
+  },
+  header: {
+    height: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  contentContainer: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  list: {
+    flex: 1,
   },
 });

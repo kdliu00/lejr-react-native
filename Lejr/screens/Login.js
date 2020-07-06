@@ -95,7 +95,7 @@ export default function Login({navigation}) {
           <Button
             onPress={() => {
               console.log('Going to create an account!');
-              navigation.navigate('EmailLogin', {showConfirm: true});
+              navigation.navigate('CreateAccount');
             }}
             disabled={IsLoggingIn}
             appearance="outline">
