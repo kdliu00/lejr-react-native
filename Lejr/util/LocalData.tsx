@@ -1,6 +1,6 @@
 import {User, Group} from './DataObjects';
 
 export default class UserData {
-  static userObject: User;
-  static userGroupObjects: Group[] = [];
+  static userObject: User = null;
+  static groupObjects: Group[] = [];
 }

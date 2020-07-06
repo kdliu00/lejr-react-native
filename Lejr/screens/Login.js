@@ -5,12 +5,10 @@ import {GoogleSignin} from '@react-native-community/google-signin';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import {Alert} from 'react-native';
 import {Layout, Button, Spinner, Icon} from '@ui-kitten/components';
+import {iOSWebClientId, androidWebClientId} from '../util/Constants';
 
 GoogleSignin.configure({
-  webClientId:
-    Platform.OS === 'ios'
-      ? '746843927000-6biufia12op03j4ma7522it3s81nim8b.apps.googleusercontent.com'
-      : '746843927000-1kd2tbmtr59ba41i9k4bk2gr8252jhau.apps.googleusercontent.com',
+  webClientId: Platform.OS === 'ios' ? iOSWebClientId : androidWebClientId,
 });
 
 const FacebookIcon = props => <Icon name="facebook" {...props} />;

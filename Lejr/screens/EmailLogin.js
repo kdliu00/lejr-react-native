@@ -5,6 +5,7 @@ import {Alert} from 'react-native';
 import * as yup from 'yup';
 import {Layout, Button, Spinner} from '@ui-kitten/components';
 import {onValidationError, InputField} from '../util/TextInputUI';
+import UserData from '../util/LocalData';
 
 export default function EmailLogin({route, navigation}) {
   const {showConfirm: ShowConfirm} = route.params;
@@ -188,6 +189,7 @@ export default function EmailLogin({route, navigation}) {
 async function signUp(email, password, setIsSubmitting) {
   setIsSubmitting(true);
   email = email.trim();
+  UserData.userObject.email = email;
 
   return auth()
     .createUserWithEmailAndPassword(email, password)

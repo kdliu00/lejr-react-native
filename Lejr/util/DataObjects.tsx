@@ -4,14 +4,14 @@ class User {
   userId: string;
   email: string;
   profilePic: string;
-  name: Map<string, string>;
+  name: string;
   groupBalances: Map<string, number>;
 
   constructor(
     userId: string,
     email: string,
     profilePic: string,
-    name: Map<string, string>,
+    name: string,
     groupBalances: Map<string, number>,
   ) {
     this.userId = userId;
@@ -21,17 +21,27 @@ class User {
     this.groupBalances = groupBalances;
   }
 
-  get fullName() {
-    return this.firstName() + ' ' + this.lastName();
-  }
-
-  get firstName() {
-    return this.name['first'];
-  }
-
-  get lastName() {
-    return this.name['last'];
-  }
+  static firestoreConverter = {
+    toFirestore: function(user: User) {
+      return {
+        userId: user.userId,
+        email: user.email,
+        profilePic: user.profilePic,
+        name: user.name,
+        groupBalances: user.groupBalances,
+      };
+    },
+    fromFirestore: function(snapshot) {
+      const data = snapshot.data();
+      return new User(
+        data.userId,
+        data.email,
+        data.profilePic,
+        data.name,
+        data.groupBalances,
+      );
+    },
+  };
 }
 
 class Group {

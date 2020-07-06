@@ -55,8 +55,8 @@ export default function EmailLogin({route, navigation}) {
                       '',
                       '',
                       '',
-                      {first: FirstName.trim(), last: LastName.trim()},
-                      null,
+                      FirstName.trim() + ' ' + LastName.trim(),
+                      new Map(),
                     );
                     navigation.navigate('EmailLogin', {showConfirm: true});
                   }
