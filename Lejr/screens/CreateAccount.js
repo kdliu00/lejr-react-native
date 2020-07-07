@@ -1,10 +1,11 @@
 import React from 'react';
-import {StyleSheet, TouchableWithoutFeedback, Keyboard} from 'react-native';
+import {TouchableWithoutFeedback, Keyboard} from 'react-native';
 import * as yup from 'yup';
 import {Layout, Button} from '@ui-kitten/components';
 import {onValidationError, InputField} from '../util/TextInputUI';
 import UserData from '../util/LocalData';
 import {User} from '../util/DataObjects';
+import FormStyles from '../util/FormStyles';
 
 export default function EmailLogin({route, navigation}) {
   const [FirstName, SetFirstName] = React.useState('');
@@ -29,14 +30,10 @@ export default function EmailLogin({route, navigation}) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <Layout style={Styles.container}>
-        <Layout style={Styles.bottomContainer}>
+      <Layout style={FormStyles.container}>
+        <Layout style={FormStyles.loginButtons}>
           <Button
-            onPress={() => navigation.navigate('Login')}
-            appearance="outline">
-            Go Back
-          </Button>
-          <Button
+            style={FormStyles.button}
             onPress={() => {
               console.log('Signing up with email!');
               ValidationSchema.validate({
@@ -64,8 +61,28 @@ export default function EmailLogin({route, navigation}) {
             }}>
             Next
           </Button>
+          <Button
+            style={FormStyles.button}
+            onPress={() => navigation.navigate('Login')}
+            appearance="outline">
+            Go back
+          </Button>
         </Layout>
-        <Layout style={Styles.loginFields}>
+        <Layout style={FormStyles.loginFields}>
+          <InputField
+            fieldError={LastNameError}
+            refToPass={LastNameRef}
+            validationSchema={ValidationSchema}
+            fieldKey="last"
+            fieldParams={text => ({last: text})}
+            setField={SetLastName}
+            setFieldError={SetLastNameError}
+            placeholder="Last name"
+            onSubmitEditing={() => {
+              Keyboard.dismiss();
+            }}
+            value={LastName}
+          />
           <InputField
             fieldError={FirstNameError}
             refToPass={FirstNameRef}
@@ -81,40 +98,8 @@ export default function EmailLogin({route, navigation}) {
             value={FirstName}
             autoFocus
           />
-          <InputField
-            fieldError={LastNameError}
-            refToPass={LastNameRef}
-            validationSchema={ValidationSchema}
-            fieldKey="last"
-            fieldParams={text => ({last: text})}
-            setField={SetLastName}
-            setFieldError={SetLastNameError}
-            placeholder="Last name"
-            onSubmitEditing={() => {
-              Keyboard.dismiss();
-            }}
-            value={LastName}
-          />
         </Layout>
       </Layout>
     </TouchableWithoutFeedback>
   );
 }
-
-const Styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column-reverse',
-  },
-  loginFields: {
-    alignItems: 'center',
-    flexDirection: 'column',
-  },
-  bottomContainer: {
-    height: '25%',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    flexDirection: 'column-reverse',
-    margin: 30,
-  },
-});

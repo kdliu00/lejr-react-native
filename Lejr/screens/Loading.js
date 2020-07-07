@@ -20,7 +20,7 @@ export default function Loading({navigation}) {
           if (doc.exists) {
             console.log('User document found!');
             UserData.userObject = User.firestoreConverter.fromFirestore(doc);
-            navigation.navigate('Dashboard');
+            checkGroups(navigation);
           } else {
             console.log('No document for user, creating new one!');
             if (UserData.userObject == null) {
@@ -40,7 +40,8 @@ export default function Loading({navigation}) {
               .collection('users')
               .doc(user.uid)
               .set(User.firestoreConverter.toFirestore(UserData.userObject))
-              .then(() => navigation.navigate('Dashboard'));
+              .catch(error => console.warn(error.message))
+              .then(() => checkGroups(navigation));
           }
         })
         .catch(error => {
@@ -56,6 +57,14 @@ export default function Loading({navigation}) {
       <Spinner size="large" />
     </Layout>
   );
+}
+
+function checkGroups(navigation) {
+  if (Object.keys(UserData.userObject.groupBalances).length === 0) {
+    navigation.navigate('JoinGroup');
+  } else {
+    navigation.navigate('Dashboard');
+  }
 }
 
 const Styles = StyleSheet.create({

@@ -1,11 +1,12 @@
 import React from 'react';
-import {StyleSheet, TouchableWithoutFeedback, Keyboard} from 'react-native';
+import {TouchableWithoutFeedback, Keyboard} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {Alert} from 'react-native';
 import * as yup from 'yup';
 import {Layout, Button, Spinner} from '@ui-kitten/components';
 import {onValidationError, InputField} from '../util/TextInputUI';
 import UserData from '../util/LocalData';
+import FormStyles from '../util/FormStyles';
 
 export default function EmailLogin({route, navigation}) {
   const {showConfirm: ShowConfirm} = route.params;
@@ -66,24 +67,13 @@ export default function EmailLogin({route, navigation}) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <Layout style={Styles.container}>
-        <Layout style={Styles.bottomContainer}>
-          <Button
-            onPress={() => {
-              if (ShowConfirm) {
-                navigation.navigate('CreateAccount');
-              } else {
-                navigation.navigate('Login');
-              }
-            }}
-            appearance="outline"
-            disabled={IsSubmitting}>
-            Go Back
-          </Button>
+      <Layout style={FormStyles.container}>
+        <Layout style={FormStyles.loginButtons}>
           {IsSubmitting ? (
             <Spinner size="small" />
           ) : ShowConfirm ? (
             <Button
+              style={FormStyles.button}
               onPress={() => {
                 console.log('Signing up with email!');
                 ValidationSchema.validate({
@@ -104,44 +94,65 @@ export default function EmailLogin({route, navigation}) {
                     }
                   });
               }}>
-              Sign Up
+              Sign up
             </Button>
           ) : (
             <Button
+              style={FormStyles.button}
               onPress={() => {
                 console.log('Signing in with email!');
                 ValidationSchema.validate({
                   email: Email,
                   password: Password,
                 })
-                  // .catch(error => onValidationError(error))
+                  .catch(error =>
+                    onValidationError(error, [
+                      [EmailRef, Email],
+                      [PasswordRef, Password],
+                    ]),
+                  )
                   .then(valid => {
                     if (valid) {
                       signIn(Email, Password, SetIsSubmitting);
                     }
                   });
               }}>
-              Sign In
+              Sign in
             </Button>
           )}
-        </Layout>
-        <Layout style={Styles.loginFields}>
-          <InputField
-            fieldError={EmailError}
-            isSubmitting={IsSubmitting}
-            refToPass={EmailRef}
-            validationSchema={ValidationSchema}
-            fieldKey="email"
-            fieldParams={text => ({email: text})}
-            setField={SetEmail}
-            setFieldError={SetEmailError}
-            placeholder="username@email.com"
-            onSubmitEditing={() => {
-              PasswordRef.current.focus();
+          <Button
+            style={FormStyles.button}
+            onPress={() => {
+              if (ShowConfirm) {
+                navigation.navigate('CreateAccount');
+              } else {
+                navigation.navigate('Login');
+              }
             }}
-            value={Email}
-            autoFocus
-          />
+            appearance="outline"
+            disabled={IsSubmitting}>
+            Go back
+          </Button>
+        </Layout>
+        <Layout style={FormStyles.loginFields}>
+          {ShowConfirm && (
+            <InputField
+              fieldError={ConfirmPasswordError}
+              isSubmitting={IsSubmitting}
+              refToPass={ConfirmPasswordRef}
+              validationSchema={ValidationSchema}
+              fieldKey="confirmPassword"
+              fieldParams={text => ({confirmPassword: text})}
+              setField={SetConfirmPassword}
+              setFieldError={SetConfirmPasswordError}
+              placeholder="confirm password"
+              onSubmitEditing={() => {
+                Keyboard.dismiss();
+              }}
+              value={ConfirmPassword}
+              secureTextEntry
+            />
+          )}
           <InputField
             fieldError={PasswordError}
             isSubmitting={IsSubmitting}
@@ -162,24 +173,22 @@ export default function EmailLogin({route, navigation}) {
             value={Password}
             secureTextEntry
           />
-          {ShowConfirm && (
-            <InputField
-              fieldError={ConfirmPasswordError}
-              isSubmitting={IsSubmitting}
-              refToPass={ConfirmPasswordRef}
-              validationSchema={ValidationSchema}
-              fieldKey="confirmPassword"
-              fieldParams={text => ({confirmPassword: text})}
-              setField={SetConfirmPassword}
-              setFieldError={SetConfirmPasswordError}
-              placeholder="confirm password"
-              onSubmitEditing={() => {
-                Keyboard.dismiss();
-              }}
-              value={ConfirmPassword}
-              secureTextEntry
-            />
-          )}
+          <InputField
+            fieldError={EmailError}
+            isSubmitting={IsSubmitting}
+            refToPass={EmailRef}
+            validationSchema={ValidationSchema}
+            fieldKey="email"
+            fieldParams={text => ({email: text})}
+            setField={SetEmail}
+            setFieldError={SetEmailError}
+            placeholder="username@email.com"
+            onSubmitEditing={() => {
+              PasswordRef.current.focus();
+            }}
+            value={Email}
+            autoFocus
+          />
         </Layout>
       </Layout>
     </TouchableWithoutFeedback>
@@ -250,21 +259,3 @@ function onEmailLoginError(error, setIsSubmitting) {
 
   setIsSubmitting(false);
 }
-
-const Styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column-reverse',
-  },
-  loginFields: {
-    alignItems: 'center',
-    flexDirection: 'column',
-  },
-  bottomContainer: {
-    height: '25%',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    flexDirection: 'column-reverse',
-    margin: 30,
-  },
-});

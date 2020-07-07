@@ -13,6 +13,7 @@ import Login from './screens/Login';
 import Dashboard from './screens/Dashboard';
 import EmailLogin from './screens/EmailLogin';
 import CreateAccount from './screens/CreateAccount';
+import JoinGroup from './screens/JoinGroup';
 
 import {default as theme} from './eva-theme.json';
 
@@ -45,6 +46,7 @@ export default function App() {
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="EmailLogin" component={EmailLogin} />
             <Stack.Screen name="CreateAccount" component={CreateAccount} />
+            <Stack.Screen name="JoinGroup" component={JoinGroup} />
             <Stack.Screen name="Dashboard" component={Dashboard} />
           </Stack.Navigator>
         </NavigationContainer>

@@ -22,87 +22,82 @@ export default function Login({navigation}) {
 
   return (
     <Layout style={Styles.container}>
-      <Layout style={Styles.marginOnly} />
       <Layout style={Styles.loginItems}>
-        <Layout style={Styles.button}>
-          <Button
-            accessoryLeft={EmailIcon}
-            onPress={() => {
-              console.log('Going to email login!');
-              navigation.navigate('EmailLogin', {showConfirm: false});
-            }}
-            disabled={IsLoggingIn}>
-            Sign in with email
-          </Button>
-        </Layout>
-        <Layout style={Styles.button}>
-          <Button
-            accessoryLeft={GoogleIcon}
-            onPress={() => {
-              console.log('Going to Google login!');
-              SetIsLoggingIn(true);
-              onGoogleButtonPress()
-                .catch(error => {
-                  onLoginError(error);
-                  SetIsLoggingIn(false);
-                })
-                .then(
-                  () => console.log('Signed in with Google!'),
-                  () => console.warn('Sign in with Google failed!'),
-                )
-                .finally(() => SetIsLoggingIn(false));
-            }}
-            disabled={IsLoggingIn}>
-            Sign in with Google
-          </Button>
-        </Layout>
-        <Layout style={Styles.button}>
-          <Button
-            accessoryLeft={FacebookIcon}
-            onPress={() => {
-              console.log('Going to Facebook login!');
-              SetIsLoggingIn(true);
-              onFacebookButtonPress()
-                .catch(error => {
-                  onLoginError(error);
-                  SetIsLoggingIn(false);
-                })
-                .then(
-                  () => console.log('Signed in with Facebook!'),
-                  () => console.warn('Sign in with Facebook failed!'),
-                )
-                .finally(() => SetIsLoggingIn(false));
-            }}
-            disabled={IsLoggingIn}>
-            Sign in with Facebook
-          </Button>
-        </Layout>
+        <Layout style={Styles.buffer} />
+        <Button
+          style={Styles.button}
+          onPress={() => {
+            console.log('Going to create an account!');
+            navigation.navigate('CreateAccount');
+          }}
+          disabled={IsLoggingIn}
+          appearance="outline">
+          Create an account
+        </Button>
+        <Layout style={Styles.buffer} />
         {Platform.OS === 'ios' && (
-          <Layout style={Styles.button}>
-            <Button
-              onPress={() => {
-                console.log('Going to Apple login!');
-              }}
-              disabled={IsLoggingIn}>
-              Sign in with Apple
-            </Button>
-          </Layout>
-        )}
-        <Layout style={Styles.button} />
-        <Layout style={Styles.button}>
           <Button
+            style={Styles.button}
             onPress={() => {
-              console.log('Going to create an account!');
-              navigation.navigate('CreateAccount');
+              console.log('Going to Apple login!');
             }}
-            disabled={IsLoggingIn}
-            appearance="outline">
-            Create an account
+            disabled={IsLoggingIn}>
+            Sign in with Apple
           </Button>
+        )}
+        <Button
+          style={Styles.button}
+          accessoryLeft={FacebookIcon}
+          onPress={() => {
+            console.log('Going to Facebook login!');
+            SetIsLoggingIn(true);
+            onFacebookButtonPress()
+              .catch(error => {
+                onLoginError(error);
+                SetIsLoggingIn(false);
+              })
+              .then(
+                () => console.log('Signed in with Facebook!'),
+                () => console.warn('Sign in with Facebook failed!'),
+              )
+              .finally(() => SetIsLoggingIn(false));
+          }}
+          disabled={IsLoggingIn}>
+          Sign in with Facebook
+        </Button>
+        <Button
+          style={Styles.button}
+          accessoryLeft={GoogleIcon}
+          onPress={() => {
+            console.log('Going to Google login!');
+            SetIsLoggingIn(true);
+            onGoogleButtonPress()
+              .catch(error => {
+                onLoginError(error);
+                SetIsLoggingIn(false);
+              })
+              .then(
+                () => console.log('Signed in with Google!'),
+                () => console.warn('Sign in with Google failed!'),
+              )
+              .finally(() => SetIsLoggingIn(false));
+          }}
+          disabled={IsLoggingIn}>
+          Sign in with Google
+        </Button>
+        <Button
+          style={Styles.button}
+          accessoryLeft={EmailIcon}
+          onPress={() => {
+            console.log('Going to email login!');
+            navigation.navigate('EmailLogin', {showConfirm: false});
+          }}
+          disabled={IsLoggingIn}>
+          Sign in with email
+        </Button>
+        <Layout style={Styles.loadingIndicator}>
+          {IsLoggingIn && <Spinner size="large" />}
         </Layout>
-      </Layout>
-      <Layout style={Styles.marginOnly}>
-        {IsLoggingIn && <Spinner size="large" />}
       </Layout>
     </Layout>
   );
@@ -169,18 +164,20 @@ async function onFacebookButtonPress() {
 const Styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    flexDirection: 'column-reverse',
   },
-  marginOnly: {
-    margin: 40,
+  loadingIndicator: {
+    marginBottom: 40,
+  },
+  buffer: {
+    margin: 25,
   },
   loginItems: {
-    alignItems: 'center',
-    height: '40%',
-  },
-  button: {
     flex: 1,
     alignItems: 'center',
+    flexDirection: 'column-reverse',
+    marginBottom: 40,
+  },
+  button: {
+    margin: 10,
   },
 });

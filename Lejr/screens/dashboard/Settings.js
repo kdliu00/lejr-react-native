@@ -28,7 +28,7 @@ export default function Settings({navigation}) {
               UserData.userObject = null;
             });
         }}>
-        Sign Out
+        Sign out
       </Button>
     </Layout>
   );
