@@ -5,20 +5,20 @@ class User {
   email: string;
   profilePic: string;
   name: string;
-  groupBalances: Map<string, number>;
+  groups: string[];
 
   constructor(
     userId: string,
     email: string,
     profilePic: string,
     name: string,
-    groupBalances: Map<string, number>,
+    groups: string[],
   ) {
     this.userId = userId;
     this.email = email;
     this.profilePic = profilePic;
     this.name = name;
-    this.groupBalances = groupBalances;
+    this.groups = groups;
   }
 
   static firestoreConverter = {
@@ -28,7 +28,7 @@ class User {
         email: user.email,
         profilePic: user.profilePic,
         name: user.name,
-        groupBalances: user.groupBalances,
+        groups: user.groups,
       };
     },
     fromFirestore: function(snapshot) {
@@ -38,7 +38,7 @@ class User {
         data.email,
         data.profilePic,
         data.name,
-        data.groupBalances,
+        data.groups,
       );
     },
   };
@@ -46,13 +46,13 @@ class User {
 
 class Group {
   groupName: string;
-  members: Map<string, string>;
+  members: Map<string, number>;
   virtualReceipts: VirtualReceipt[];
   archives: string[];
 
   constructor(
     groupName: string,
-    members: Map<string, string>,
+    members: Map<string, number>,
     virtualReceipts: VirtualReceipt[],
     archives: string[],
   ) {
@@ -72,7 +72,7 @@ class VirtualReceipt {
   items: Item[];
   total: number;
   totalSplit: Map<string, number>;
-  receipt: string;
+  receiptImage: string;
 
   constructor(
     buyerId: string,
@@ -83,7 +83,7 @@ class VirtualReceipt {
     items: Item[],
     total: number,
     totalSplit: Map<string, number>,
-    receipt: string,
+    receiptImage: string,
   ) {
     this.buyerId = buyerId;
     this.virtualReceiptId = virtualReceiptId;
@@ -93,7 +93,7 @@ class VirtualReceipt {
     this.items = items;
     this.total = total;
     this.totalSplit = totalSplit;
-    this.receipt = receipt;
+    this.receiptImage = receiptImage;
   }
 }
 
