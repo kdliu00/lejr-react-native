@@ -8,7 +8,9 @@ import {User} from '../util/DataObjects';
 import FormStyles from '../util/FormStyles';
 import {Screens} from '../util/Constants';
 
-export default function EmailLogin({navigation}) {
+export default function CreateAccount({navigation}) {
+  console.log('Arrived at CreateAccount!');
+
   const [FirstName, SetFirstName] = React.useState('');
   const [LastName, SetLastName] = React.useState('');
 
@@ -26,8 +28,8 @@ export default function EmailLogin({navigation}) {
   const [FirstNameError, SetFirstNameError] = React.useState('');
   const [LastNameError, SetLastNameError] = React.useState('');
 
-  const FirstNameRef = React.createRef();
-  const LastNameRef = React.createRef();
+  const FirstNameRef = React.useRef();
+  const LastNameRef = React.useRef();
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -49,7 +51,7 @@ export default function EmailLogin({navigation}) {
                 )
                 .then(valid => {
                   if (valid) {
-                    LocalData.userObject = new User(
+                    LocalData.user = new User(
                       '',
                       '',
                       '',

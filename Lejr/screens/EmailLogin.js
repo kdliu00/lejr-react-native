@@ -10,6 +10,8 @@ import FormStyles from '../util/FormStyles';
 import {Screens} from '../util/Constants';
 
 export default function EmailLogin({route, navigation}) {
+  console.log('Arrived at EmailLogin!');
+
   const {showConfirm: ShowConfirm} = route.params;
 
   const [Email, SetEmail] = React.useState('');
@@ -62,9 +64,9 @@ export default function EmailLogin({route, navigation}) {
 
   const [IsSubmitting, SetIsSubmitting] = React.useState(false);
 
-  const EmailRef = React.createRef();
-  const PasswordRef = React.createRef();
-  const ConfirmPasswordRef = React.createRef();
+  const EmailRef = React.useRef();
+  const PasswordRef = React.useRef();
+  const ConfirmPasswordRef = React.useRef();
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -199,7 +201,7 @@ export default function EmailLogin({route, navigation}) {
 async function signUp(email, password, setIsSubmitting) {
   setIsSubmitting(true);
   email = email.trim();
-  LocalData.userObject.email = email;
+  LocalData.user.email = email;
 
   return auth()
     .createUserWithEmailAndPassword(email, password)

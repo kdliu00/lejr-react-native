@@ -13,7 +13,7 @@ export default function Home({navigation}) {
   return (
     <Layout style={Styles.container}>
       <Layout style={Styles.header}>
-        <Text category="h5">Group name</Text>
+        <Text category="h5">{LocalData.currentGroup.groupName}</Text>
       </Layout>
       <List
         style={Styles.list}

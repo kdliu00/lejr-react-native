@@ -12,11 +12,11 @@ export default function Settings({navigation}) {
       <Avatar
         style={Styles.avatar}
         size="giant"
-        source={{uri: LocalData.userObject.profilePic}}
+        source={{uri: LocalData.user.profilePic}}
         shape="round"
       />
-      <Text category="h6">{LocalData.userObject.name}</Text>
-      <Text>{LocalData.userObject.email}</Text>
+      <Text category="h6">{LocalData.user.name}</Text>
+      <Text>{LocalData.user.email}</Text>
       <Button
         style={Styles.button}
         appearance="outline"
@@ -25,7 +25,7 @@ export default function Settings({navigation}) {
             .signOut()
             .then(() => {
               console.log('User signed out!');
-              LocalData.userObject = null;
+              LocalData.user = null;
             });
         }}>
         Sign out

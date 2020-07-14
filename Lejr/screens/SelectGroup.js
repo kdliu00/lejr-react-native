@@ -3,20 +3,25 @@ import {TouchableWithoutFeedback, StyleSheet, Keyboard} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {Layout, Text, Button, Spinner} from '@ui-kitten/components';
 import firestore from '@react-native-firebase/firestore';
-import {LocalData, PushGroupData, PushUserData} from '../util/LocalData';
+import {
+  LocalData,
+  pushGroupData,
+  pushUserData,
+  getGroupsLength,
+} from '../util/LocalData';
 import {Collections, Screens} from '../util/Constants';
 import {Group} from '../util/DataObjects';
 import * as yup from 'yup';
 import {onValidationError, InputField} from '../util/TextInputUI';
 
 export default function SelectGroup({navigation}) {
-  console.log('Arrived at JoinGroup!');
+  console.log('Arrived at SelectGroup!');
 
   const [IsCreating, SetIsCreating] = React.useState(false);
 
   const [GroupName, SetGroupName] = React.useState('');
   const [GroupNameError, SetGroupNameError] = React.useState('');
-  const GroupNameRef = React.createRef();
+  const GroupNameRef = React.useRef();
 
   const ValidationSchema = yup.object().shape({
     groupName: yup
@@ -59,27 +64,28 @@ export default function SelectGroup({navigation}) {
             <Button
               onPress={() => {
                 SetIsCreating(true);
-                ValidationSchema.validate({groupName: GroupName}).catch(
-                  validationError =>
+                ValidationSchema.validate({groupName: GroupName})
+                  .catch(validationError =>
                     onValidationError(validationError, [
                       [GroupNameRef, GroupName],
-                    ]).then(valid => {
-                      if (valid) {
-                        Promise.all(CreateGroup(GroupName))
-                          .catch(error => console.warn(error.message))
-                          .then(
-                            () => {
-                              console.log('Succesfully created group!');
-                              navigation.navigate(Screens.Dashboard);
-                            },
-                            () => console.log('Group creation failed!'),
-                          )
-                          .finally(() => {
-                            SetIsCreating(false);
-                          });
-                      }
-                    }),
-                );
+                    ]),
+                  )
+                  .then(valid => {
+                    if (valid) {
+                      Promise.all(CreateGroup(GroupName))
+                        .catch(error => console.warn(error.message))
+                        .then(
+                          () => {
+                            console.log('Succesfully created group!');
+                            navigation.navigate(Screens.Dashboard);
+                          },
+                          () => console.log('Group creation failed!'),
+                        );
+                    }
+                  })
+                  .finally(() => {
+                    SetIsCreating(false);
+                  });
               }}>
               Create group
             </Button>
@@ -93,7 +99,7 @@ export default function SelectGroup({navigation}) {
                 .signOut()
                 .then(() => {
                   console.log('User signed out!');
-                  LocalData.userObject = null;
+                  LocalData.user = null;
                 });
             }}>
             Sign out
@@ -109,11 +115,17 @@ async function CreateGroup(groupName) {
     .collection(Collections.Groups)
     .doc().id;
 
-  var newGroupObject = new Group(newGroupId, groupName, Map(), [], []);
-  newGroupObject.members[LocalData.userObject.userId] = 0.0;
+  var newGroupObject = new Group(newGroupId, groupName, new Map(), [], []);
+  newGroupObject.members[LocalData.user.userId] = 0.0;
 
-  LocalData.groupObject = newGroupObject;
-  return [PushGroupData(), PushUserData()];
+  LocalData.currentGroup = newGroupObject;
+  if (getGroupsLength() === 0) {
+    LocalData.user.groups = [newGroupId];
+  } else {
+    LocalData.user.groups.push(newGroupId);
+  }
+
+  return [pushGroupData(), pushUserData()];
 }
 
 const Styles = StyleSheet.create({
