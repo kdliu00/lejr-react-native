@@ -3,9 +3,9 @@ import {StyleSheet} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {Layout, Spinner} from '@ui-kitten/components';
 import firestore from '@react-native-firebase/firestore';
-import UserData from '../util/LocalData';
+import {LocalData} from '../util/LocalData';
 import {User} from '../util/DataObjects';
-import {defaultProfilePic} from '../util/Constants';
+import {defaultProfilePic, Collections, Screens} from '../util/Constants';
 
 export default function Loading({navigation}) {
   console.log('Arrived at Loading!');
@@ -13,19 +13,19 @@ export default function Loading({navigation}) {
   auth().onAuthStateChanged(user => {
     if (user) {
       firestore()
-        .collection('users')
+        .collection(Collections.Users)
         .doc(user.uid)
         .get()
         .then(doc => {
           if (doc.exists) {
             console.log('User document found!');
-            UserData.userObject = User.firestoreConverter.fromFirestore(doc);
+            LocalData.userObject = User.firestoreConverter.fromFirestore(doc);
             checkGroups(navigation);
           } else {
             console.log('No document for user, creating new one!');
-            if (UserData.userObject == null) {
+            if (LocalData.userObject == null) {
               console.log('Creating new user object from auth!');
-              UserData.userObject = new User(
+              LocalData.userObject = new User(
                 user.uid,
                 user.email,
                 user.photoURL,
@@ -33,13 +33,13 @@ export default function Loading({navigation}) {
                 new Map(),
               );
             }
-            UserData.userObject.userId = user.uid;
-            console.log(UserData.userObject.userId);
-            UserData.userObject.profilePic = defaultProfilePic;
+            LocalData.userObject.userId = user.uid;
+            console.log(LocalData.userObject.userId);
+            LocalData.userObject.profilePic = defaultProfilePic;
             firestore()
-              .collection('users')
+              .collection(Collections.Users)
               .doc(user.uid)
-              .set(User.firestoreConverter.toFirestore(UserData.userObject))
+              .set(User.firestoreConverter.toFirestore(LocalData.userObject))
               .catch(error => console.warn(error.message))
               .then(() => checkGroups(navigation));
           }
@@ -48,7 +48,7 @@ export default function Loading({navigation}) {
           console.warn(error.message);
         });
     } else {
-      navigation.navigate('Login');
+      navigation.navigate(Screens.Login);
     }
   });
 
@@ -60,10 +60,10 @@ export default function Loading({navigation}) {
 }
 
 function checkGroups(navigation) {
-  if (Object.keys(UserData.userObject.groupBalances).length === 0) {
-    navigation.navigate('JoinGroup');
+  if (Object.keys(LocalData.userObject.groups).length === 0) {
+    navigation.navigate(Screens.SelectGroup);
   } else {
-    navigation.navigate('Dashboard');
+    navigation.navigate(Screens.Dashboard);
   }
 }
 

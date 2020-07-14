@@ -5,8 +5,9 @@ import {Alert} from 'react-native';
 import * as yup from 'yup';
 import {Layout, Button, Spinner} from '@ui-kitten/components';
 import {onValidationError, InputField} from '../util/TextInputUI';
-import UserData from '../util/LocalData';
+import {LocalData} from '../util/LocalData';
 import FormStyles from '../util/FormStyles';
+import {Screens} from '../util/Constants';
 
 export default function EmailLogin({route, navigation}) {
   const {showConfirm: ShowConfirm} = route.params;
@@ -124,9 +125,9 @@ export default function EmailLogin({route, navigation}) {
             style={FormStyles.button}
             onPress={() => {
               if (ShowConfirm) {
-                navigation.navigate('CreateAccount');
+                navigation.navigate(Screens.CreateAccount);
               } else {
-                navigation.navigate('Login');
+                navigation.navigate(Screens.Login);
               }
             }}
             appearance="outline"
@@ -198,7 +199,7 @@ export default function EmailLogin({route, navigation}) {
 async function signUp(email, password, setIsSubmitting) {
   setIsSubmitting(true);
   email = email.trim();
-  UserData.userObject.email = email;
+  LocalData.userObject.email = email;
 
   return auth()
     .createUserWithEmailAndPassword(email, password)

@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {Layout, Button, Text, Avatar} from '@ui-kitten/components';
-import UserData from '../../util/LocalData';
+import {LocalData} from '../../util/LocalData';
 
 export default function Settings({navigation}) {
   console.log('Arrived at Settings!');
@@ -12,11 +12,11 @@ export default function Settings({navigation}) {
       <Avatar
         style={Styles.avatar}
         size="giant"
-        source={{uri: UserData.userObject.profilePic}}
+        source={{uri: LocalData.userObject.profilePic}}
         shape="round"
       />
-      <Text category="h6">{UserData.userObject.name}</Text>
-      <Text>{UserData.userObject.email}</Text>
+      <Text category="h6">{LocalData.userObject.name}</Text>
+      <Text>{LocalData.userObject.email}</Text>
       <Button
         style={Styles.button}
         appearance="outline"
@@ -25,7 +25,7 @@ export default function Settings({navigation}) {
             .signOut()
             .then(() => {
               console.log('User signed out!');
-              UserData.userObject = null;
+              LocalData.userObject = null;
             });
         }}>
         Sign out

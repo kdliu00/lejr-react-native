@@ -2,10 +2,10 @@ import React from 'react';
 import {StyleSheet} from 'react-native';
 import {Layout, List, Text} from '@ui-kitten/components';
 import {ContributionCard} from '../../util/ContributionUI';
-import UserData from '../../util/LocalData';
+import {LocalData} from '../../util/LocalData';
 
 // Array of objects with at least properties 'memo', 'total', and 'totalSplit'
-// const VirtualReceiptData = UserData.userGroupObjects[0].virtualReceipts;
+// const VirtualReceiptData = UserData.userGroupObject.virtualReceipts;
 
 export default function Home({navigation}) {
   console.log('Arrived at Home!');

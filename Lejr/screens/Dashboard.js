@@ -10,6 +10,7 @@ import Home from './dashboard/Home';
 import Settings from './dashboard/Settings';
 import Contribution from './dashboard/Contribution';
 import FromImage from './dashboard/FromImage';
+import {Screens} from '../util/Constants';
 
 const {Navigator, Screen} = createBottomTabNavigator();
 
@@ -23,7 +24,10 @@ const SettingsIcon = props => <Icon name="settings-2-outline" {...props} />;
 export default function Dashboard() {
   console.log('Arrived at Dashboard!');
   return (
-    <TabNavigator initialRouteName="Home" screenOptions={{header: null}} />
+    <TabNavigator
+      initialRouteName={Screens.Home}
+      screenOptions={{header: null}}
+    />
   );
 }
 
@@ -40,9 +44,9 @@ const BottomTabBar = ({navigation, state}) => (
 
 const TabNavigator = () => (
   <Navigator tabBar={props => <BottomTabBar {...props} />}>
-    <Screen name="Home" component={Home} />
-    <Screen name="Contribution" component={Contribution} />
-    <Screen name="Camera" component={FromImage} />
-    <Screen name="Settings" component={Settings} />
+    <Screen name={Screens.Home} component={Home} />
+    <Screen name={Screens.Contribution} component={Contribution} />
+    <Screen name={Screens.FromImage} component={FromImage} />
+    <Screen name={Screens.Settings} component={Settings} />
   </Navigator>
 );

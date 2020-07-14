@@ -3,11 +3,12 @@ import {TouchableWithoutFeedback, Keyboard} from 'react-native';
 import * as yup from 'yup';
 import {Layout, Button} from '@ui-kitten/components';
 import {onValidationError, InputField} from '../util/TextInputUI';
-import UserData from '../util/LocalData';
+import {LocalData} from '../util/LocalData';
 import {User} from '../util/DataObjects';
 import FormStyles from '../util/FormStyles';
+import {Screens} from '../util/Constants';
 
-export default function EmailLogin({route, navigation}) {
+export default function EmailLogin({navigation}) {
   const [FirstName, SetFirstName] = React.useState('');
   const [LastName, SetLastName] = React.useState('');
 
@@ -48,14 +49,16 @@ export default function EmailLogin({route, navigation}) {
                 )
                 .then(valid => {
                   if (valid) {
-                    UserData.userObject = new User(
+                    LocalData.userObject = new User(
                       '',
                       '',
                       '',
                       FirstName.trim() + ' ' + LastName.trim(),
                       new Map(),
                     );
-                    navigation.navigate('EmailLogin', {showConfirm: true});
+                    navigation.navigate(Screens.EmailLogin, {
+                      showConfirm: true,
+                    });
                   }
                 });
             }}>
@@ -63,7 +66,7 @@ export default function EmailLogin({route, navigation}) {
           </Button>
           <Button
             style={FormStyles.button}
-            onPress={() => navigation.navigate('Login')}
+            onPress={() => navigation.navigate(Screens.Login)}
             appearance="outline">
             Go back
           </Button>

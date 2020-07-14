@@ -13,9 +13,10 @@ import Login from './screens/Login';
 import Dashboard from './screens/Dashboard';
 import EmailLogin from './screens/EmailLogin';
 import CreateAccount from './screens/CreateAccount';
-import JoinGroup from './screens/JoinGroup';
+import SelectGroup from './screens/SelectGroup';
 
 import {default as theme} from './eva-theme.json';
+import {Screens} from './util/Constants';
 
 console.disableYellowBox = true;
 
@@ -40,14 +41,17 @@ export default function App() {
       <ApplicationProvider {...eva} theme={{...eva.light, ...theme}}>
         <NavigationContainer>
           <Stack.Navigator
-            initialRouteName="Loading"
+            initialRouteName={Screens.Loading}
             screenOptions={{headerShown: false, gestureEnabled: false}}>
-            <Stack.Screen name="Loading" component={Loading} />
-            <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="EmailLogin" component={EmailLogin} />
-            <Stack.Screen name="CreateAccount" component={CreateAccount} />
-            <Stack.Screen name="JoinGroup" component={JoinGroup} />
-            <Stack.Screen name="Dashboard" component={Dashboard} />
+            <Stack.Screen name={Screens.Loading} component={Loading} />
+            <Stack.Screen name={Screens.Login} component={Login} />
+            <Stack.Screen name={Screens.EmailLogin} component={EmailLogin} />
+            <Stack.Screen
+              name={Screens.CreateAccount}
+              component={CreateAccount}
+            />
+            <Stack.Screen name={Screens.SelectGroup} component={SelectGroup} />
+            <Stack.Screen name={Screens.Dashboard} component={Dashboard} />
           </Stack.Navigator>
         </NavigationContainer>
       </ApplicationProvider>

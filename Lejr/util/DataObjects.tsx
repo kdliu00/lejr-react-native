@@ -45,22 +45,47 @@ class User {
 }
 
 class Group {
+  groupId: string;
   groupName: string;
   members: Map<string, number>;
   virtualReceipts: VirtualReceipt[];
   archives: string[];
 
   constructor(
+    groupId: string,
     groupName: string,
     members: Map<string, number>,
     virtualReceipts: VirtualReceipt[],
     archives: string[],
   ) {
+    this.groupId = groupId;
     this.groupName = groupName;
     this.members = members;
     this.virtualReceipts = virtualReceipts;
     this.archives = archives;
   }
+
+  static firestoreConverter = {
+    toFirestore: function(group: Group) {
+      return {
+        groupId: group.groupId,
+        groupName: group.groupName,
+        members: group.members,
+        virtualReceipts: group.virtualReceipts,
+        archives: group.archives,
+      };
+    },
+    fromFirestore: function(snapshot) {
+      const data = snapshot.data();
+      return new Group(
+        data.groupId,
+        data.groupName,
+        data.members,
+        data.virtualReceipts,
+        data.archives,
+      );
+    },
+  };
 }
 
 class VirtualReceipt {
