@@ -7,7 +7,7 @@ import {LocalData} from '../../util/LocalData';
 // Array of objects with at least properties 'memo', 'total', and 'totalSplit'
 // const VirtualReceiptData = UserData.userGroupObject.virtualReceipts;
 
-export default function Home({navigation}) {
+export default function Home() {
   console.log('Arrived at Home!');
 
   return (

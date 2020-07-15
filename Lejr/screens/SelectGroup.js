@@ -1,6 +1,5 @@
 import React from 'react';
 import {TouchableWithoutFeedback, StyleSheet, Keyboard} from 'react-native';
-import auth from '@react-native-firebase/auth';
 import {Layout, Text, Button, Spinner} from '@ui-kitten/components';
 import firestore from '@react-native-firebase/firestore';
 import {
@@ -8,6 +7,7 @@ import {
   pushGroupData,
   pushUserData,
   getGroupsLength,
+  signOut,
 } from '../util/LocalData';
 import {Collections, Screens} from '../util/Constants';
 import {Group} from '../util/DataObjects';
@@ -94,14 +94,7 @@ export default function SelectGroup({navigation}) {
             style={Styles.button}
             appearance="outline"
             disabled={IsCreating}
-            onPress={() => {
-              auth()
-                .signOut()
-                .then(() => {
-                  console.log('User signed out!');
-                  LocalData.user = null;
-                });
-            }}>
+            onPress={() => signOut()}>
             Sign out
           </Button>
         </Layout>

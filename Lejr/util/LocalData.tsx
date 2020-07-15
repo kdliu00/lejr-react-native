@@ -1,12 +1,22 @@
 import {User, Group} from './DataObjects';
+import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import {Collections} from './Constants';
 
-export {LocalData, pushUserData, pushGroupData, getGroupsLength};
+export {LocalData, signOut, pushUserData, pushGroupData, getGroupsLength};
 
 class LocalData {
   static user: User = null;
   static currentGroup: Group = null;
+}
+
+function signOut() {
+  auth()
+    .signOut()
+    .then(() => {
+      console.log('User signed out!');
+      LocalData.user = null;
+    });
 }
 
 function getGroupsLength() {

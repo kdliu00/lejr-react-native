@@ -7,6 +7,7 @@ import {LocalData, getGroupsLength} from '../util/LocalData';
 import {User, Group} from '../util/DataObjects';
 import {defaultProfilePic, Collections, Screens} from '../util/Constants';
 import {Alert} from 'react-native';
+import {StackActions} from '@react-navigation/native';
 
 export default function Loading({navigation}) {
   console.log('Arrived at Loading!');
@@ -50,6 +51,9 @@ export default function Loading({navigation}) {
           console.warn(error.message);
         });
     } else {
+      if (navigation.canGoBack()) {
+        navigation.dispatch(StackActions.popToTop());
+      }
       navigation.navigate(Screens.Login);
     }
   });
