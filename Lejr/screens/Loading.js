@@ -3,10 +3,9 @@ import {StyleSheet} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {Layout, Spinner} from '@ui-kitten/components';
 import firestore from '@react-native-firebase/firestore';
-import {LocalData, getGroupsLength} from '../util/LocalData';
-import {User, Group} from '../util/DataObjects';
+import {LocalData, checkGroups} from '../util/LocalData';
+import {User} from '../util/DataObjects';
 import {defaultProfilePic, Collections, Screens} from '../util/Constants';
-import {Alert} from 'react-native';
 import {StackActions} from '@react-navigation/native';
 
 export default function Loading({navigation}) {
@@ -32,7 +31,7 @@ export default function Loading({navigation}) {
                 user.email,
                 user.photoURL,
                 user.displayName,
-                new Map(),
+                [],
               );
             }
             LocalData.user.userId = user.uid;
@@ -63,32 +62,6 @@ export default function Loading({navigation}) {
       <Spinner size="large" />
     </Layout>
   );
-}
-
-function checkGroups(navigation) {
-  if (getGroupsLength() === 0) {
-    navigation.navigate(Screens.SelectGroup);
-  } else {
-    var groupId = LocalData.user.groups[0];
-    firestore()
-      .collection(Collections.Groups)
-      .doc(groupId)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          console.log('Group document found!');
-          LocalData.currentGroup = Group.firestoreConverter.fromFirestore(doc);
-          navigation.navigate(Screens.Dashboard);
-        } else {
-          console.warn('Group not found!');
-          Alert.alert(
-            'Login Error',
-            'Could not load group data. Returning to login.',
-          );
-          navigation.navigate(Screens.Login);
-        }
-      });
-  }
 }
 
 const Styles = StyleSheet.create({
