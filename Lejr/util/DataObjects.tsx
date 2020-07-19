@@ -1,24 +1,27 @@
-export {User, Group, VirtualReceipt, Item, Archive};
+export {User, GroupInfo, Group, VirtualReceipt, Item, Archive};
 
 class User {
   userId: string;
   email: string;
   profilePic: string;
   name: string;
-  groups: string[];
+  groups: GroupInfo[];
+  invites: Map<string, string>;
 
   constructor(
     userId: string,
     email: string,
     profilePic: string,
     name: string,
-    groups: string[],
+    groups: GroupInfo[],
+    invites: Map<string, string>,
   ) {
     this.userId = userId;
     this.email = email;
     this.profilePic = profilePic;
     this.name = name;
     this.groups = groups;
+    this.invites = invites;
   }
 
   static firestoreConverter = {
@@ -29,6 +32,7 @@ class User {
         profilePic: user.profilePic,
         name: user.name,
         groups: user.groups,
+        invites: user.invites,
       };
     },
     fromFirestore: function(snapshot) {
@@ -39,7 +43,31 @@ class User {
         data.profilePic,
         data.name,
         data.groups,
+        data.invites,
       );
+    },
+  };
+}
+
+class GroupInfo {
+  groupId: string;
+  groupName: string;
+
+  constructor(groupId: string, groupName: string) {
+    this.groupId = groupId;
+    this.groupName = groupName;
+  }
+
+  static firestoreConverter = {
+    toFirestore: function(groupInfo: GroupInfo) {
+      return {
+        groupId: groupInfo.groupId,
+        groupName: groupInfo.groupName,
+      };
+    },
+    fromFirestore: function(snapshot) {
+      const data = snapshot.data();
+      return new GroupInfo(data.groupId, data.groupName);
     },
   };
 }

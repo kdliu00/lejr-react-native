@@ -1,5 +1,10 @@
 import React from 'react';
-import {KeyboardAvoidingView, StyleSheet, Platform} from 'react-native';
+import {
+  KeyboardAvoidingView,
+  StyleSheet,
+  Platform,
+  AppState,
+} from 'react-native';
 import 'react-native-gesture-handler';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -13,10 +18,11 @@ import Login from './screens/Login';
 import Dashboard from './screens/Dashboard';
 import EmailLogin from './screens/EmailLogin';
 import CreateAccount from './screens/CreateAccount';
-import SelectGroup from './screens/SelectGroup';
+import CreateGroup from './screens/CreateGroup';
 
 import {default as theme} from './eva-theme.json';
 import {Screens} from './util/Constants';
+import {pushGroupData, pushUserData} from './util/LocalData';
 
 console.disableYellowBox = true;
 
@@ -29,6 +35,11 @@ firebase.apps.forEach(app => {
 });
 
 const Stack = createStackNavigator();
+
+AppState.addEventListener('change', () => {
+  pushUserData();
+  pushGroupData();
+});
 
 export default function App() {
   console.log('Arrived at App!');
@@ -50,7 +61,7 @@ export default function App() {
               name={Screens.CreateAccount}
               component={CreateAccount}
             />
-            <Stack.Screen name={Screens.SelectGroup} component={SelectGroup} />
+            <Stack.Screen name={Screens.CreateGroup} component={CreateGroup} />
             <Stack.Screen name={Screens.Dashboard} component={Dashboard} />
           </Stack.Navigator>
         </NavigationContainer>

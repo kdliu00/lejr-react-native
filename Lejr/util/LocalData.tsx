@@ -10,14 +10,12 @@ export {
   pushUserData,
   pushGroupData,
   getGroupsLength,
-  checkGroups,
-  pullGroup,
+  loadGroupAsMain,
 };
 
 class LocalData {
   static user: User = null;
   static currentGroup: Group = null;
-  static groupMap: Map<string, string> = null;
 }
 
 function signOut() {
@@ -29,28 +27,7 @@ function signOut() {
     });
 }
 
-function checkGroups(navigation) {
-  if (getGroupsLength() === 0) {
-    navigation.navigate(Screens.SelectGroup);
-  } else {
-    var promiseList = [];
-    LocalData.groupMap = new Map();
-    for (var i = 0; i < LocalData.user.groups.length; i++) {
-      promiseList.push(pullGroup(LocalData.user.groups[i], i === 0));
-    }
-    Promise.all(promiseList)
-      .catch(error => {
-        console.warn(error.message);
-        Alert.alert(
-          'Login Error',
-          'Unable to fetch user. Please reload the app.',
-        );
-      })
-      .then(() => navigation.navigate(Screens.Dashboard));
-  }
-}
-
-async function pullGroup(groupId, isMain) {
+async function loadGroupAsMain(groupId: string) {
   return firestore()
     .collection(Collections.Groups)
     .doc(groupId)
@@ -58,11 +35,7 @@ async function pullGroup(groupId, isMain) {
     .then(doc => {
       if (doc.exists) {
         console.log('Group document found!');
-        var groupObject = Group.firestoreConverter.fromFirestore(doc);
-        if (isMain) {
-          LocalData.currentGroup = groupObject;
-        }
-        LocalData.groupMap[groupId] = groupObject.groupName;
+        LocalData.currentGroup = Group.firestoreConverter.fromFirestore(doc);
       } else {
         throw new Error('Invalid group id!');
       }
@@ -70,29 +43,43 @@ async function pullGroup(groupId, isMain) {
 }
 
 function getGroupsLength() {
-  return Object.keys(LocalData.user.groups).length;
+  return LocalData.user.groups.length;
 }
 
-async function pushUserData() {
-  return firestore()
-    .collection(Collections.Users)
-    .doc(LocalData.user.userId)
-    .set(User.firestoreConverter.toFirestore(LocalData.user))
-    .catch(error => console.warn(error.message))
-    .then(
-      () => console.log('Successfully pushed user data!'),
-      () => console.log('Push user data failed!'),
-    );
+function pushUserData() {
+  if (LocalData.user)
+    firestore()
+      .collection(Collections.Users)
+      .doc(LocalData.user.userId)
+      .set(User.firestoreConverter.toFirestore(LocalData.user))
+      .catch(error => {
+        console.warn(error.message);
+        Alert.alert(
+          'Database Error',
+          'We were not able to save your user data. Please reload the app and try again.',
+        );
+      })
+      .then(
+        () => console.log('Successfully pushed user data!'),
+        () => console.log('Push user data failed!'),
+      );
 }
 
-async function pushGroupData() {
-  return firestore()
-    .collection(Collections.Groups)
-    .doc(LocalData.currentGroup.groupId)
-    .set(Group.firestoreConverter.toFirestore(LocalData.currentGroup))
-    .catch(error => console.warn(error.message))
-    .then(
-      () => console.log('Successfully pushed group data!'),
-      () => console.log('Push group data failed!'),
-    );
+function pushGroupData() {
+  if (LocalData.currentGroup)
+    firestore()
+      .collection(Collections.Groups)
+      .doc(LocalData.currentGroup.groupId)
+      .set(Group.firestoreConverter.toFirestore(LocalData.currentGroup))
+      .catch(error => {
+        console.warn(error.message);
+        Alert.alert(
+          'Database Error',
+          'We were not able to save your group data. Please reload the app and try again.',
+        );
+      })
+      .then(
+        () => console.log('Successfully pushed group data!'),
+        () => console.log('Push group data failed!'),
+      );
 }

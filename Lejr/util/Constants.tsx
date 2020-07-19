@@ -26,7 +26,7 @@ enum Screens {
   Login = 'Login',
   EmailLogin = 'EmailLogin',
   CreateAccount = 'CreateAccount',
-  SelectGroup = 'SelectGroup',
+  CreateGroup = 'CreateGroup',
   Dashboard = 'Dashboard',
   Home = 'Home',
   Contribution = 'Contribution',

@@ -82,7 +82,7 @@ export default function CreateAccount({navigation}) {
             fieldParams={text => ({last: text})}
             setField={SetLastName}
             setFieldError={SetLastNameError}
-            placeholder="Last name"
+            placeholder="last name"
             onSubmitEditing={() => {
               Keyboard.dismiss();
             }}
@@ -96,7 +96,7 @@ export default function CreateAccount({navigation}) {
             fieldParams={text => ({first: text})}
             setField={SetFirstName}
             setFieldError={SetFirstNameError}
-            placeholder="First name"
+            placeholder="first name"
             onSubmitEditing={() => {
               LastNameRef.current.focus();
             }}

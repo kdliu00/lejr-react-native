@@ -4,17 +4,16 @@ import {Layout, Text, Button, Spinner} from '@ui-kitten/components';
 import firestore from '@react-native-firebase/firestore';
 import {
   LocalData,
-  pushGroupData,
-  pushUserData,
-  getGroupsLength,
   signOut,
+  pushUserData,
+  pushGroupData,
 } from '../util/LocalData';
 import {Collections, Screens} from '../util/Constants';
-import {Group} from '../util/DataObjects';
+import {GroupInfo, Group} from '../util/DataObjects';
 import * as yup from 'yup';
 import {onValidationError, InputField} from '../util/TextInputUI';
 
-export default function SelectGroup({navigation}) {
+export default function CreateGroup({navigation}) {
   console.log('Arrived at SelectGroup!');
 
   const [IsCreating, SetIsCreating] = React.useState(false);
@@ -52,7 +51,7 @@ export default function SelectGroup({navigation}) {
             fieldParams={text => ({groupName: text})}
             setField={SetGroupName}
             setFieldError={SetGroupNameError}
-            placeholder="Group name"
+            placeholder="group name"
             onSubmitEditing={() => {
               Keyboard.dismiss();
             }}
@@ -72,7 +71,7 @@ export default function SelectGroup({navigation}) {
                   )
                   .then(valid => {
                     if (valid) {
-                      Promise.all(CreateGroup(GroupName))
+                      Promise.all(CreateNewGroup(GroupName))
                         .catch(error => console.warn(error.message))
                         .then(
                           () => {
@@ -103,22 +102,20 @@ export default function SelectGroup({navigation}) {
   );
 }
 
-async function CreateGroup(groupName) {
+async function CreateNewGroup(newGroupName) {
   var newGroupId = firestore()
     .collection(Collections.Groups)
     .doc().id;
 
-  var newGroupObject = new Group(newGroupId, groupName, new Map(), [], []);
+  var newGroupObject = new Group(newGroupId, newGroupName, new Map(), [], []);
   newGroupObject.members[LocalData.user.userId] = 0.0;
 
   LocalData.currentGroup = newGroupObject;
-  if (getGroupsLength() === 0) {
-    LocalData.user.groups = [newGroupId];
-  } else {
-    LocalData.user.groups.push(newGroupId);
-  }
 
-  return [pushGroupData(), pushUserData()];
+  var newGroupInfo = new GroupInfo(newGroupId, newGroupName);
+  LocalData.user.groups.push(newGroupInfo);
+
+  return [pushUserData(), pushGroupData()];
 }
 
 const Styles = StyleSheet.create({
