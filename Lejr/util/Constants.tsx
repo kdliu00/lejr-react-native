@@ -32,4 +32,6 @@ enum Screens {
   Contribution = 'Contribution',
   FromImage = 'FromImage',
   Settings = 'Settings',
+  InviteToGroup = 'InviteToGroup',
+  Invitations = 'Invitations',
 }

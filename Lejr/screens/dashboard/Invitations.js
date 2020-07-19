@@ -1,22 +1,13 @@
 import React from 'react';
 import {StyleSheet} from 'react-native';
 import {Layout, Text} from '@ui-kitten/components';
-import ImagePicker from 'react-native-image-crop-picker';
 
-export default function FromImage({navigation}) {
-  console.log('Arrived at FromImage');
-
-  ImagePicker.openCamera({
-    width: 300,
-    height: 400,
-    cropping: true,
-  }).then(image => {
-    console.log(image);
-  });
+export default function Invitations({navigation}) {
+  console.log('Arrived at Invitations!');
 
   return (
     <Layout style={Styles.container}>
-      <Text>FromImage</Text>
+      <Text>Invitations</Text>
     </Layout>
   );
 }

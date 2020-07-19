@@ -7,14 +7,20 @@ import {
   signOut,
   pushUserData,
   pushGroupData,
+  getGroupsLength,
 } from '../util/LocalData';
 import {Collections, Screens} from '../util/Constants';
 import {GroupInfo, Group} from '../util/DataObjects';
 import * as yup from 'yup';
-import {onValidationError, InputField} from '../util/TextInputUI';
+import {
+  ButtonSpinner,
+  onValidationError,
+  InputField,
+} from '../util/TextInputUI';
+import FormStyles from '../util/FormStyles';
 
 export default function CreateGroup({navigation}) {
-  console.log('Arrived at SelectGroup!');
+  console.log('Arrived at CreateGroup');
 
   const [IsCreating, SetIsCreating] = React.useState(false);
 
@@ -57,38 +63,44 @@ export default function CreateGroup({navigation}) {
             }}
             value={GroupName}
           />
-          {IsCreating ? (
-            <Spinner size="small" />
-          ) : (
-            <Button
-              onPress={() => {
-                SetIsCreating(true);
-                ValidationSchema.validate({groupName: GroupName})
-                  .catch(validationError =>
-                    onValidationError(validationError, [
-                      [GroupNameRef, GroupName],
-                    ]),
-                  )
-                  .then(valid => {
-                    if (valid) {
-                      Promise.all(CreateNewGroup(GroupName))
-                        .catch(error => console.warn(error.message))
-                        .then(
-                          () => {
-                            console.log('Succesfully created group!');
-                            navigation.navigate(Screens.Dashboard);
-                          },
-                          () => console.log('Group creation failed!'),
-                        );
-                    }
-                  })
-                  .finally(() => {
-                    SetIsCreating(false);
-                  });
-              }}>
-              Create group
-            </Button>
-          )}
+          <Layout style={FormStyles.dynamicButton}>
+            {IsCreating ? (
+              <Button
+                style={FormStyles.button}
+                accessoryLeft={ButtonSpinner}
+                appearance="ghost"
+              />
+            ) : (
+              <Button
+                onPress={() => {
+                  SetIsCreating(true);
+                  ValidationSchema.validate({groupName: GroupName})
+                    .catch(validationError =>
+                      onValidationError(validationError, [
+                        [GroupNameRef, GroupName],
+                      ]),
+                    )
+                    .then(valid => {
+                      if (valid) {
+                        Promise.all(CreateNewGroup(GroupName))
+                          .catch(error => console.warn(error.message))
+                          .then(
+                            () => {
+                              console.log('Succesfully created group');
+                              navigation.replace(Screens.Dashboard);
+                            },
+                            () => console.log('Group creation failed!'),
+                          );
+                      }
+                    })
+                    .finally(() => {
+                      SetIsCreating(false);
+                    });
+                }}>
+                Create group
+              </Button>
+            )}
+          </Layout>
           <Button
             style={Styles.button}
             appearance="outline"
@@ -113,7 +125,12 @@ async function CreateNewGroup(newGroupName) {
   LocalData.currentGroup = newGroupObject;
 
   var newGroupInfo = new GroupInfo(newGroupId, newGroupName);
-  LocalData.user.groups.push(newGroupInfo);
+
+  if (getGroupsLength() === 0) {
+    LocalData.user.groups = [newGroupInfo];
+  } else {
+    LocalData.user.groups.push(newGroupInfo);
+  }
 
   return [pushUserData(), pushGroupData()];
 }

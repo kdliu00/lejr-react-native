@@ -16,7 +16,7 @@ const GoogleIcon = props => <Icon name="google" {...props} />;
 const EmailIcon = props => <Icon name="email" {...props} />;
 
 export default function Login({navigation}) {
-  console.log('Arrived at Login!');
+  console.log('Arrived at Login');
 
   const [IsLoggingIn, SetIsLoggingIn] = React.useState(false);
 
@@ -27,7 +27,7 @@ export default function Login({navigation}) {
         <Button
           style={Styles.button}
           onPress={() => {
-            console.log('Going to create an account!');
+            console.log('Going to create an account');
             navigation.navigate(Screens.CreateAccount);
           }}
           disabled={IsLoggingIn}
@@ -39,7 +39,7 @@ export default function Login({navigation}) {
           <Button
             style={Styles.button}
             onPress={() => {
-              console.log('Going to Apple login!');
+              console.log('Going to Apple login');
             }}
             disabled={IsLoggingIn}>
             Sign in with Apple
@@ -49,7 +49,7 @@ export default function Login({navigation}) {
           style={Styles.button}
           accessoryLeft={FacebookIcon}
           onPress={() => {
-            console.log('Going to Facebook login!');
+            console.log('Going to Facebook login');
             SetIsLoggingIn(true);
             onFacebookButtonPress()
               .catch(error => {
@@ -57,7 +57,7 @@ export default function Login({navigation}) {
                 SetIsLoggingIn(false);
               })
               .then(
-                () => console.log('Signed in with Facebook!'),
+                () => console.log('Signed in with Facebook'),
                 () => console.warn('Sign in with Facebook failed!'),
               )
               .finally(() => SetIsLoggingIn(false));
@@ -69,7 +69,7 @@ export default function Login({navigation}) {
           style={Styles.button}
           accessoryLeft={GoogleIcon}
           onPress={() => {
-            console.log('Going to Google login!');
+            console.log('Going to Google login');
             SetIsLoggingIn(true);
             onGoogleButtonPress()
               .catch(error => {
@@ -77,7 +77,7 @@ export default function Login({navigation}) {
                 SetIsLoggingIn(false);
               })
               .then(
-                () => console.log('Signed in with Google!'),
+                () => console.log('Signed in with Google'),
                 () => console.warn('Sign in with Google failed!'),
               )
               .finally(() => SetIsLoggingIn(false));
@@ -89,7 +89,7 @@ export default function Login({navigation}) {
           style={Styles.button}
           accessoryLeft={EmailIcon}
           onPress={() => {
-            console.log('Going to email login!');
+            console.log('Going to email login');
             navigation.navigate(Screens.EmailLogin, {showConfirm: false});
           }}
           disabled={IsLoggingIn}>

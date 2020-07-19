@@ -23,6 +23,8 @@ import CreateGroup from './screens/CreateGroup';
 import {default as theme} from './eva-theme.json';
 import {Screens} from './util/Constants';
 import {pushGroupData, pushUserData} from './util/LocalData';
+import {BackHandler} from 'react-native';
+import {Alert} from 'react-native';
 
 console.disableYellowBox = true;
 
@@ -41,8 +43,28 @@ AppState.addEventListener('change', () => {
   pushGroupData();
 });
 
+BackHandler.addEventListener('hardwareBackPress', () => {
+  Alert.alert(
+    'Exit Lejr',
+    'Are you sure you want to exit Lejr?',
+    [
+      {
+        text: 'Yes',
+        onPress: () => {
+          console.log('Exiting Lejr');
+          BackHandler.exitApp();
+        },
+        style: 'cancel',
+      },
+      {text: 'No', onPress: () => console.log('Not exiting Lejr')},
+    ],
+    {cancelable: false},
+  );
+  return true;
+});
+
 export default function App() {
-  console.log('Arrived at App!');
+  console.log('Arrived at App');
 
   return (
     <KeyboardAvoidingView

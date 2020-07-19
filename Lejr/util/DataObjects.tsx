@@ -20,8 +20,8 @@ class User {
     this.email = email;
     this.profilePic = profilePic;
     this.name = name;
-    this.groups = groups;
-    this.invites = invites;
+    this.groups = nullHandler(groups, []);
+    this.invites = nullHandler(invites, new Map());
   }
 
   static firestoreConverter = {
@@ -88,9 +88,9 @@ class Group {
   ) {
     this.groupId = groupId;
     this.groupName = groupName;
-    this.members = members;
-    this.virtualReceipts = virtualReceipts;
-    this.archives = archives;
+    this.members = nullHandler(members, new Map());
+    this.virtualReceipts = nullHandler(virtualReceipts, []);
+    this.archives = nullHandler(archives, []);
   }
 
   static firestoreConverter = {
@@ -143,9 +143,9 @@ class VirtualReceipt {
     this.memo = memo;
     this.storeName = storeName;
     this.dateAdded = dateAdded;
-    this.items = items;
+    this.items = nullHandler(items, []);
     this.total = total;
-    this.totalSplit = totalSplit;
+    this.totalSplit = nullHandler(totalSplit, new Map());
     this.receiptImage = receiptImage;
   }
 }
@@ -162,7 +162,7 @@ class Item {
   ) {
     this.itemName = itemName;
     this.itemCost = itemCost;
-    this.itemSplit = itemSplit;
+    this.itemSplit = nullHandler(itemSplit, new Map());
   }
 }
 
@@ -180,7 +180,16 @@ class Archive {
   ) {
     this.dateStart = dateStart;
     this.dateEnd = dateEnd;
-    this.virtualReceipts = virtualReceipts;
-    this.endBalances = endBalances;
+    this.virtualReceipts = nullHandler(virtualReceipts, []);
+    this.endBalances = nullHandler(endBalances, new Map());
   }
+}
+
+/**
+ * Handles null properties when the firestore property is empty
+ * @param property The property to handle
+ * @param ifNull What to return if property is null
+ */
+function nullHandler(property: any, ifNull: any) {
+  return property ? property : ifNull;
 }

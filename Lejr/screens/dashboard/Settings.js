@@ -4,7 +4,7 @@ import {Layout, Button, Text, Avatar} from '@ui-kitten/components';
 import {LocalData, signOut} from '../../util/LocalData';
 
 export default function Settings({navigation}) {
-  console.log('Arrived at Settings!');
+  console.log('Arrived at Settings');
 
   return (
     <Layout style={Styles.container}>

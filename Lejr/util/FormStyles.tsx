@@ -7,15 +7,21 @@ const FormStyles = StyleSheet.create({
     flexDirection: 'column-reverse',
   },
   loginFields: {
-    flex: 2,
+    flex: 5,
+    alignItems: 'center',
     flexDirection: 'column-reverse',
-    marginBottom: 20,
   },
   loginButtons: {
-    flex: 1,
-    marginBottom: 65,
+    flex: 2,
     alignItems: 'center',
     justifyContent: 'space-evenly',
+    marginTop: 15,
+    marginBottom: 40,
+  },
+  dynamicButton: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   button: {
     margin: 10,

@@ -3,10 +3,12 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import {Collections, Screens} from './Constants';
 import {Alert} from 'react-native';
+import {StackActions} from '@react-navigation/native';
 
 export {
   LocalData,
   signOut,
+  torchAndReplace,
   pushUserData,
   pushGroupData,
   getGroupsLength,
@@ -22,9 +24,16 @@ function signOut() {
   auth()
     .signOut()
     .then(() => {
-      console.log('User signed out!');
+      console.log('User signed out');
       LocalData.user = null;
     });
+}
+
+function torchAndReplace(navigation: any, destination: string) {
+  if (navigation.canGoBack()) {
+    navigation.dispatch(StackActions.popToTop());
+  }
+  navigation.replace(destination);
 }
 
 async function loadGroupAsMain(groupId: string) {
@@ -34,7 +43,7 @@ async function loadGroupAsMain(groupId: string) {
     .get()
     .then(doc => {
       if (doc.exists) {
-        console.log('Group document found!');
+        console.log('Group document found');
         LocalData.currentGroup = Group.firestoreConverter.fromFirestore(doc);
       } else {
         throw new Error('Invalid group id!');
@@ -43,7 +52,7 @@ async function loadGroupAsMain(groupId: string) {
 }
 
 function getGroupsLength() {
-  return LocalData.user.groups.length;
+  return Object.keys(LocalData.user.groups).length;
 }
 
 function pushUserData() {
@@ -54,13 +63,15 @@ function pushUserData() {
       .set(User.firestoreConverter.toFirestore(LocalData.user))
       .catch(error => {
         console.warn(error.message);
-        Alert.alert(
-          'Database Error',
-          'We were not able to save your user data. Please reload the app and try again.',
-        );
+        if (error.code != 'firestore/permission-denied') {
+          Alert.alert(
+            'Database Error',
+            'We were not able to save your group data. Please reload the app and try again.',
+          );
+        }
       })
       .then(
-        () => console.log('Successfully pushed user data!'),
+        () => console.log('Successfully pushed user data'),
         () => console.log('Push user data failed!'),
       );
 }
@@ -73,13 +84,15 @@ function pushGroupData() {
       .set(Group.firestoreConverter.toFirestore(LocalData.currentGroup))
       .catch(error => {
         console.warn(error.message);
-        Alert.alert(
-          'Database Error',
-          'We were not able to save your group data. Please reload the app and try again.',
-        );
+        if (error.code != 'firestore/permission-denied') {
+          Alert.alert(
+            'Database Error',
+            'We were not able to save your group data. Please reload the app and try again.',
+          );
+        }
       })
       .then(
-        () => console.log('Successfully pushed group data!'),
+        () => console.log('Successfully pushed group data'),
         () => console.log('Push group data failed!'),
       );
 }

@@ -3,13 +3,17 @@ import {StyleSheet} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {Layout, Spinner} from '@ui-kitten/components';
 import firestore from '@react-native-firebase/firestore';
-import {LocalData, getGroupsLength, loadGroupAsMain} from '../util/LocalData';
+import {
+  LocalData,
+  torchAndReplace,
+  getGroupsLength,
+  loadGroupAsMain,
+} from '../util/LocalData';
 import {User} from '../util/DataObjects';
 import {defaultProfilePic, Collections, Screens} from '../util/Constants';
-import {StackActions} from '@react-navigation/native';
 
 export default function Loading({navigation}) {
-  console.log('Arrived at Loading!');
+  console.log('Arrived at Loading');
 
   auth().onAuthStateChanged(user => {
     if (user) {
@@ -19,19 +23,13 @@ export default function Loading({navigation}) {
         .get()
         .then(doc => {
           if (doc.exists) {
-            console.log('User document found!');
+            console.log('User document found');
             LocalData.user = User.firestoreConverter.fromFirestore(doc);
-            if (getGroupsLength() === 0) {
-              navigation.navigate(Screens.CreateGroup);
-            } else {
-              loadGroupAsMain(LocalData.user.groups[0].groupId).then(() =>
-                navigation.navigate(Screens.Dashboard),
-              );
-            }
+            handleScreen(navigation);
           } else {
-            console.log('No document for user, creating new one!');
+            console.log('No document for user, creating new one');
             if (LocalData.user == null) {
-              console.log('Creating new user object from auth!');
+              console.log('Creating new user object from auth');
               LocalData.user = new User(
                 user.uid,
                 user.email,
@@ -50,19 +48,17 @@ export default function Loading({navigation}) {
               .doc(user.uid)
               .set(User.firestoreConverter.toFirestore(LocalData.user))
               .catch(error => console.warn(error.message))
-              .then(() =>
-                console.log('Successfully created new user document!'),
-              );
+              .then(() => {
+                console.log('Successfully created new user document');
+                handleScreen(navigation);
+              });
           }
         })
         .catch(error => {
           console.warn(error.message);
         });
     } else {
-      if (navigation.canGoBack()) {
-        navigation.dispatch(StackActions.popToTop());
-      }
-      navigation.navigate(Screens.Login);
+      torchAndReplace(navigation, Screens.Login);
     }
   });
 
@@ -71,6 +67,16 @@ export default function Loading({navigation}) {
       <Spinner size="large" />
     </Layout>
   );
+}
+
+function handleScreen(navigation) {
+  if (getGroupsLength() === 0) {
+    torchAndReplace(navigation, Screens.CreateGroup);
+  } else {
+    loadGroupAsMain(LocalData.user.groups[0].groupId).then(() =>
+      torchAndReplace(navigation, Screens.Dashboard),
+    );
+  }
 }
 
 const Styles = StyleSheet.create({

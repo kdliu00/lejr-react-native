@@ -1,16 +1,20 @@
 import React from 'react';
-import {TouchableWithoutFeedback, Keyboard} from 'react-native';
+import {StyleSheet, TouchableWithoutFeedback, Keyboard} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {Alert} from 'react-native';
 import * as yup from 'yup';
 import {Layout, Button, Spinner} from '@ui-kitten/components';
-import {onValidationError, InputField} from '../util/TextInputUI';
+import {
+  ButtonSpinner,
+  onValidationError,
+  InputField,
+} from '../util/TextInputUI';
 import {LocalData} from '../util/LocalData';
 import FormStyles from '../util/FormStyles';
 import {Screens} from '../util/Constants';
 
 export default function EmailLogin({route, navigation}) {
-  console.log('Arrived at EmailLogin!');
+  console.log('Arrived at EmailLogin');
 
   const {showConfirm: ShowConfirm} = route.params;
 
@@ -72,57 +76,63 @@ export default function EmailLogin({route, navigation}) {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <Layout style={FormStyles.container}>
         <Layout style={FormStyles.loginButtons}>
-          {IsSubmitting ? (
-            <Spinner size="small" />
-          ) : ShowConfirm ? (
-            <Button
-              style={FormStyles.button}
-              onPress={() => {
-                console.log('Signing up with email!');
-                ValidationSchema.validate({
-                  email: Email,
-                  password: Password,
-                  confirmPassword: ConfirmPassword,
-                })
-                  .catch(error =>
-                    onValidationError(error, [
-                      [EmailRef, Email],
-                      [PasswordRef, Password],
-                      [ConfirmPasswordRef, ConfirmPassword],
-                    ]),
-                  )
-                  .then(valid => {
-                    if (valid) {
-                      signUp(Email, Password, SetIsSubmitting);
-                    }
-                  });
-              }}>
-              Sign up
-            </Button>
-          ) : (
-            <Button
-              style={FormStyles.button}
-              onPress={() => {
-                console.log('Signing in with email!');
-                ValidationSchema.validate({
-                  email: Email,
-                  password: Password,
-                })
-                  .catch(error =>
-                    onValidationError(error, [
-                      [EmailRef, Email],
-                      [PasswordRef, Password],
-                    ]),
-                  )
-                  .then(valid => {
-                    if (valid) {
-                      signIn(Email, Password, SetIsSubmitting);
-                    }
-                  });
-              }}>
-              Sign in
-            </Button>
-          )}
+          <Layout style={FormStyles.dynamicButton}>
+            {IsSubmitting ? (
+              <Button
+                style={FormStyles.button}
+                accessoryLeft={ButtonSpinner}
+                appearance="ghost"
+              />
+            ) : ShowConfirm ? (
+              <Button
+                style={FormStyles.button}
+                onPress={() => {
+                  console.log('Signing up with email');
+                  ValidationSchema.validate({
+                    email: Email,
+                    password: Password,
+                    confirmPassword: ConfirmPassword,
+                  })
+                    .catch(error =>
+                      onValidationError(error, [
+                        [EmailRef, Email],
+                        [PasswordRef, Password],
+                        [ConfirmPasswordRef, ConfirmPassword],
+                      ]),
+                    )
+                    .then(valid => {
+                      if (valid) {
+                        signUp(Email, Password, SetIsSubmitting);
+                      }
+                    });
+                }}>
+                Sign up
+              </Button>
+            ) : (
+              <Button
+                style={FormStyles.button}
+                onPress={() => {
+                  console.log('Signing in with email');
+                  ValidationSchema.validate({
+                    email: Email,
+                    password: Password,
+                  })
+                    .catch(error =>
+                      onValidationError(error, [
+                        [EmailRef, Email],
+                        [PasswordRef, Password],
+                      ]),
+                    )
+                    .then(valid => {
+                      if (valid) {
+                        signIn(Email, Password, SetIsSubmitting);
+                      }
+                    });
+                }}>
+                Sign in
+              </Button>
+            )}
+          </Layout>
           <Button
             style={FormStyles.button}
             onPress={() => {
@@ -141,7 +151,6 @@ export default function EmailLogin({route, navigation}) {
           {ShowConfirm && (
             <InputField
               fieldError={ConfirmPasswordError}
-              isSubmitting={IsSubmitting}
               refToPass={ConfirmPasswordRef}
               validationSchema={ValidationSchema}
               fieldKey="confirmPassword"
@@ -153,12 +162,12 @@ export default function EmailLogin({route, navigation}) {
                 Keyboard.dismiss();
               }}
               value={ConfirmPassword}
+              editable={!IsSubmitting}
               secureTextEntry
             />
           )}
           <InputField
             fieldError={PasswordError}
-            isSubmitting={IsSubmitting}
             refToPass={PasswordRef}
             validationSchema={ValidationSchema}
             fieldKey="password"
@@ -174,11 +183,11 @@ export default function EmailLogin({route, navigation}) {
               }
             }}
             value={Password}
+            editable={!IsSubmitting}
             secureTextEntry
           />
           <InputField
             fieldError={EmailError}
-            isSubmitting={IsSubmitting}
             refToPass={EmailRef}
             validationSchema={ValidationSchema}
             fieldKey="email"
@@ -190,6 +199,7 @@ export default function EmailLogin({route, navigation}) {
               PasswordRef.current.focus();
             }}
             value={Email}
+            editable={!IsSubmitting}
             autoFocus
           />
         </Layout>
@@ -210,7 +220,7 @@ async function signUp(email, password, setIsSubmitting) {
     })
     .then(
       () => {
-        console.log('Signed up with email!');
+        console.log('Signed up with email');
       },
       () => {
         console.warn('Sign up with email failed!');
@@ -230,7 +240,7 @@ async function signIn(email, password, setIsSubmitting) {
     })
     .then(
       () => {
-        console.log('Signed in with email!');
+        console.log('Signed in with email');
       },
       () => {
         console.warn('Sign in with email failed!');

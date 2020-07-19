@@ -9,7 +9,7 @@ import FormStyles from '../util/FormStyles';
 import {Screens} from '../util/Constants';
 
 export default function CreateAccount({navigation}) {
-  console.log('Arrived at CreateAccount!');
+  console.log('Arrived at CreateAccount');
 
   const [FirstName, SetFirstName] = React.useState('');
   const [LastName, SetLastName] = React.useState('');
@@ -38,7 +38,7 @@ export default function CreateAccount({navigation}) {
           <Button
             style={FormStyles.button}
             onPress={() => {
-              console.log('Signing up with email!');
+              console.log('Signing up with email');
               ValidationSchema.validate({
                 first: FirstName,
                 last: LastName,

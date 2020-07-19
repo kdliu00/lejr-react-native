@@ -1,8 +1,14 @@
 import React from 'react';
 import {StyleSheet} from 'react-native';
-import {Layout, Input, Text} from '@ui-kitten/components';
+import {Layout, Input, Text, Spinner} from '@ui-kitten/components';
 
-export {onValidationError, InputField, InputFieldWrapper};
+export {ButtonSpinner, onValidationError, InputField, InputFieldWrapper};
+
+const ButtonSpinner = props => (
+  <Layout style={[props.style, Styles.indicator]}>
+    <Spinner size="small" />
+  </Layout>
+);
 
 function onValidationError(error, fieldRefs) {
   console.warn(error.message);
@@ -51,7 +57,6 @@ const InputField = ({
         autoCorrect={false}
         autoCapitalize="none"
         enablesReturnKeyAutomatically={true}
-        editable={!isSubmitting}
         status={fieldError ? 'danger' : value ? 'success' : 'basic'}
         onChangeText={text => validateField(text)}
         {...rest}
@@ -72,5 +77,9 @@ const Styles = StyleSheet.create({
   },
   errorText: {
     color: 'red',
+  },
+  indicator: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
