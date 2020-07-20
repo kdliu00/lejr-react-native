@@ -1,18 +1,19 @@
-import {User, Group} from './DataObjects';
+import {User, Group, InviteInfo, GroupInfo} from './DataObjects';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import {Collections, Screens} from './Constants';
+import {Collections} from './Constants';
 import {Alert} from 'react-native';
 import {StackActions} from '@react-navigation/native';
 
 export {
   LocalData,
   signOut,
-  torchAndReplace,
   pushUserData,
   pushGroupData,
-  getGroupsLength,
+  isUserGroupsEmpty,
   loadGroupAsMain,
+  pushInvite,
+  joinGroup,
 };
 
 class LocalData {
@@ -27,13 +28,6 @@ function signOut() {
       console.log('User signed out');
       LocalData.user = null;
     });
-}
-
-function torchAndReplace(navigation: any, destination: string) {
-  if (navigation.canGoBack()) {
-    navigation.dispatch(StackActions.popToTop());
-  }
-  navigation.replace(destination);
 }
 
 async function loadGroupAsMain(groupId: string) {
@@ -51,8 +45,70 @@ async function loadGroupAsMain(groupId: string) {
     });
 }
 
-function getGroupsLength() {
-  return Object.keys(LocalData.user.groups).length;
+function isUserGroupsEmpty() {
+  return Object.keys(LocalData.user.groups).length === 0;
+}
+
+async function pushInvite(fromName: string, email: string) {
+  var newInviteInfo = new InviteInfo(
+    fromName,
+    LocalData.currentGroup.groupId,
+    LocalData.currentGroup.groupName,
+  );
+  return firestore()
+    .collection(Collections.Users)
+    .where('email', '==', email)
+    .get()
+    .then(query => {
+      if (query.size == 1) {
+        var docRef = query.docs[0];
+        var recipientInvites = docRef.data().invites;
+        if (Object.keys(recipientInvites).length === 0) {
+          recipientInvites = [newInviteInfo];
+        } else {
+          recipientInvites.push(newInviteInfo);
+        }
+        firestore()
+          .collection(Collections.Users)
+          .doc(docRef.id)
+          .update({invites: recipientInvites});
+      } else if (query.size == 0) {
+        throw new Error('Could not find user with email: ' + email);
+      } else {
+        console.error(
+          'There should not be multiple users with the same email!',
+        );
+        throw new Error('One account per email violation!');
+      }
+    });
+}
+
+/**
+ * This does not call pushUserData()
+ * @param groupId
+ */
+function joinGroup(groupId: string) {
+  firestore()
+    .collection(Collections.Groups)
+    .doc(groupId)
+    .get()
+    .then(doc => {
+      if (doc.exists) {
+        var groupToJoin: Group = Group.firestoreConverter.fromFirestore(doc);
+        var newGroupInfo: GroupInfo = new GroupInfo(
+          groupToJoin.groupId,
+          groupToJoin.groupName,
+        );
+        if (isUserGroupsEmpty()) {
+          LocalData.user.groups = [newGroupInfo];
+        } else {
+          LocalData.user.groups.push(newGroupInfo);
+        }
+      } else {
+        Alert.alert('Group Error', 'This group no longer exists.');
+      }
+    })
+    .catch(error => console.warn(error.message));
 }
 
 function pushUserData() {
@@ -61,18 +117,17 @@ function pushUserData() {
       .collection(Collections.Users)
       .doc(LocalData.user.userId)
       .set(User.firestoreConverter.toFirestore(LocalData.user))
-      .catch(error => {
-        console.warn(error.message);
-        if (error.code != 'firestore/permission-denied') {
-          Alert.alert(
-            'Database Error',
-            'We were not able to save your group data. Please reload the app and try again.',
-          );
-        }
-      })
       .then(
         () => console.log('Successfully pushed user data'),
-        () => console.log('Push user data failed!'),
+        error => {
+          console.warn('Push user data failed: ' + error.message);
+          if (error.code != 'firestore/permission-denied') {
+            Alert.alert(
+              'Database Error',
+              'We were not able to save your group data. Please reload the app and try again.',
+            );
+          }
+        },
       );
 }
 
@@ -82,17 +137,16 @@ function pushGroupData() {
       .collection(Collections.Groups)
       .doc(LocalData.currentGroup.groupId)
       .set(Group.firestoreConverter.toFirestore(LocalData.currentGroup))
-      .catch(error => {
-        console.warn(error.message);
-        if (error.code != 'firestore/permission-denied') {
-          Alert.alert(
-            'Database Error',
-            'We were not able to save your group data. Please reload the app and try again.',
-          );
-        }
-      })
       .then(
         () => console.log('Successfully pushed group data'),
-        () => console.log('Push group data failed!'),
+        error => {
+          console.warn('Push group data failed: ' + error.message);
+          if (error.code != 'firestore/permission-denied') {
+            Alert.alert(
+              'Database Error',
+              'We were not able to save your group data. Please reload the app and try again.',
+            );
+          }
+        },
       );
 }

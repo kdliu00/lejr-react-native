@@ -1,4 +1,4 @@
-export {User, GroupInfo, Group, VirtualReceipt, Item, Archive};
+export {User, GroupInfo, InviteInfo, Group, VirtualReceipt, Item, Archive};
 
 class User {
   userId: string;
@@ -6,7 +6,7 @@ class User {
   profilePic: string;
   name: string;
   groups: GroupInfo[];
-  invites: Map<string, string>;
+  invites: InviteInfo[];
 
   constructor(
     userId: string,
@@ -14,14 +14,14 @@ class User {
     profilePic: string,
     name: string,
     groups: GroupInfo[],
-    invites: Map<string, string>,
+    invites: InviteInfo[],
   ) {
     this.userId = userId;
     this.email = email;
     this.profilePic = profilePic;
     this.name = name;
-    this.groups = nullHandler(groups, []);
-    this.invites = nullHandler(invites, new Map());
+    this.groups = groups;
+    this.invites = invites;
   }
 
   static firestoreConverter = {
@@ -45,6 +45,32 @@ class User {
         data.groups,
         data.invites,
       );
+    },
+  };
+}
+
+class InviteInfo {
+  fromName: string;
+  groupId: string;
+  groupName: string;
+
+  constructor(fromName: string, groupId: string, groupName: string) {
+    this.fromName = fromName;
+    this.groupId = groupId;
+    this.groupName = groupName;
+  }
+
+  static firestoreConverter = {
+    toFirestore: function(groupInfo: InviteInfo) {
+      return {
+        fromName: groupInfo.fromName,
+        groupId: groupInfo.groupId,
+        groupName: groupInfo.groupName,
+      };
+    },
+    fromFirestore: function(snapshot) {
+      const data = snapshot.data();
+      return new InviteInfo(data.fromName, data.groupId, data.groupName);
     },
   };
 }
@@ -88,9 +114,9 @@ class Group {
   ) {
     this.groupId = groupId;
     this.groupName = groupName;
-    this.members = nullHandler(members, new Map());
-    this.virtualReceipts = nullHandler(virtualReceipts, []);
-    this.archives = nullHandler(archives, []);
+    this.members = members;
+    this.virtualReceipts = virtualReceipts;
+    this.archives = archives;
   }
 
   static firestoreConverter = {
@@ -143,9 +169,9 @@ class VirtualReceipt {
     this.memo = memo;
     this.storeName = storeName;
     this.dateAdded = dateAdded;
-    this.items = nullHandler(items, []);
+    this.items = items;
     this.total = total;
-    this.totalSplit = nullHandler(totalSplit, new Map());
+    this.totalSplit = totalSplit;
     this.receiptImage = receiptImage;
   }
 }
@@ -162,7 +188,7 @@ class Item {
   ) {
     this.itemName = itemName;
     this.itemCost = itemCost;
-    this.itemSplit = nullHandler(itemSplit, new Map());
+    this.itemSplit = itemSplit;
   }
 }
 
@@ -180,16 +206,7 @@ class Archive {
   ) {
     this.dateStart = dateStart;
     this.dateEnd = dateEnd;
-    this.virtualReceipts = nullHandler(virtualReceipts, []);
-    this.endBalances = nullHandler(endBalances, new Map());
+    this.virtualReceipts = virtualReceipts;
+    this.endBalances = endBalances;
   }
-}
-
-/**
- * Handles null properties when the firestore property is empty
- * @param property The property to handle
- * @param ifNull What to return if property is null
- */
-function nullHandler(property: any, ifNull: any) {
-  return property ? property : ifNull;
 }

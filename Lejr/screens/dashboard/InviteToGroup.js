@@ -3,15 +3,24 @@ import {Keyboard, Dimensions} from 'react-native';
 import {Layout, Text, Button} from '@ui-kitten/components';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import FormStyles from '../../util/FormStyles';
-import {onValidationError, InputField} from '../../util/TextInputUI';
+import {
+  onValidationError,
+  InputField,
+  ButtonSpinner,
+} from '../../util/TextInputUI';
 import * as yup from 'yup';
 import {Screens} from '../../util/Constants';
 import {StyleSheet} from 'react-native';
+import {pushInvite, LocalData} from '../../util/LocalData';
 
 export default function InviteToGroup({route, navigation}) {
   console.log('Arrived at InviteToGroup');
 
   const {GroupName} = route.params;
+
+  const [IsInviting, SetIsInviting] = React.useState(false);
+  const [Message, SetMessage] = React.useState('');
+  const [TextStatus, SetTextStatus] = React.useState('success');
 
   const [Email, SetEmail] = React.useState('');
   const [EmailError, SetEmailError] = React.useState('');
@@ -25,11 +34,54 @@ export default function InviteToGroup({route, navigation}) {
       .required(),
   });
 
+  const MessageText = () => (
+    <Text style={Styles.text} status={TextStatus}>
+      {Message}
+    </Text>
+  );
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <Layout style={Styles.container}>
         <Layout style={FormStyles.loginButtons}>
-          <Button>Invite to group</Button>
+          <Layout style={FormStyles.dynamicButton}>
+            {IsInviting ? (
+              <Button
+                style={FormStyles.button}
+                accessoryLeft={ButtonSpinner}
+                appearance="ghost"
+              />
+            ) : (
+              <Button
+                onPress={() => {
+                  SetIsInviting(true);
+                  ValidationSchema.validate({email: Email})
+                    .catch(error =>
+                      onValidationError(error, [[EmailRef, Email]]),
+                    )
+                    .then(valid => {
+                      if (valid) {
+                        pushInvite(LocalData.user.name, Email)
+                          .then(
+                            () => {
+                              SetTextStatus('success');
+                              SetMessage('Invite sent!');
+                              EmailRef.current.clear();
+                            },
+                            error => {
+                              console.log(error.message);
+                              SetTextStatus('danger');
+                              SetMessage('Invite failed!');
+                            },
+                          )
+                          .finally(() => SetIsInviting(false));
+                      }
+                    });
+                }}>
+                Invite to group
+              </Button>
+            )}
+          </Layout>
           <Button
             style={FormStyles.button}
             onPress={() => navigation.navigate(Screens.Home)}
@@ -53,6 +105,7 @@ export default function InviteToGroup({route, navigation}) {
             value={Email}
             autoFocus
           />
+          <MessageText />
           <Text style={Styles.text}>
             You can invite others to {GroupName} using their email.
           </Text>
@@ -71,5 +124,8 @@ const Styles = StyleSheet.create({
   },
   text: {
     textAlign: 'center',
+    marginTop: 5,
+    marginLeft: 20,
+    marginRight: 20,
   },
 });

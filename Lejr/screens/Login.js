@@ -52,13 +52,15 @@ export default function Login({navigation}) {
             console.log('Going to Facebook login');
             SetIsLoggingIn(true);
             onFacebookButtonPress()
-              .catch(error => {
-                onLoginError(error);
-                SetIsLoggingIn(false);
-              })
               .then(
                 () => console.log('Signed in with Facebook'),
-                () => console.warn('Sign in with Facebook failed!'),
+                error => {
+                  onLoginError(error);
+                  console.warn(
+                    'Sign in with Facebook failed: ' + error.message,
+                  );
+                  SetIsLoggingIn(false);
+                },
               )
               .finally(() => SetIsLoggingIn(false));
           }}
@@ -72,13 +74,13 @@ export default function Login({navigation}) {
             console.log('Going to Google login');
             SetIsLoggingIn(true);
             onGoogleButtonPress()
-              .catch(error => {
-                onLoginError(error);
-                SetIsLoggingIn(false);
-              })
               .then(
                 () => console.log('Signed in with Google'),
-                () => console.warn('Sign in with Google failed!'),
+                error => {
+                  onLoginError(error);
+                  console.warn('Sign in with Google failed: ' + error.message);
+                  SetIsLoggingIn(false);
+                },
               )
               .finally(() => SetIsLoggingIn(false));
           }}
@@ -107,8 +109,6 @@ function onLoginError(error) {
   var errorCode = error.userInfo.code;
   var message = error.userInfo.message;
   var alertTitle = '<INSERT ALERT TITLE>';
-
-  console.warn(errorCode);
 
   switch (errorCode) {
     case 'account-exists-with-different-credential':

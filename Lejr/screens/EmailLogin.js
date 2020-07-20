@@ -216,14 +216,14 @@ async function signUp(email, password, setIsSubmitting) {
   return auth()
     .createUserWithEmailAndPassword(email, password)
     .catch(error => {
-      onEmailLoginError(error, setIsSubmitting);
+      onEmailLoginError(error);
     })
     .then(
       () => {
         console.log('Signed up with email');
       },
-      () => {
-        console.warn('Sign up with email failed!');
+      error => {
+        console.warn('Sign up with email failed: ' + error.message);
         setIsSubmitting(false);
       },
     );
@@ -236,20 +236,20 @@ async function signIn(email, password, setIsSubmitting) {
   return auth()
     .signInWithEmailAndPassword(email, password)
     .catch(error => {
-      onEmailLoginError(error, setIsSubmitting);
+      onEmailLoginError(error);
     })
     .then(
       () => {
         console.log('Signed in with email');
       },
-      () => {
-        console.warn('Sign in with email failed!');
+      error => {
+        console.warn('Sign in with email failed: ' + error.message);
         setIsSubmitting(false);
       },
     );
 }
 
-function onEmailLoginError(error, setIsSubmitting) {
+function onEmailLoginError(error) {
   var errorCode = error.userInfo.code;
   var message = error.userInfo.message;
   var alertTitle = '<INSERT ALERT TITLE>';
@@ -267,8 +267,5 @@ function onEmailLoginError(error, setIsSubmitting) {
       alertTitle = 'Email Login Error';
       break;
   }
-  console.warn(errorCode);
   Alert.alert(alertTitle, message);
-
-  setIsSubmitting(false);
 }

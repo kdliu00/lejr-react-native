@@ -7,7 +7,7 @@ import {
   signOut,
   pushUserData,
   pushGroupData,
-  getGroupsLength,
+  isUserGroupsEmpty,
 } from '../util/LocalData';
 import {Collections, Screens} from '../util/Constants';
 import {GroupInfo, Group} from '../util/DataObjects';
@@ -75,22 +75,21 @@ export default function CreateGroup({navigation}) {
                 onPress={() => {
                   SetIsCreating(true);
                   ValidationSchema.validate({groupName: GroupName})
-                    .catch(validationError =>
-                      onValidationError(validationError, [
-                        [GroupNameRef, GroupName],
-                      ]),
+                    .catch(error =>
+                      onValidationError(error, [[GroupNameRef, GroupName]]),
                     )
                     .then(valid => {
                       if (valid) {
-                        Promise.all(CreateNewGroup(GroupName))
-                          .catch(error => console.warn(error.message))
-                          .then(
-                            () => {
-                              console.log('Succesfully created group');
-                              navigation.replace(Screens.Dashboard);
-                            },
-                            () => console.log('Group creation failed!'),
-                          );
+                        Promise.all(CreateNewGroup(GroupName)).then(
+                          () => {
+                            console.log('Succesfully created group');
+                            navigation.navigate(Screens.Dashboard);
+                          },
+                          error =>
+                            console.warn(
+                              'Group creation failed: ' + error.message,
+                            ),
+                        );
                       }
                     })
                     .finally(() => {
@@ -126,7 +125,7 @@ async function CreateNewGroup(newGroupName) {
 
   var newGroupInfo = new GroupInfo(newGroupId, newGroupName);
 
-  if (getGroupsLength() === 0) {
+  if (isUserGroupsEmpty()) {
     LocalData.user.groups = [newGroupInfo];
   } else {
     LocalData.user.groups.push(newGroupInfo);

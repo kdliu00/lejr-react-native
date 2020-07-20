@@ -1,11 +1,12 @@
 import React from 'react';
 import {StyleSheet} from 'react-native';
 import {Avatar, Card, Layout, Text} from '@ui-kitten/components';
+import {VirtualReceipt} from './DataObjects';
 
 export {ContributionCard};
 
 const ContributionCard = info => {
-  const item = info.item;
+  const item: VirtualReceipt = info.item;
 
   return (
     <Card style={Styles.card}>
@@ -14,35 +15,17 @@ const ContributionCard = info => {
           <Text numberOfLines={1}>{item.memo}</Text>
         </Layout>
         <Layout style={Styles.topRight}>
-          <Text numberOfLines={1}>{item.total}</Text>
+          <Text numberOfLines={1}>${item.total}</Text>
         </Layout>
       </Layout>
       <Layout style={Styles.footer}>
-        <Avatar
-          style={Styles.avatar}
-          size="tiny"
-          source={require('../icon.png')}
-        />
-        <Avatar
-          style={Styles.avatar}
-          size="tiny"
-          source={require('../icon.png')}
-        />
-        <Avatar
-          style={Styles.avatar}
-          size="tiny"
-          source={require('../icon.png')}
-        />
-        <Avatar
-          style={Styles.avatar}
-          size="tiny"
-          source={require('../icon.png')}
-        />
-        <Avatar
-          style={Styles.avatar}
-          size="tiny"
-          source={require('../icon.png')}
-        />
+        {new Array(5).fill(
+          <Avatar
+            style={Styles.avatar}
+            size="tiny"
+            source={require('../icon.png')}
+          />,
+        )}
       </Layout>
     </Card>
   );
@@ -51,6 +34,7 @@ const ContributionCard = info => {
 const Styles = StyleSheet.create({
   card: {
     marginVertical: 4,
+    borderRadius: 8,
   },
   header: {
     flexDirection: 'row',

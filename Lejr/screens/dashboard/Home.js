@@ -20,10 +20,11 @@ const MailIcon = props => <Icon name="email-outline" {...props} />;
 export default function Home({navigation}) {
   console.log('Arrived at Home');
 
-  /**
-   * Array of objects with at least properties 'memo', 'total', and 'totalSplit'
-   */
-  const VirtualReceiptData = LocalData.currentGroup.virtualReceipts;
+  // const VirtualReceiptData = LocalData.currentGroup.virtualReceipts;
+  const VirtualReceiptData = new Array(8).fill({
+    memo: 'Cooks and chips',
+    total: '23.16',
+  });
 
   const [IsLoading, SetIsLoading] = React.useState(false);
   const [OverflowVisible, SetOverflowVisible] = React.useState(false);
@@ -162,5 +163,6 @@ const Styles = StyleSheet.create({
   },
   list: {
     flex: 1,
+    backgroundColor: 'white',
   },
 });
