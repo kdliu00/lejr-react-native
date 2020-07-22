@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, SafeAreaView} from 'react-native';
 import {Layout, Text} from '@ui-kitten/components';
 import ImagePicker from 'react-native-image-crop-picker';
 
@@ -15,9 +15,9 @@ export default function FromImage({navigation}) {
   });
 
   return (
-    <Layout style={Styles.container}>
+    <SafeAreaView style={Styles.container}>
       <Text>FromImage</Text>
-    </Layout>
+    </SafeAreaView>
   );
 }
 

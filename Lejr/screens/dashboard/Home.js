@@ -1,5 +1,10 @@
 import React from 'react';
-import {StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
+import {
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity,
+  SafeAreaView,
+} from 'react-native';
 import {
   Layout,
   List,
@@ -13,9 +18,8 @@ import {ContributionCard} from '../../util/ContributionUI';
 import {
   LocalData,
   loadGroupAsMain,
-  isPossibleObjectEmpty,
+  safeGetListData,
 } from '../../util/LocalData';
-import {SafeAreaView} from 'react-navigation';
 import {Screens} from '../../util/Constants';
 
 const InviteIcon = props => <Icon name="person-add-outline" {...props} />;
@@ -24,11 +28,7 @@ const MailIcon = props => <Icon name="email-outline" {...props} />;
 export default function Home({navigation}) {
   console.log('Arrived at Home');
 
-  // const VirtualReceiptData = isPossibleObjectEmpty(
-  //   LocalData.currentGroup.virtualReceipts,
-  // )
-  //   ? []
-  //   : LocalData.currentGroup.virtualReceipts;
+  // const VirtualReceiptData = safeGetListData(LocalData.currentGroup.virtualReceipts);
   const VirtualReceiptData = new Array(8).fill({
     memo: 'Cooks and chips',
     total: '23.16',
@@ -144,6 +144,7 @@ const CustomMenuItem = ({
 const Styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'white',
   },
   center: {
     flex: 1,

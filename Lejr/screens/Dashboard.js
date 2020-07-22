@@ -1,6 +1,7 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
+import {SafeAreaView, StyleSheet} from 'react-native';
 import {
   BottomNavigation,
   BottomNavigationTab,
@@ -52,14 +53,16 @@ const TabNavigatorComponent = () => (
 );
 
 const BottomTabBar = ({navigation, state}) => (
-  <BottomNavigation
-    selectedIndex={state.index}
-    onSelect={index => navigation.navigate(state.routeNames[index])}>
-    <BottomNavigationTab icon={HomeIcon} />
-    <BottomNavigationTab icon={ContributionIcon} />
-    <BottomNavigationTab icon={CameraIcon} />
-    <BottomNavigationTab icon={SettingsIcon} />
-  </BottomNavigation>
+  <SafeAreaView style={Styles.container}>
+    <BottomNavigation
+      selectedIndex={state.index}
+      onSelect={index => navigation.navigate(state.routeNames[index])}>
+      <BottomNavigationTab icon={HomeIcon} />
+      <BottomNavigationTab icon={ContributionIcon} />
+      <BottomNavigationTab icon={CameraIcon} />
+      <BottomNavigationTab icon={SettingsIcon} />
+    </BottomNavigation>
+  </SafeAreaView>
 );
 
 const TabNavigator = () => (
@@ -70,3 +73,9 @@ const TabNavigator = () => (
     <MainStack.Screen name={Screens.Settings} component={Settings} />
   </MainStack.Navigator>
 );
+
+const Styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'white',
+  },
+});

@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, SafeAreaView} from 'react-native';
 import {Layout, Button, Text, Avatar} from '@ui-kitten/components';
 import {LocalData, signOut} from '../../util/LocalData';
 
@@ -7,7 +7,7 @@ export default function Settings({navigation}) {
   console.log('Arrived at Settings');
 
   return (
-    <Layout style={Styles.container}>
+    <SafeAreaView style={Styles.container}>
       <Avatar
         style={Styles.avatar}
         size="giant"
@@ -22,7 +22,7 @@ export default function Settings({navigation}) {
         onPress={() => signOut()}>
         Sign out
       </Button>
-    </Layout>
+    </SafeAreaView>
   );
 }
 

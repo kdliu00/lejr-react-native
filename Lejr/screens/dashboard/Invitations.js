@@ -1,19 +1,17 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, SafeAreaView} from 'react-native';
 import {Text, List, Layout, Button} from '@ui-kitten/components';
 import {Screens} from '../../util/Constants';
-import {LocalData, isPossibleObjectEmpty} from '../../util/LocalData';
+import {LocalData, safeGetListData} from '../../util/LocalData';
 import {InvitationCard} from '../../util/InvitationUI';
 
 export default function Invitations({navigation}) {
   console.log('Arrived at Invitations!');
 
-  const InviteData = isPossibleObjectEmpty(LocalData.user.invites)
-    ? []
-    : LocalData.user.invites;
+  const InviteData = safeGetListData(LocalData.user.invites);
 
   return (
-    <Layout style={Styles.container}>
+    <SafeAreaView style={Styles.container}>
       <Layout style={Styles.titleContainer}>
         <Text style={Styles.text} category="h4">
           Invitations
@@ -34,7 +32,7 @@ export default function Invitations({navigation}) {
           Go back
         </Button>
       </Layout>
-    </Layout>
+    </SafeAreaView>
   );
 }
 

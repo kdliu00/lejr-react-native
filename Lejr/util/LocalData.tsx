@@ -3,13 +3,13 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import {Collections} from './Constants';
 import {Alert} from 'react-native';
-import {StackActions} from '@react-navigation/native';
 
 export {
   LocalData,
   signOut,
   pushUserData,
   pushGroupData,
+  safeGetListData,
   isPossibleObjectEmpty,
   loadGroupAsMain,
   pushInvite,
@@ -43,6 +43,15 @@ async function loadGroupAsMain(groupId: string) {
         throw new Error('Invalid group id!');
       }
     });
+}
+
+/**
+ * Empty lists on firestore are retrieved as empty objects.
+ * This returns an empty array if data was an empty object.
+ * @param data the list of data to retrieve
+ */
+function safeGetListData(data: any) {
+  return isPossibleObjectEmpty(data) ? [] : data;
 }
 
 function isPossibleObjectEmpty(data: any) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Keyboard, TouchableWithoutFeedback} from 'react-native';
+import {Keyboard, TouchableWithoutFeedback, SafeAreaView} from 'react-native';
 import {Layout, Text, Button} from '@ui-kitten/components';
 import FormStyles from '../../util/FormStyles';
 import {
@@ -41,7 +41,7 @@ export default function InviteToGroup({route, navigation}) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <Layout style={Styles.container}>
+      <SafeAreaView style={Styles.container}>
         <Layout style={FormStyles.loginButtons}>
           <Layout style={FormStyles.dynamicButton}>
             {IsInviting ? (
@@ -109,7 +109,7 @@ export default function InviteToGroup({route, navigation}) {
             You can invite others to {GroupName} using their email.
           </Text>
         </Layout>
-      </Layout>
+      </SafeAreaView>
     </TouchableWithoutFeedback>
   );
 }
