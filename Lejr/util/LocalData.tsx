@@ -1,7 +1,7 @@
 import {User, Group, InviteInfo, GroupInfo} from './DataObjects';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import {Collections} from './Constants';
+import {Collection, ErrorCode} from './Constants';
 import {Alert} from 'react-native';
 
 export {
@@ -32,7 +32,7 @@ function signOut() {
 
 async function loadGroupAsMain(groupId: string) {
   return firestore()
-    .collection(Collections.Groups)
+    .collection(Collection.Groups)
     .doc(groupId)
     .get()
     .then(doc => {
@@ -40,17 +40,17 @@ async function loadGroupAsMain(groupId: string) {
         console.log('Group document found');
         LocalData.currentGroup = Group.firestoreConverter.fromFirestore(doc);
       } else {
-        throw new Error('Invalid group id!');
+        throw new Error(ErrorCode.InvalidId);
       }
     });
 }
 
 /**
- * Empty lists on firestore are retrieved as empty objects.
+ * Empty arrays on firestore are retrieved as empty objects.
  * This returns an empty array if data was an empty object.
  * @param data the list of data to retrieve
  */
-function safeGetListData(data: any) {
+function safeGetListData(data: any): Array<any> {
   return isPossibleObjectEmpty(data) ? [] : data;
 }
 
@@ -65,45 +65,61 @@ async function pushInvite(fromName: string, email: string) {
     LocalData.currentGroup.groupName,
   );
   return firestore()
-    .collection(Collections.Users)
+    .collection(Collection.Users)
     .where('email', '==', email)
     .get()
     .then(query => {
       if (query.size == 1) {
-        var docRef = query.docs[0];
-        var recipientInvites = docRef.data().invites;
+        //Retrieve user object
+        var userObject: User = User.firestoreConverter.fromFirestore(
+          query.docs[0],
+        );
+
+        //Check if user is already in group
+        safeGetListData(userObject.groups).forEach(groupInfo => {
+          if (groupInfo.groupId === newInviteInfo.groupId) {
+            throw new Error(ErrorCode.UserDuplicate);
+          }
+        });
+
+        //Add invite
+        var recipientInvites = userObject.invites;
         if (Object.keys(recipientInvites).length === 0) {
           recipientInvites = [newInviteInfo];
         } else {
           recipientInvites.push(newInviteInfo);
         }
         firestore()
-          .collection(Collections.Users)
-          .doc(docRef.id)
+          .collection(Collection.Users)
+          .doc(userObject.userId)
           .update({invites: recipientInvites});
       } else if (query.size == 0) {
-        throw new Error('Could not find user with email: ' + email);
+        console.warn('Could not find user with email: ' + email);
+        throw new Error(ErrorCode.UserNotFound);
       } else {
         console.error(
           'There should not be multiple users with the same email!',
         );
-        throw new Error('One account per email violation!');
+        throw new Error(ErrorCode.UserDuplicate);
       }
     });
 }
 
 /**
- * This does not call pushUserData()
+ * This does not push data to firestore and does not catch errors.
  * @param groupId
  */
-function joinGroup(groupId: string) {
-  firestore()
-    .collection(Collections.Groups)
+async function joinGroup(groupId: string) {
+  return firestore()
+    .collection(Collection.Groups)
     .doc(groupId)
     .get()
     .then(doc => {
       if (doc.exists) {
+        //Retrieve the group object
         var groupToJoin: Group = Group.firestoreConverter.fromFirestore(doc);
+
+        //Create new group info entry to add to user object
         var newGroupInfo: GroupInfo = new GroupInfo(
           groupToJoin.groupId,
           groupToJoin.groupName,
@@ -113,17 +129,28 @@ function joinGroup(groupId: string) {
         } else {
           LocalData.user.groups.push(newGroupInfo);
         }
+
+        //Create new mapping in group members
+        groupToJoin.members[LocalData.user.userId] = 0.0;
+        firestore()
+          .collection(Collection.Groups)
+          .doc(groupId)
+          .update({members: groupToJoin.members})
+          .then(
+            () => console.log('Successfully updated group'),
+            error => console.warn(error.message),
+          );
       } else {
         Alert.alert('Group Error', 'This group no longer exists.');
+        throw new Error(ErrorCode.DoesNotExist);
       }
-    })
-    .catch(error => console.warn(error.message));
+    });
 }
 
 function pushUserData() {
   if (LocalData.user)
     firestore()
-      .collection(Collections.Users)
+      .collection(Collection.Users)
       .doc(LocalData.user.userId)
       .set(User.firestoreConverter.toFirestore(LocalData.user))
       .then(
@@ -141,21 +168,19 @@ function pushUserData() {
 }
 
 function pushGroupData() {
-  if (LocalData.currentGroup)
+  if (LocalData.currentGroup && LocalData.user)
     firestore()
-      .collection(Collections.Groups)
+      .collection(Collection.Groups)
       .doc(LocalData.currentGroup.groupId)
       .set(Group.firestoreConverter.toFirestore(LocalData.currentGroup))
       .then(
         () => console.log('Successfully pushed group data'),
         error => {
           console.warn('Push group data failed: ' + error.message);
-          if (error.code != 'firestore/permission-denied') {
-            Alert.alert(
-              'Database Error',
-              'We were not able to save your group data. Please reload the app and try again.',
-            );
-          }
+          Alert.alert(
+            'Database Error',
+            'We were not able to save your group data. Please reload the app and try again.',
+          );
         },
       );
 }

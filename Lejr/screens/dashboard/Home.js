@@ -20,7 +20,7 @@ import {
   loadGroupAsMain,
   safeGetListData,
 } from '../../util/LocalData';
-import {Screens} from '../../util/Constants';
+import {Screen} from '../../util/Constants';
 
 const InviteIcon = props => <Icon name="person-add-outline" {...props} />;
 const MailIcon = props => <Icon name="email-outline" {...props} />;
@@ -58,7 +58,7 @@ export default function Home({navigation}) {
       <Button
         accessoryLeft={MailIcon}
         appearance="ghost"
-        onPress={() => navigation.navigate(Screens.Invitations)}
+        onPress={() => navigation.navigate(Screen.Invitations)}
       />
       <Text category="h5" onPress={() => SetOverflowVisible(true)}>
         {SelectedGroup}
@@ -67,7 +67,7 @@ export default function Home({navigation}) {
         accessoryLeft={InviteIcon}
         appearance="ghost"
         onPress={() =>
-          navigation.navigate(Screens.InviteToGroup, {GroupName: SelectedGroup})
+          navigation.navigate(Screen.InviteToGroup, {GroupName: SelectedGroup})
         }
       />
     </Layout>

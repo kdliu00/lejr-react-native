@@ -2,6 +2,7 @@ import React from 'react';
 import {StyleSheet} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {Layout, Spinner} from '@ui-kitten/components';
+import {StackActions} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import {
   LocalData,
@@ -9,7 +10,7 @@ import {
   loadGroupAsMain,
 } from '../util/LocalData';
 import {User} from '../util/DataObjects';
-import {defaultProfilePic, Collections, Screens} from '../util/Constants';
+import {defaultProfilePic, Collection, Screen} from '../util/Constants';
 
 export default function Loading({navigation}) {
   console.log('Arrived at Loading');
@@ -17,7 +18,7 @@ export default function Loading({navigation}) {
   auth().onAuthStateChanged(user => {
     if (user) {
       firestore()
-        .collection(Collections.Users)
+        .collection(Collection.Users)
         .doc(user.uid)
         .get()
         .then(doc => {
@@ -43,7 +44,7 @@ export default function Loading({navigation}) {
               LocalData.user.profilePic = defaultProfilePic;
             }
             firestore()
-              .collection(Collections.Users)
+              .collection(Collection.Users)
               .doc(user.uid)
               .set(User.firestoreConverter.toFirestore(LocalData.user))
               .then(
@@ -59,7 +60,8 @@ export default function Loading({navigation}) {
           console.warn(error.message);
         });
     } else {
-      navigation.navigate(Screens.Login);
+      navigation.dispatch(StackActions.popToTop());
+      navigation.navigate(Screen.Login);
     }
   });
 
@@ -72,10 +74,10 @@ export default function Loading({navigation}) {
 
 function handleScreen(navigation) {
   if (isPossibleObjectEmpty(LocalData.user.groups)) {
-    navigation.navigate(Screens.CreateGroup);
+    navigation.navigate(Screen.CreateGroup);
   } else {
     loadGroupAsMain(LocalData.user.groups[0].groupId).then(() =>
-      navigation.navigate(Screens.Dashboard),
+      navigation.navigate(Screen.Dashboard),
     );
   }
 }

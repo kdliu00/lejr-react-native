@@ -1,9 +1,9 @@
 import React from 'react';
-import {StyleSheet, TouchableWithoutFeedback, Keyboard} from 'react-native';
+import {TouchableWithoutFeedback, Keyboard} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {Alert} from 'react-native';
 import * as yup from 'yup';
-import {Layout, Button, Spinner} from '@ui-kitten/components';
+import {Layout, Button} from '@ui-kitten/components';
 import {
   ButtonSpinner,
   onValidationError,
@@ -11,7 +11,7 @@ import {
 } from '../util/TextInputUI';
 import {LocalData} from '../util/LocalData';
 import FormStyles from '../util/FormStyles';
-import {Screens} from '../util/Constants';
+import {Screen} from '../util/Constants';
 
 export default function EmailLogin({route, navigation}) {
   console.log('Arrived at EmailLogin');
@@ -137,9 +137,9 @@ export default function EmailLogin({route, navigation}) {
             style={FormStyles.button}
             onPress={() => {
               if (ShowConfirm) {
-                navigation.navigate(Screens.CreateAccount);
+                navigation.navigate(Screen.CreateAccount);
               } else {
-                navigation.navigate(Screens.Login);
+                navigation.navigate(Screen.Login);
               }
             }}
             appearance="outline"

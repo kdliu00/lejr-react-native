@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleSheet, SafeAreaView} from 'react-native';
-import {Layout, Button, Text, Avatar} from '@ui-kitten/components';
+import {Button, Text, Avatar} from '@ui-kitten/components';
 import {LocalData, signOut} from '../../util/LocalData';
 
 export default function Settings({navigation}) {

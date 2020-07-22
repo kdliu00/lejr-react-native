@@ -8,7 +8,7 @@ import {
   ButtonSpinner,
 } from '../../util/TextInputUI';
 import * as yup from 'yup';
-import {Screens} from '../../util/Constants';
+import {Screen, ErrorCode} from '../../util/Constants';
 import {StyleSheet} from 'react-native';
 import {pushInvite, LocalData} from '../../util/LocalData';
 
@@ -68,9 +68,23 @@ export default function InviteToGroup({route, navigation}) {
                               EmailRef.current.clear();
                             },
                             error => {
-                              console.log(error.message);
-                              SetTextStatus('danger');
-                              SetMessage('Invite failed!');
+                              console.warn(error.message);
+                              switch (error.message) {
+                                case ErrorCode.UserDuplicate:
+                                  SetTextStatus('warning');
+                                  SetMessage('User already in group!');
+                                  break;
+
+                                case ErrorCode.UserNotFound:
+                                  SetTextStatus('warning');
+                                  SetMessage('User not found!');
+                                  break;
+
+                                default:
+                                  SetTextStatus('danger');
+                                  SetMessage('Invite failed!');
+                                  break;
+                              }
                             },
                           )
                           .finally(() => SetIsInviting(false));
@@ -83,7 +97,7 @@ export default function InviteToGroup({route, navigation}) {
           </Layout>
           <Button
             style={FormStyles.button}
-            onPress={() => navigation.navigate(Screens.Home)}
+            onPress={() => navigation.navigate(Screen.Home)}
             appearance="outline">
             Go back
           </Button>
@@ -120,6 +134,7 @@ const Styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     flexDirection: 'column-reverse',
+    backgroundColor: 'white',
   },
   text: {
     textAlign: 'center',

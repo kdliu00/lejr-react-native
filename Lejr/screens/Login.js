@@ -5,7 +5,7 @@ import {GoogleSignin} from '@react-native-community/google-signin';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import {Alert} from 'react-native';
 import {Layout, Button, Spinner, Icon} from '@ui-kitten/components';
-import {iOSWebClientId, androidWebClientId, Screens} from '../util/Constants';
+import {iOSWebClientId, androidWebClientId, Screen} from '../util/Constants';
 
 GoogleSignin.configure({
   webClientId: Platform.OS === 'ios' ? iOSWebClientId : androidWebClientId,
@@ -28,7 +28,7 @@ export default function Login({navigation}) {
           style={Styles.button}
           onPress={() => {
             console.log('Going to create an account');
-            navigation.navigate(Screens.CreateAccount);
+            navigation.navigate(Screen.CreateAccount);
           }}
           disabled={IsLoggingIn}
           appearance="outline">
@@ -92,7 +92,7 @@ export default function Login({navigation}) {
           accessoryLeft={EmailIcon}
           onPress={() => {
             console.log('Going to email login');
-            navigation.navigate(Screens.EmailLogin, {showConfirm: false});
+            navigation.navigate(Screen.EmailLogin, {showConfirm: false});
           }}
           disabled={IsLoggingIn}>
           Sign in with email

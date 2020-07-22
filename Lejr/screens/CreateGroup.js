@@ -9,7 +9,7 @@ import {
   pushGroupData,
   isPossibleObjectEmpty,
 } from '../util/LocalData';
-import {Collections, Screens} from '../util/Constants';
+import {Collection, Screen} from '../util/Constants';
 import {GroupInfo, Group} from '../util/DataObjects';
 import * as yup from 'yup';
 import {
@@ -83,7 +83,7 @@ export default function CreateGroup({navigation}) {
                         Promise.all(CreateNewGroup(GroupName)).then(
                           () => {
                             console.log('Succesfully created group');
-                            navigation.navigate(Screens.Dashboard);
+                            navigation.navigate(Screen.Dashboard);
                           },
                           error =>
                             console.warn(
@@ -115,7 +115,7 @@ export default function CreateGroup({navigation}) {
 
 async function CreateNewGroup(newGroupName) {
   var newGroupId = firestore()
-    .collection(Collections.Groups)
+    .collection(Collection.Groups)
     .doc().id;
 
   var newGroupObject = new Group(newGroupId, newGroupName, new Map(), [], []);

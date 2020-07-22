@@ -2,8 +2,9 @@ export {
   defaultProfilePic,
   iOSWebClientId,
   androidWebClientId,
-  Collections,
-  Screens,
+  Collection,
+  Screen,
+  ErrorCode,
 };
 
 const defaultProfilePic =
@@ -15,13 +16,13 @@ const iOSWebClientId =
 const androidWebClientId =
   '746843927000-1kd2tbmtr59ba41i9k4bk2gr8252jhau.apps.googleusercontent.com';
 
-enum Collections {
+enum Collection {
   Users = 'users',
   Groups = 'groups',
   Archives = 'archives',
 }
 
-enum Screens {
+enum Screen {
   Loading = 'Loading',
   Login = 'Login',
   EmailLogin = 'EmailLogin',
@@ -34,4 +35,11 @@ enum Screens {
   Settings = 'Settings',
   InviteToGroup = 'InviteToGroup',
   Invitations = 'Invitations',
+}
+
+enum ErrorCode {
+  UserNotFound = 'UserNotFound',
+  UserDuplicate = 'UserDuplicate',
+  InvalidId = 'InvalidId',
+  DoesNotExist = 'DoesNotExist',
 }

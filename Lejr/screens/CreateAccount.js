@@ -6,7 +6,7 @@ import {onValidationError, InputField} from '../util/TextInputUI';
 import {LocalData} from '../util/LocalData';
 import {User} from '../util/DataObjects';
 import FormStyles from '../util/FormStyles';
-import {Screens} from '../util/Constants';
+import {Screen} from '../util/Constants';
 
 export default function CreateAccount({navigation}) {
   console.log('Arrived at CreateAccount');
@@ -58,7 +58,7 @@ export default function CreateAccount({navigation}) {
                       FirstName.trim() + ' ' + LastName.trim(),
                       new Map(),
                     );
-                    navigation.navigate(Screens.EmailLogin, {
+                    navigation.navigate(Screen.EmailLogin, {
                       showConfirm: true,
                     });
                   }
@@ -68,7 +68,7 @@ export default function CreateAccount({navigation}) {
           </Button>
           <Button
             style={FormStyles.button}
-            onPress={() => navigation.navigate(Screens.Login)}
+            onPress={() => navigation.navigate(Screen.Login)}
             appearance="outline">
             Go back
           </Button>

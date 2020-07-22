@@ -12,7 +12,7 @@ import Home from './dashboard/Home';
 import Settings from './dashboard/Settings';
 import Contribution from './dashboard/Contribution';
 import FromImage from './dashboard/FromImage';
-import {Screens} from '../util/Constants';
+import {Screen} from '../util/Constants';
 
 import InviteToGroup from './dashboard/InviteToGroup';
 import Invitations from './dashboard/Invitations';
@@ -40,14 +40,14 @@ const DashboardScreen = () => (
       component={TabNavigatorComponent}
       options={{headerShown: false}}
     />
-    <RootStack.Screen name={Screens.InviteToGroup} component={InviteToGroup} />
-    <RootStack.Screen name={Screens.Invitations} component={Invitations} />
+    <RootStack.Screen name={Screen.InviteToGroup} component={InviteToGroup} />
+    <RootStack.Screen name={Screen.Invitations} component={Invitations} />
   </RootStack.Navigator>
 );
 
 const TabNavigatorComponent = () => (
   <TabNavigator
-    initialRouteName={Screens.Home}
+    initialRouteName={Screen.Home}
     screenOptions={{headerShown: false}}
   />
 );
@@ -67,10 +67,10 @@ const BottomTabBar = ({navigation, state}) => (
 
 const TabNavigator = () => (
   <MainStack.Navigator tabBar={props => <BottomTabBar {...props} />}>
-    <MainStack.Screen name={Screens.Home} component={Home} />
-    <MainStack.Screen name={Screens.Contribution} component={Contribution} />
-    <MainStack.Screen name={Screens.FromImage} component={FromImage} />
-    <MainStack.Screen name={Screens.Settings} component={Settings} />
+    <MainStack.Screen name={Screen.Home} component={Home} />
+    <MainStack.Screen name={Screen.Contribution} component={Contribution} />
+    <MainStack.Screen name={Screen.FromImage} component={FromImage} />
+    <MainStack.Screen name={Screen.Settings} component={Settings} />
   </MainStack.Navigator>
 );
 

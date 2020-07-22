@@ -21,7 +21,7 @@ import CreateAccount from './screens/CreateAccount';
 import CreateGroup from './screens/CreateGroup';
 
 import {default as theme} from './eva-theme.json';
-import {Screens} from './util/Constants';
+import {Screen} from './util/Constants';
 import {pushGroupData, pushUserData} from './util/LocalData';
 import {BackHandler} from 'react-native';
 import {Alert} from 'react-native';
@@ -74,17 +74,17 @@ export default function App() {
       <ApplicationProvider {...eva} theme={{...eva.light, ...theme}}>
         <NavigationContainer>
           <Stack.Navigator
-            initialRouteName={Screens.Loading}
+            initialRouteName={Screen.Loading}
             screenOptions={{headerShown: false, gestureEnabled: false}}>
-            <Stack.Screen name={Screens.Loading} component={Loading} />
-            <Stack.Screen name={Screens.Login} component={Login} />
-            <Stack.Screen name={Screens.EmailLogin} component={EmailLogin} />
+            <Stack.Screen name={Screen.Loading} component={Loading} />
+            <Stack.Screen name={Screen.Login} component={Login} />
+            <Stack.Screen name={Screen.EmailLogin} component={EmailLogin} />
             <Stack.Screen
-              name={Screens.CreateAccount}
+              name={Screen.CreateAccount}
               component={CreateAccount}
             />
-            <Stack.Screen name={Screens.CreateGroup} component={CreateGroup} />
-            <Stack.Screen name={Screens.Dashboard} component={Dashboard} />
+            <Stack.Screen name={Screen.CreateGroup} component={CreateGroup} />
+            <Stack.Screen name={Screen.Dashboard} component={Dashboard} />
           </Stack.Navigator>
         </NavigationContainer>
       </ApplicationProvider>
