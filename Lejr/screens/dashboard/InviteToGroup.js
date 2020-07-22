@@ -1,7 +1,6 @@
 import React from 'react';
-import {Keyboard, Dimensions} from 'react-native';
+import {Keyboard, TouchableWithoutFeedback} from 'react-native';
 import {Layout, Text, Button} from '@ui-kitten/components';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import FormStyles from '../../util/FormStyles';
 import {
   onValidationError,

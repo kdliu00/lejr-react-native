@@ -10,7 +10,11 @@ import {
   Icon,
 } from '@ui-kitten/components';
 import {ContributionCard} from '../../util/ContributionUI';
-import {LocalData, loadGroupAsMain} from '../../util/LocalData';
+import {
+  LocalData,
+  loadGroupAsMain,
+  isPossibleObjectEmpty,
+} from '../../util/LocalData';
 import {SafeAreaView} from 'react-navigation';
 import {Screens} from '../../util/Constants';
 
@@ -20,7 +24,11 @@ const MailIcon = props => <Icon name="email-outline" {...props} />;
 export default function Home({navigation}) {
   console.log('Arrived at Home');
 
-  // const VirtualReceiptData = LocalData.currentGroup.virtualReceipts;
+  // const VirtualReceiptData = isPossibleObjectEmpty(
+  //   LocalData.currentGroup.virtualReceipts,
+  // )
+  //   ? []
+  //   : LocalData.currentGroup.virtualReceipts;
   const VirtualReceiptData = new Array(8).fill({
     memo: 'Cooks and chips',
     total: '23.16',

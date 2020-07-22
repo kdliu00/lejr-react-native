@@ -2,13 +2,15 @@ import React from 'react';
 import {StyleSheet} from 'react-native';
 import {Text, List, Layout, Button} from '@ui-kitten/components';
 import {Screens} from '../../util/Constants';
-import {LocalData} from '../../util/LocalData';
+import {LocalData, isPossibleObjectEmpty} from '../../util/LocalData';
 import {InvitationCard} from '../../util/InvitationUI';
 
 export default function Invitations({navigation}) {
   console.log('Arrived at Invitations!');
 
-  const InviteData = LocalData.user.invites;
+  const InviteData = isPossibleObjectEmpty(LocalData.user.invites)
+    ? []
+    : LocalData.user.invites;
 
   return (
     <Layout style={Styles.container}>
@@ -39,7 +41,7 @@ export default function Invitations({navigation}) {
 const Styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
+    // alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
   },

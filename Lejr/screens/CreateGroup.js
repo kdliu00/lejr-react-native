@@ -1,13 +1,13 @@
 import React from 'react';
 import {TouchableWithoutFeedback, StyleSheet, Keyboard} from 'react-native';
-import {Layout, Text, Button, Spinner} from '@ui-kitten/components';
+import {Layout, Text, Button} from '@ui-kitten/components';
 import firestore from '@react-native-firebase/firestore';
 import {
   LocalData,
   signOut,
   pushUserData,
   pushGroupData,
-  isUserGroupsEmpty,
+  isPossibleObjectEmpty,
 } from '../util/LocalData';
 import {Collections, Screens} from '../util/Constants';
 import {GroupInfo, Group} from '../util/DataObjects';
@@ -125,7 +125,7 @@ async function CreateNewGroup(newGroupName) {
 
   var newGroupInfo = new GroupInfo(newGroupId, newGroupName);
 
-  if (isUserGroupsEmpty()) {
+  if (isPossibleObjectEmpty(LocalData.user.groups)) {
     LocalData.user.groups = [newGroupInfo];
   } else {
     LocalData.user.groups.push(newGroupInfo);

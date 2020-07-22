@@ -10,7 +10,7 @@ export {
   signOut,
   pushUserData,
   pushGroupData,
-  isUserGroupsEmpty,
+  isPossibleObjectEmpty,
   loadGroupAsMain,
   pushInvite,
   joinGroup,
@@ -45,8 +45,8 @@ async function loadGroupAsMain(groupId: string) {
     });
 }
 
-function isUserGroupsEmpty() {
-  return Object.keys(LocalData.user.groups).length === 0;
+function isPossibleObjectEmpty(data: any) {
+  return Object.keys(data).length === 0;
 }
 
 async function pushInvite(fromName: string, email: string) {
@@ -99,7 +99,7 @@ function joinGroup(groupId: string) {
           groupToJoin.groupId,
           groupToJoin.groupName,
         );
-        if (isUserGroupsEmpty()) {
+        if (isPossibleObjectEmpty(LocalData.user.groups)) {
           LocalData.user.groups = [newGroupInfo];
         } else {
           LocalData.user.groups.push(newGroupInfo);
