@@ -215,15 +215,12 @@ async function signUp(email, password, setIsSubmitting) {
 
   return auth()
     .createUserWithEmailAndPassword(email, password)
-    .catch(error => {
-      onEmailLoginError(error);
-    })
     .then(
       () => {
         console.log('Signed up with email');
       },
       error => {
-        console.warn('Sign up with email failed: ' + error.message);
+        onEmailLoginError(error);
         setIsSubmitting(false);
       },
     );
@@ -235,26 +232,25 @@ async function signIn(email, password, setIsSubmitting) {
 
   return auth()
     .signInWithEmailAndPassword(email, password)
-    .catch(error => {
-      onEmailLoginError(error);
-    })
     .then(
       () => {
         console.log('Signed in with email');
       },
       error => {
-        console.warn('Sign in with email failed: ' + error.message);
+        onEmailLoginError(error);
         setIsSubmitting(false);
       },
     );
 }
 
 function onEmailLoginError(error) {
-  var errorCode = error.userInfo.code;
-  var message = error.userInfo.message;
-  var alertTitle = '<INSERT ALERT TITLE>';
+  console.warn(error);
 
-  switch (errorCode) {
+  var code = error.userInfo.code;
+  var message = error.userInfo.message;
+  var alertTitle;
+
+  switch (code) {
     case 'email-already-in-use':
       alertTitle = 'Email Already In Use';
       break;
@@ -267,5 +263,6 @@ function onEmailLoginError(error) {
       alertTitle = 'Email Login Error';
       break;
   }
+
   Alert.alert(alertTitle, message);
 }

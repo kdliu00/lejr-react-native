@@ -60,7 +60,9 @@ export default function Loading({navigation}) {
           console.warn(error.message);
         });
     } else {
-      navigation.dispatch(StackActions.popToTop());
+      if (navigation.canGoBack()) {
+        navigation.dispatch(StackActions.popToTop());
+      }
       navigation.navigate(Screen.Login);
     }
   });

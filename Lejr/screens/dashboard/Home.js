@@ -21,6 +21,7 @@ import {
   safeGetListData,
 } from '../../util/LocalData';
 import {Screen} from '../../util/Constants';
+import {ThemedLayout} from '../../util/ThemedComponents';
 
 const InviteIcon = props => <Icon name="person-add-outline" {...props} />;
 const MailIcon = props => <Icon name="email-outline" {...props} />;
@@ -74,28 +75,30 @@ export default function Home({navigation}) {
   );
 
   return (
-    <SafeAreaView style={Styles.container}>
-      {IsLoading ? (
-        <Layout style={Styles.center}>
-          <Spinner size="large" />
-        </Layout>
-      ) : (
-        <List
-          style={Styles.list}
-          contentContainerStyle={Styles.contentContainer}
-          data={VirtualReceiptData}
-          renderItem={ContributionCard}
-        />
-      )}
-      <OverflowMenu
-        style={Styles.overflowMenu}
-        visible={OverflowVisible}
-        anchor={groupSelect}
-        placement="top"
-        onBackdropPress={() => SetOverflowVisible(false)}>
-        {groupElements}
-      </OverflowMenu>
-    </SafeAreaView>
+    <ThemedLayout style={Styles.container}>
+      <SafeAreaView style={Styles.container}>
+        {IsLoading ? (
+          <ThemedLayout style={Styles.center}>
+            <Spinner size="large" />
+          </ThemedLayout>
+        ) : (
+          <List
+            style={Styles.list}
+            contentContainerStyle={Styles.contentContainer}
+            data={VirtualReceiptData}
+            renderItem={ContributionCard}
+          />
+        )}
+        <OverflowMenu
+          style={Styles.overflowMenu}
+          visible={OverflowVisible}
+          anchor={groupSelect}
+          placement="top"
+          onBackdropPress={() => SetOverflowVisible(false)}>
+          {groupElements}
+        </OverflowMenu>
+      </SafeAreaView>
+    </ThemedLayout>
   );
 }
 
@@ -144,7 +147,6 @@ const CustomMenuItem = ({
 const Styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
   },
   center: {
     flex: 1,
@@ -152,7 +154,6 @@ const Styles = StyleSheet.create({
     alignItems: 'center',
   },
   overflowItem: {
-    backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 10,
@@ -172,6 +173,5 @@ const Styles = StyleSheet.create({
   },
   list: {
     flex: 1,
-    backgroundColor: 'white',
   },
 });

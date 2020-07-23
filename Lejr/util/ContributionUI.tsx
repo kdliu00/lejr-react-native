@@ -5,7 +5,7 @@ import {VirtualReceipt} from './DataObjects';
 
 export {ContributionCard};
 
-const ContributionCard = info => {
+const ContributionCard = (info: any) => {
   const item: VirtualReceipt = info.item;
 
   return (

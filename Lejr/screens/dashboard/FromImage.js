@@ -15,9 +15,11 @@ export default function FromImage({navigation}) {
   });
 
   return (
-    <SafeAreaView style={Styles.container}>
-      <Text>FromImage</Text>
-    </SafeAreaView>
+    <Layout style={Styles.container}>
+      <SafeAreaView style={Styles.container}>
+        <Text>FromImage</Text>
+      </SafeAreaView>
+    </Layout>
   );
 }
 

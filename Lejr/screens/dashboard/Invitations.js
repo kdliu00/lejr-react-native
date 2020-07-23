@@ -1,6 +1,13 @@
 import React from 'react';
 import {StyleSheet, SafeAreaView, Alert} from 'react-native';
-import {Text, List, Layout, Button, Icon} from '@ui-kitten/components';
+import {
+  Text,
+  List,
+  Layout,
+  Button,
+  Icon,
+  withStyles,
+} from '@ui-kitten/components';
 import {Screen, ErrorCode} from '../../util/Constants';
 import {
   LocalData,
@@ -8,6 +15,7 @@ import {
   pushUserData,
   joinGroup,
 } from '../../util/LocalData';
+import {ThemedLayout} from '../../util/ThemedComponents';
 
 const AcceptIcon = props => <Icon name="checkmark-outline" {...props} />;
 const DenyIcon = props => <Icon name="close-outline" {...props} />;
@@ -61,28 +69,30 @@ export default function Invitations({navigation}) {
   };
 
   return (
-    <SafeAreaView style={Styles.container}>
-      <Layout style={Styles.titleContainer}>
-        <Text style={Styles.titleText} category="h4">
-          Invitations
-        </Text>
-      </Layout>
-      <Layout style={Styles.listContainer}>
-        <List
-          style={Styles.list}
-          contentContainerStyle={Styles.contentContainer}
-          data={InviteData}
-          renderItem={InvitationCard}
-        />
-      </Layout>
-      <Layout style={Styles.buttonContainer}>
-        <Button
-          onPress={() => navigation.navigate(Screen.Home)}
-          appearance="outline">
-          Go back
-        </Button>
-      </Layout>
-    </SafeAreaView>
+    <Layout style={Styles.container}>
+      <SafeAreaView style={Styles.container}>
+        <Layout style={Styles.titleContainer}>
+          <Text style={Styles.titleText} category="h4">
+            Invitations
+          </Text>
+        </Layout>
+        <ThemedLayout style={Styles.listContainer}>
+          <List
+            style={Styles.list}
+            contentContainerStyle={Styles.contentContainer}
+            data={InviteData}
+            renderItem={InvitationCard}
+          />
+        </ThemedLayout>
+        <Layout style={Styles.buttonContainer}>
+          <Button
+            onPress={() => navigation.navigate(Screen.Home)}
+            appearance="outline">
+            Go back
+          </Button>
+        </Layout>
+      </SafeAreaView>
+    </Layout>
   );
 }
 
@@ -96,7 +106,6 @@ const Styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: 'white',
     width: '100%',
   },
   titleText: {
@@ -113,7 +122,7 @@ const Styles = StyleSheet.create({
     alignItems: 'center',
   },
   list: {
-    backgroundColor: 'white',
+    flex: 1,
   },
   buttonContainer: {
     flex: 1,

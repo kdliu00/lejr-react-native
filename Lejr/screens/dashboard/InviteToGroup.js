@@ -41,89 +41,91 @@ export default function InviteToGroup({route, navigation}) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <SafeAreaView style={Styles.container}>
-        <Layout style={FormStyles.loginButtons}>
-          <Layout style={FormStyles.dynamicButton}>
-            {IsInviting ? (
-              <Button
-                style={FormStyles.button}
-                accessoryLeft={ButtonSpinner}
-                appearance="ghost"
-              />
-            ) : (
-              <Button
-                onPress={() => {
-                  SetIsInviting(true);
-                  ValidationSchema.validate({email: Email})
-                    .catch(error =>
-                      onValidationError(error, [[EmailRef, Email]]),
-                    )
-                    .then(valid => {
-                      if (valid) {
-                        pushInvite(LocalData.user.name, Email)
-                          .then(
-                            () => {
-                              SetTextStatus('success');
-                              SetMessage('Invite sent!');
-                              EmailRef.current.clear();
-                            },
-                            error => {
-                              console.warn(error.message);
-                              switch (error.message) {
-                                case ErrorCode.UserDuplicate:
-                                  SetTextStatus('warning');
-                                  SetMessage('User already in group!');
-                                  break;
+      <Layout style={Styles.container}>
+        <SafeAreaView style={Styles.container}>
+          <Layout style={FormStyles.loginButtons}>
+            <Layout style={FormStyles.dynamicButton}>
+              {IsInviting ? (
+                <Button
+                  style={FormStyles.button}
+                  accessoryLeft={ButtonSpinner}
+                  appearance="ghost"
+                />
+              ) : (
+                <Button
+                  onPress={() => {
+                    SetIsInviting(true);
+                    ValidationSchema.validate({email: Email})
+                      .catch(error =>
+                        onValidationError(error, [[EmailRef, Email]]),
+                      )
+                      .then(valid => {
+                        if (valid) {
+                          pushInvite(LocalData.user.name, Email)
+                            .then(
+                              () => {
+                                SetTextStatus('success');
+                                SetMessage('Invite sent!');
+                                EmailRef.current.clear();
+                              },
+                              error => {
+                                console.warn(error.message);
+                                switch (error.message) {
+                                  case ErrorCode.UserDuplicate:
+                                    SetTextStatus('warning');
+                                    SetMessage('User already in group!');
+                                    break;
 
-                                case ErrorCode.UserNotFound:
-                                  SetTextStatus('warning');
-                                  SetMessage('User not found!');
-                                  break;
+                                  case ErrorCode.UserNotFound:
+                                    SetTextStatus('warning');
+                                    SetMessage('User not found!');
+                                    break;
 
-                                default:
-                                  SetTextStatus('danger');
-                                  SetMessage('Invite failed!');
-                                  break;
-                              }
-                            },
-                          )
-                          .finally(() => SetIsInviting(false));
-                      }
-                    });
-                }}>
-                Invite to group
-              </Button>
-            )}
+                                  default:
+                                    SetTextStatus('danger');
+                                    SetMessage('Invite failed!');
+                                    break;
+                                }
+                              },
+                            )
+                            .finally(() => SetIsInviting(false));
+                        }
+                      });
+                  }}>
+                  Invite to group
+                </Button>
+              )}
+            </Layout>
+            <Button
+              style={FormStyles.button}
+              onPress={() => navigation.navigate(Screen.Home)}
+              appearance="outline">
+              Go back
+            </Button>
           </Layout>
-          <Button
-            style={FormStyles.button}
-            onPress={() => navigation.navigate(Screen.Home)}
-            appearance="outline">
-            Go back
-          </Button>
-        </Layout>
-        <Layout style={FormStyles.loginFields}>
-          <InputField
-            fieldError={EmailError}
-            refToPass={EmailRef}
-            validationSchema={ValidationSchema}
-            fieldKey="email"
-            fieldParams={text => ({email: text})}
-            setField={SetEmail}
-            setFieldError={SetEmailError}
-            placeholder="username@email.com"
-            onSubmitEditing={() => {
-              Keyboard.dismiss();
-            }}
-            value={Email}
-            autoFocus
-          />
-          <MessageText />
-          <Text style={Styles.text}>
-            You can invite others to {GroupName} using their email.
-          </Text>
-        </Layout>
-      </SafeAreaView>
+          <Layout style={FormStyles.loginFields}>
+            <InputField
+              fieldError={EmailError}
+              refToPass={EmailRef}
+              validationSchema={ValidationSchema}
+              fieldKey="email"
+              fieldParams={text => ({email: text})}
+              setField={SetEmail}
+              setFieldError={SetEmailError}
+              placeholder="username@email.com"
+              onSubmitEditing={() => {
+                Keyboard.dismiss();
+              }}
+              value={Email}
+              autoFocus
+            />
+            <MessageText />
+            <Text style={Styles.text}>
+              You can invite others to {GroupName} using their email.
+            </Text>
+          </Layout>
+        </SafeAreaView>
+      </Layout>
     </TouchableWithoutFeedback>
   );
 }

@@ -6,6 +6,7 @@ import {
   BottomNavigation,
   BottomNavigationTab,
   Icon,
+  Layout,
 } from '@ui-kitten/components';
 
 import Home from './dashboard/Home';
@@ -53,16 +54,18 @@ const TabNavigatorComponent = () => (
 );
 
 const BottomTabBar = ({navigation, state}) => (
-  <SafeAreaView style={Styles.container}>
-    <BottomNavigation
-      selectedIndex={state.index}
-      onSelect={index => navigation.navigate(state.routeNames[index])}>
-      <BottomNavigationTab icon={HomeIcon} />
-      <BottomNavigationTab icon={ContributionIcon} />
-      <BottomNavigationTab icon={CameraIcon} />
-      <BottomNavigationTab icon={SettingsIcon} />
-    </BottomNavigation>
-  </SafeAreaView>
+  <Layout>
+    <SafeAreaView>
+      <BottomNavigation
+        selectedIndex={state.index}
+        onSelect={index => navigation.navigate(state.routeNames[index])}>
+        <BottomNavigationTab icon={HomeIcon} />
+        <BottomNavigationTab icon={ContributionIcon} />
+        <BottomNavigationTab icon={CameraIcon} />
+        <BottomNavigationTab icon={SettingsIcon} />
+      </BottomNavigation>
+    </SafeAreaView>
+  </Layout>
 );
 
 const TabNavigator = () => (
@@ -73,9 +76,3 @@ const TabNavigator = () => (
     <MainStack.Screen name={Screen.Settings} component={Settings} />
   </MainStack.Navigator>
 );
-
-const Styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'white',
-  },
-});

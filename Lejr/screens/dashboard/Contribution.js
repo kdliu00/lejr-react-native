@@ -6,9 +6,11 @@ export default function Contribution({navigation}) {
   console.log('Arrived at Contribution');
 
   return (
-    <SafeAreaView style={Styles.container}>
-      <Text>Contribution</Text>
-    </SafeAreaView>
+    <Layout style={Styles.container}>
+      <SafeAreaView style={Styles.container}>
+        <Text>Contribution</Text>
+      </SafeAreaView>
+    </Layout>
   );
 }
 

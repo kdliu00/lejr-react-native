@@ -56,10 +56,6 @@ export default function Login({navigation}) {
                 () => console.log('Signed in with Facebook'),
                 error => {
                   onLoginError(error);
-                  console.warn(
-                    'Sign in with Facebook failed: ' + error.message,
-                  );
-                  SetIsLoggingIn(false);
                 },
               )
               .finally(() => SetIsLoggingIn(false));
@@ -78,8 +74,6 @@ export default function Login({navigation}) {
                 () => console.log('Signed in with Google'),
                 error => {
                   onLoginError(error);
-                  console.warn('Sign in with Google failed: ' + error.message);
-                  SetIsLoggingIn(false);
                 },
               )
               .finally(() => SetIsLoggingIn(false));
@@ -106,11 +100,21 @@ export default function Login({navigation}) {
 }
 
 function onLoginError(error) {
-  var errorCode = error.userInfo.code;
-  var message = error.userInfo.message;
-  var alertTitle = '<INSERT ALERT TITLE>';
+  console.warn(error);
 
-  switch (errorCode) {
+  if (
+    JSON.stringify(error)
+      .toLowerCase()
+      .includes('user canceled')
+  ) {
+    return;
+  }
+
+  var code = error.userInfo.code;
+  var message = error.userInfo.message;
+  var alertTitle;
+
+  switch (code) {
     case 'account-exists-with-different-credential':
       alertTitle = 'Account Already Exists';
       break;
@@ -142,14 +146,21 @@ async function onFacebookButtonPress() {
   ]);
 
   if (result.isCancelled) {
-    throw 'User cancelled the login process';
+    throw {
+      userInfo: {message: 'The user canceled signing in with Facebook.'},
+    };
   }
 
   // Once signed in, get the users AccesToken
   const data = await AccessToken.getCurrentAccessToken();
 
   if (!data) {
-    throw 'Something went wrong obtaining access token';
+    throw {
+      userInfo: {
+        message:
+          'Could not obtain access token while signing in with Facebook.',
+      },
+    };
   }
 
   // Create a Firebase credential with the AccessToken
