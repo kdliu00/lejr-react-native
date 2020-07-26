@@ -1,21 +1,15 @@
 import React from 'react';
 import {StyleSheet, SafeAreaView, Alert} from 'react-native';
-import {
-  Text,
-  List,
-  Layout,
-  Button,
-  Icon,
-  withStyles,
-} from '@ui-kitten/components';
+import {Text, Layout, Button, Icon} from '@ui-kitten/components';
 import {Screen, ErrorCode} from '../../util/Constants';
 import {
   LocalData,
   safeGetListData,
   pushUserData,
   joinGroup,
+  isPossibleObjectEmpty,
 } from '../../util/LocalData';
-import {ThemedLayout} from '../../util/ThemedComponents';
+import {ThemedList, ThemedCard} from '../../util/ThemedComponents';
 
 const AcceptIcon = props => <Icon name="checkmark-outline" {...props} />;
 const DenyIcon = props => <Icon name="close-outline" {...props} />;
@@ -31,7 +25,7 @@ export default function Invitations({navigation}) {
     const item = info.item;
 
     return (
-      <Layout style={Styles.card}>
+      <ThemedCard style={Styles.card}>
         <Layout style={Styles.innerContainer}>
           <Button
             size="small"
@@ -64,7 +58,7 @@ export default function Invitations({navigation}) {
             }}
           />
         </Layout>
-      </Layout>
+      </ThemedCard>
     );
   };
 
@@ -76,14 +70,22 @@ export default function Invitations({navigation}) {
             Invitations
           </Text>
         </Layout>
-        <ThemedLayout style={Styles.listContainer}>
-          <List
-            style={Styles.list}
-            contentContainerStyle={Styles.contentContainer}
-            data={InviteData}
-            renderItem={InvitationCard}
-          />
-        </ThemedLayout>
+        <Layout style={Styles.listContainer}>
+          {isPossibleObjectEmpty(InviteData) ? (
+            <Layout style={Styles.container}>
+              <Text style={Styles.text} appearance="hint">
+                No invitations
+              </Text>
+            </Layout>
+          ) : (
+            <ThemedList
+              style={Styles.list}
+              contentContainerStyle={Styles.contentContainer}
+              data={InviteData}
+              renderItem={InvitationCard}
+            />
+          )}
+        </Layout>
         <Layout style={Styles.buttonContainer}>
           <Button
             onPress={() => navigation.navigate(Screen.Home)}
@@ -106,7 +108,6 @@ const Styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    width: '100%',
   },
   titleText: {
     textAlign: 'center',
@@ -125,7 +126,7 @@ const Styles = StyleSheet.create({
     flex: 1,
   },
   buttonContainer: {
-    flex: 1,
+    flex: 2,
     justifyContent: 'center',
     alignItems: 'center',
     margin: 20,
@@ -135,10 +136,9 @@ const Styles = StyleSheet.create({
     paddingVertical: 4,
   },
   card: {
-    marginVertical: 4,
+    marginVertical: 6,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'lightgray',
     flex: 1,
   },
   innerContainer: {

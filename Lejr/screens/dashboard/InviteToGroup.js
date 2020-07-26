@@ -53,14 +53,15 @@ export default function InviteToGroup({route, navigation}) {
                 />
               ) : (
                 <Button
+                  style={FormStyles.button}
                   onPress={() => {
-                    SetIsInviting(true);
                     ValidationSchema.validate({email: Email})
                       .catch(error =>
                         onValidationError(error, [[EmailRef, Email]]),
                       )
                       .then(valid => {
                         if (valid) {
+                          SetIsInviting(true);
                           pushInvite(LocalData.user.name, Email)
                             .then(
                               () => {
@@ -132,11 +133,8 @@ export default function InviteToGroup({route, navigation}) {
 
 const Styles = StyleSheet.create({
   container: {
-    height: '100%',
-    width: '100%',
     alignItems: 'center',
     flexDirection: 'column-reverse',
-    backgroundColor: 'white',
   },
   text: {
     textAlign: 'center',

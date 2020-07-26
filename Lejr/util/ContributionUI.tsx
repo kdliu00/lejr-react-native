@@ -1,15 +1,16 @@
 import React from 'react';
 import {StyleSheet} from 'react-native';
 import {Avatar, Card, Layout, Text} from '@ui-kitten/components';
-import {VirtualReceipt} from './DataObjects';
+import {VirtualReceipt, Item} from './DataObjects';
+import {ThemedCard} from './ThemedComponents';
 
-export {ContributionCard};
+export {ContributionCard, ItemCard};
 
 const ContributionCard = (info: any) => {
   const item: VirtualReceipt = info.item;
 
   return (
-    <Card style={Styles.card}>
+    <ThemedCard style={Styles.card}>
       <Layout style={Styles.header}>
         <Layout style={Styles.topLeft}>
           <Text numberOfLines={1}>{item.memo}</Text>
@@ -27,14 +28,36 @@ const ContributionCard = (info: any) => {
           />,
         )}
       </Layout>
-    </Card>
+    </ThemedCard>
+  );
+};
+
+const ItemCard = (info: any) => {
+  const item: Item = info.item;
+
+  return (
+    <ThemedCard style={Styles.card}>
+      <Layout style={Styles.header}>
+        <Layout style={Styles.topLeft}>
+          <Text numberOfLines={1}>{item.itemName}</Text>
+        </Layout>
+        <Layout style={Styles.topRight}>
+          <Text numberOfLines={1}>${item.itemCost}</Text>
+        </Layout>
+      </Layout>
+    </ThemedCard>
   );
 };
 
 const Styles = StyleSheet.create({
   card: {
-    marginVertical: 4,
+    paddingTop: 12,
+    paddingBottom: 16,
+    paddingHorizontal: 20,
+    marginVertical: 6,
     borderRadius: 8,
+    borderWidth: 1,
+    flex: 1,
   },
   header: {
     flexDirection: 'row',

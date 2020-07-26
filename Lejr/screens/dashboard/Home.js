@@ -7,7 +7,6 @@ import {
 } from 'react-native';
 import {
   Layout,
-  List,
   Text,
   OverflowMenu,
   Spinner,
@@ -19,9 +18,10 @@ import {
   LocalData,
   loadGroupAsMain,
   safeGetListData,
+  isPossibleObjectEmpty,
 } from '../../util/LocalData';
 import {Screen} from '../../util/Constants';
-import {ThemedLayout} from '../../util/ThemedComponents';
+import {ThemedLayout, ThemedList} from '../../util/ThemedComponents';
 
 const InviteIcon = props => <Icon name="person-add-outline" {...props} />;
 const MailIcon = props => <Icon name="email-outline" {...props} />;
@@ -29,11 +29,9 @@ const MailIcon = props => <Icon name="email-outline" {...props} />;
 export default function Home({navigation}) {
   console.log('Arrived at Home');
 
-  // const VirtualReceiptData = safeGetListData(LocalData.currentGroup.virtualReceipts);
-  const VirtualReceiptData = new Array(8).fill({
-    memo: 'Cooks and chips',
-    total: '23.16',
-  });
+  const VirtualReceiptData = safeGetListData(
+    LocalData.currentGroup.virtualReceipts,
+  );
 
   const [IsLoading, SetIsLoading] = React.useState(false);
   const [OverflowVisible, SetOverflowVisible] = React.useState(false);
@@ -81,8 +79,12 @@ export default function Home({navigation}) {
           <ThemedLayout style={Styles.center}>
             <Spinner size="large" />
           </ThemedLayout>
+        ) : isPossibleObjectEmpty(VirtualReceiptData) ? (
+          <ThemedLayout style={Styles.center}>
+            <Text appearance="hint">No contributions</Text>
+          </ThemedLayout>
         ) : (
-          <List
+          <ThemedList
             style={Styles.list}
             contentContainerStyle={Styles.contentContainer}
             data={VirtualReceiptData}
@@ -109,10 +111,10 @@ function onGroupPress(
   setVisible,
   setIsLoading,
 ) {
-  setIsLoading(true);
-  setSelectedGroup(groupName);
   setVisible(false);
   if (LocalData.currentGroup.groupId !== groupId) {
+    setIsLoading(true);
+    setSelectedGroup(groupName);
     loadGroupAsMain(groupId)
       .catch(error => console.warn(error.message))
       .finally(() => setIsLoading(false));
@@ -156,10 +158,10 @@ const Styles = StyleSheet.create({
   overflowItem: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 10,
+    padding: 12,
   },
   overflowMenu: {
-    width: Dimensions.get('window').width,
+    width: Dimensions.get('window').width * 0.99,
   },
   groupSelect: {
     height: 56,
