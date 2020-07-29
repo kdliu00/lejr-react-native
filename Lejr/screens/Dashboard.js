@@ -17,6 +17,7 @@ import {Screen} from '../util/Constants';
 
 import InviteToGroup from './dashboard/InviteToGroup';
 import Invitations from './dashboard/Invitations';
+import {Component} from 'react';
 
 const MainStack = createBottomTabNavigator();
 const RootStack = createStackNavigator();
@@ -28,10 +29,18 @@ const ContributionIcon = props => (
 const CameraIcon = props => <Icon name="camera-outline" {...props} />;
 const SettingsIcon = props => <Icon name="settings-2-outline" {...props} />;
 
-export default function Dashboard({navigation}) {
-  console.log('Arrived at Dashboard');
+export default class Dashboard extends Component {
+  constructor() {
+    super();
+  }
 
-  return <DashboardScreen />;
+  componentDidMount() {
+    console.log('Arrived at Dashboard');
+  }
+
+  render() {
+    return <DashboardScreen />;
+  }
 }
 
 const DashboardScreen = () => (

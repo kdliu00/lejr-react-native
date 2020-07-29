@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {TouchableWithoutFeedback, Keyboard} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {Alert} from 'react-native';
@@ -12,200 +12,219 @@ import {
 import {LocalData} from '../util/LocalData';
 import FormStyles from '../util/FormStyles';
 import {Screen} from '../util/Constants';
+import {MergeState} from '../util/UtilityMethods';
 
-export default function EmailLogin({route, navigation}) {
-  console.log('Arrived at EmailLogin');
+export default class EmailLogin extends Component {
+  constructor(props) {
+    super();
+    this.showConfirm = props.route.params.showConfirm;
+    this.state = {
+      email: '',
+      password: '',
+      confirmPassword: '',
+      emailError: '',
+      passwordError: '',
+      confirmPasswordError: '',
+      isSubmitting: false,
+    };
+    this.emailRef = React.createRef();
+    this.passwordRef = React.createRef();
+    this.confirmPasswordRef = React.createRef();
+    this.validationSchema = yup.object().shape({
+      email: yup
+        .string()
+        .label('Email')
+        .email()
+        .required(),
+      password: yup.lazy(() => {
+        if (this.showConfirm) {
+          return yup
+            .string()
+            .label('Password')
+            .required()
+            .min(8, 'Password too short')
+            .test(
+              'no-whitespace',
+              'Do not use spaces in your password',
+              function(value) {
+                return !value.includes(' ');
+              },
+            );
+        } else {
+          return yup
+            .string()
+            .label('Password')
+            .required();
+        }
+      }),
+      confirmPassword: yup.lazy(() => {
+        if (this.showConfirm) {
+          return yup
+            .string()
+            .required()
+            .label('Confirm password')
+            .test(
+              'passwords-match',
+              'Passwords must match',
+              function(value) {
+                return this.state.password === value;
+              }.bind(this),
+            );
+        } else {
+          return yup.string();
+        }
+      }),
+    });
+  }
 
-  const {showConfirm: ShowConfirm} = route.params;
+  componentDidMount() {
+    console.log('Arrived at EmailLogin');
+  }
 
-  const [Email, SetEmail] = React.useState('');
-  const [Password, SetPassword] = React.useState('');
-  const [ConfirmPassword, SetConfirmPassword] = React.useState('');
-
-  const ValidationSchema = yup.object().shape({
-    email: yup
-      .string()
-      .label('Email')
-      .email()
-      .required(),
-    password: yup.lazy(() => {
-      if (ShowConfirm) {
-        return yup
-          .string()
-          .label('Password')
-          .required()
-          .min(8, 'Password too short')
-          .test('no-whitespace', 'Do not use spaces in your password', function(
-            value,
-          ) {
-            return !value.includes(' ');
-          });
-      } else {
-        return yup
-          .string()
-          .label('Password')
-          .required();
-      }
-    }),
-    confirmPassword: yup.lazy(() => {
-      if (ShowConfirm) {
-        return yup
-          .string()
-          .required()
-          .label('Confirm password')
-          .test('passwords-match', 'Passwords must match', function(value) {
-            return Password === value;
-          });
-      } else {
-        return yup.string();
-      }
-    }),
-  });
-
-  const [EmailError, SetEmailError] = React.useState('');
-  const [PasswordError, SetPasswordError] = React.useState('');
-  const [ConfirmPasswordError, SetConfirmPasswordError] = React.useState('');
-
-  const [IsSubmitting, SetIsSubmitting] = React.useState(false);
-
-  const EmailRef = React.useRef();
-  const PasswordRef = React.useRef();
-  const ConfirmPasswordRef = React.useRef();
-
-  return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <Layout style={FormStyles.container}>
-        <Layout style={FormStyles.loginButtons}>
-          <Layout style={FormStyles.dynamicButton}>
-            {IsSubmitting ? (
-              <Button
-                style={FormStyles.button}
-                accessoryLeft={ButtonSpinner}
-                appearance="ghost"
-              />
-            ) : ShowConfirm ? (
-              <Button
-                style={FormStyles.button}
-                onPress={() => {
-                  console.log('Signing up with email');
-                  ValidationSchema.validate({
-                    email: Email,
-                    password: Password,
-                    confirmPassword: ConfirmPassword,
-                  })
-                    .catch(error =>
-                      onValidationError(error, [
-                        [EmailRef, Email],
-                        [PasswordRef, Password],
-                        [ConfirmPasswordRef, ConfirmPassword],
-                      ]),
-                    )
-                    .then(valid => {
-                      if (valid) {
-                        signUp(Email, Password, SetIsSubmitting);
-                      }
-                    });
-                }}>
-                Sign up
-              </Button>
-            ) : (
-              <Button
-                style={FormStyles.button}
-                onPress={() => {
-                  console.log('Signing in with email');
-                  ValidationSchema.validate({
-                    email: Email,
-                    password: Password,
-                  })
-                    .catch(error =>
-                      onValidationError(error, [
-                        [EmailRef, Email],
-                        [PasswordRef, Password],
-                      ]),
-                    )
-                    .then(valid => {
-                      if (valid) {
-                        signIn(Email, Password, SetIsSubmitting);
-                      }
-                    });
-                }}>
-                Sign in
-              </Button>
-            )}
-          </Layout>
-          <Button
-            style={FormStyles.button}
-            onPress={() => {
-              if (ShowConfirm) {
-                navigation.navigate(Screen.CreateAccount);
-              } else {
-                navigation.navigate(Screen.Login);
-              }
-            }}
-            appearance="outline"
-            disabled={IsSubmitting}>
-            Go back
-          </Button>
-        </Layout>
-        <Layout style={FormStyles.loginFields}>
-          {ShowConfirm && (
-            <InputField
-              fieldError={ConfirmPasswordError}
-              refToPass={ConfirmPasswordRef}
-              validationSchema={ValidationSchema}
-              fieldKey="confirmPassword"
-              fieldParams={text => ({confirmPassword: text})}
-              setField={SetConfirmPassword}
-              setFieldError={SetConfirmPasswordError}
-              placeholder="confirm password"
-              onSubmitEditing={() => {
-                Keyboard.dismiss();
+  render() {
+    return (
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <Layout style={FormStyles.container}>
+          <Layout style={FormStyles.loginButtons}>
+            <Layout style={FormStyles.dynamicButton}>
+              {this.state.isSubmitting ? (
+                <Button
+                  style={FormStyles.button}
+                  accessoryLeft={ButtonSpinner}
+                  appearance="ghost"
+                />
+              ) : this.showConfirm ? (
+                <Button
+                  style={FormStyles.button}
+                  onPress={() => {
+                    console.log('Signing up with email');
+                    this.validationSchema
+                      .validate({
+                        email: this.state.email,
+                        password: this.state.password,
+                        confirmPassword: this.state.confirmPassword,
+                      })
+                      .catch(error =>
+                        onValidationError(error, [
+                          [this.emailRef, this.state.email],
+                          [this.passwordRef, this.state.password],
+                          [this.confirmPasswordRef, this.state.confirmPassword],
+                        ]),
+                      )
+                      .then(valid => {
+                        if (valid) {
+                          signUp(this.state.email, this.state.password, value =>
+                            MergeState(this, {isSubmitting: value}),
+                          );
+                        }
+                      });
+                  }}>
+                  Sign up
+                </Button>
+              ) : (
+                <Button
+                  style={FormStyles.button}
+                  onPress={() => {
+                    console.log('Signing in with email');
+                    this.validationSchema
+                      .validate({
+                        email: this.state.email,
+                        password: this.state.password,
+                      })
+                      .catch(error =>
+                        onValidationError(error, [
+                          [this.emailRef, this.state.email],
+                          [this.passwordRef, this.state.password],
+                        ]),
+                      )
+                      .then(valid => {
+                        if (valid) {
+                          signIn(this.state.email, this.state.password, value =>
+                            MergeState(this, {isSubmitting: value}),
+                          );
+                        }
+                      });
+                  }}>
+                  Sign in
+                </Button>
+              )}
+            </Layout>
+            <Button
+              style={FormStyles.button}
+              onPress={() => {
+                if (this.showConfirm) {
+                  this.props.navigation.navigate(Screen.CreateAccount);
+                } else {
+                  this.props.navigation.navigate(Screen.Login);
+                }
               }}
-              value={ConfirmPassword}
-              editable={!IsSubmitting}
+              appearance="outline"
+              disabled={this.state.isSubmitting}>
+              Go back
+            </Button>
+          </Layout>
+          <Layout style={FormStyles.loginFields}>
+            {this.showConfirm && (
+              <InputField
+                fieldError={this.state.confirmPasswordError}
+                refToPass={this.confirmPasswordRef}
+                validationSchema={this.validationSchema}
+                fieldKey="confirmPassword"
+                fieldParams={text => ({confirmPassword: text})}
+                setField={value => MergeState(this, {confirmPassword: value})}
+                setFieldError={value =>
+                  MergeState(this, {confirmPasswordError: value})
+                }
+                placeholder="confirm password"
+                onSubmitEditing={() => {
+                  Keyboard.dismiss();
+                }}
+                value={this.state.confirmPassword}
+                editable={!this.state.isSubmitting}
+                secureTextEntry
+              />
+            )}
+            <InputField
+              fieldError={this.state.passwordError}
+              refToPass={this.passwordRef}
+              validationSchema={this.validationSchema}
+              fieldKey="password"
+              fieldParams={text => ({password: text})}
+              setField={value => MergeState(this, {password: value})}
+              setFieldError={value => MergeState(this, {passwordError: value})}
+              placeholder="password"
+              onSubmitEditing={() => {
+                if (this.showConfirm) {
+                  this.confirmPasswordRef.current.focus();
+                } else {
+                  Keyboard.dismiss();
+                }
+              }}
+              value={this.state.password}
+              editable={!this.state.isSubmitting}
               secureTextEntry
             />
-          )}
-          <InputField
-            fieldError={PasswordError}
-            refToPass={PasswordRef}
-            validationSchema={ValidationSchema}
-            fieldKey="password"
-            fieldParams={text => ({password: text})}
-            setField={SetPassword}
-            setFieldError={SetPasswordError}
-            placeholder="password"
-            onSubmitEditing={() => {
-              if (ShowConfirm) {
-                ConfirmPasswordRef.current.focus();
-              } else {
-                Keyboard.dismiss();
-              }
-            }}
-            value={Password}
-            editable={!IsSubmitting}
-            secureTextEntry
-          />
-          <InputField
-            fieldError={EmailError}
-            refToPass={EmailRef}
-            validationSchema={ValidationSchema}
-            fieldKey="email"
-            fieldParams={text => ({email: text})}
-            setField={SetEmail}
-            setFieldError={SetEmailError}
-            placeholder="username@email.com"
-            onSubmitEditing={() => {
-              PasswordRef.current.focus();
-            }}
-            value={Email}
-            editable={!IsSubmitting}
-            autoFocus
-          />
+            <InputField
+              fieldError={this.state.emailError}
+              refToPass={this.emailRef}
+              validationSchema={this.validationSchema}
+              fieldKey="email"
+              fieldParams={text => ({email: text})}
+              setField={value => MergeState(this, {email: value})}
+              setFieldError={value => MergeState(this, {emailError: value})}
+              placeholder="username@email.com"
+              onSubmitEditing={() => {
+                this.passwordRef.current.focus();
+              }}
+              value={this.state.email}
+              editable={!this.state.isSubmitting}
+              autoFocus
+            />
+          </Layout>
         </Layout>
-      </Layout>
-    </TouchableWithoutFeedback>
-  );
+      </TouchableWithoutFeedback>
+    );
+  }
 }
 
 async function signUp(email, password, setIsSubmitting) {
@@ -252,15 +271,15 @@ function onEmailLoginError(error) {
 
   switch (code) {
     case 'email-already-in-use':
-      alertTitle = 'Email Already In Use';
+      alertTitle = 'this.state.email Already In Use';
       break;
 
     case 'invalid-email':
-      alertTitle = 'Email Invalid';
+      alertTitle = 'this.state.email Invalid';
       break;
 
     default:
-      alertTitle = 'Email Login Error';
+      alertTitle = 'this.state.email Login Error';
       break;
   }
 

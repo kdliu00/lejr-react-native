@@ -2,25 +2,34 @@ import React from 'react';
 import {StyleSheet, SafeAreaView} from 'react-native';
 import {Layout, Text} from '@ui-kitten/components';
 import ImagePicker from 'react-native-image-crop-picker';
+import {Component} from 'react';
 
-export default function FromImage({navigation}) {
-  console.log('Arrived at FromImage');
+export default class FromImage extends Component {
+  constructor() {
+    super();
+  }
 
-  ImagePicker.openCamera({
-    width: 300,
-    height: 400,
-    cropping: true,
-  }).then(image => {
-    console.log(image);
-  });
+  componentDidMount() {
+    console.log('Arrived at FromImage');
 
-  return (
-    <Layout style={Styles.container}>
-      <SafeAreaView style={Styles.container}>
-        <Text>FromImage</Text>
-      </SafeAreaView>
-    </Layout>
-  );
+    ImagePicker.openCamera({
+      width: 300,
+      height: 400,
+      cropping: true,
+    }).then(image => {
+      console.log(image);
+    });
+  }
+
+  render() {
+    return (
+      <Layout style={Styles.container}>
+        <SafeAreaView style={Styles.container}>
+          <Text>FromImage</Text>
+        </SafeAreaView>
+      </Layout>
+    );
+  }
 }
 
 const Styles = StyleSheet.create({

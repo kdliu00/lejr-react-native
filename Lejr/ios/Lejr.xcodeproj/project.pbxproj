@@ -20,7 +20,7 @@
 		88BDB94DBA031A6B908F0389 /* libPods-Lejr-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DDEC0BCD8C93B62939336FC5 /* libPods-Lejr-tvOS.a */; };
 		965F54319B00AC91E9E50D63 /* libPods-Lejr-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A3AC7813D7324FD753C5AE0D /* libPods-Lejr-tvOSTests.a */; };
 		9BD4FD6DEAE042E9DDE9985B /* libPods-Lejr-LejrTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD2349F15F2E196008B46BE8 /* libPods-Lejr-LejrTests.a */; };
-		BE3C4BCF24A6F2F4001A48CA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BE3C4BCE24A6F2F4001A48CA /* GoogleService-Info.plist */; };
+		BE34EDD024D0AA0600AEC46F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BE34EDCF24D0AA0600AEC46F /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,7 +63,7 @@
 		9C97DA6DE011FBB3A0F0EA94 /* libPods-Lejr.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Lejr.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3AC7813D7324FD753C5AE0D /* libPods-Lejr-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Lejr-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B421A59399ABA813D7094558 /* Pods-Lejr.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Lejr.debug.xcconfig"; path = "Target Support Files/Pods-Lejr/Pods-Lejr.debug.xcconfig"; sourceTree = "<group>"; };
-		BE3C4BCE24A6F2F4001A48CA /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		BE34EDCF24D0AA0600AEC46F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Lejr/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CD2349F15F2E196008B46BE8 /* libPods-Lejr-LejrTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Lejr-LejrTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDEC0BCD8C93B62939336FC5 /* libPods-Lejr-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Lejr-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4A2C1AF8D5DD0CE77A9183D /* Pods-Lejr.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Lejr.release.xcconfig"; path = "Target Support Files/Pods-Lejr/Pods-Lejr.release.xcconfig"; sourceTree = "<group>"; };
@@ -127,7 +127,7 @@
 		13B07FAE1A68108700A75B9A /* Lejr */ = {
 			isa = PBXGroup;
 			children = (
-				BE3C4BCE24A6F2F4001A48CA /* GoogleService-Info.plist */,
+				BE34EDCF24D0AA0600AEC46F /* GoogleService-Info.plist */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -297,6 +297,7 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = P427BYLXAV;
 						LastSwiftMigration = 1120;
 					};
 					2D02E47A1E0B4A5D006451C7 = {
@@ -345,7 +346,7 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
-				BE3C4BCF24A6F2F4001A48CA /* GoogleService-Info.plist in Resources */,
+				BE34EDD024D0AA0600AEC46F /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -704,6 +705,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = P427BYLXAV;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -732,6 +734,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = P427BYLXAV;
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Lejr/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

@@ -1,17 +1,25 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {StyleSheet, SafeAreaView} from 'react-native';
 import {Layout, Text} from '@ui-kitten/components';
 
-export default function Contribution({navigation}) {
-  console.log('Arrived at Contribution');
+export default class Contribution extends Component {
+  constructor() {
+    super();
+  }
 
-  return (
-    <Layout style={Styles.container}>
-      <SafeAreaView style={Styles.container}>
-        <Text>Contribution</Text>
-      </SafeAreaView>
-    </Layout>
-  );
+  componentDidMount() {
+    console.log('Arrived at Contribution');
+  }
+
+  render() {
+    return (
+      <Layout style={Styles.container}>
+        <SafeAreaView style={Styles.container}>
+          <Text>Contribution</Text>
+        </SafeAreaView>
+      </Layout>
+    );
+  }
 }
 
 const Styles = StyleSheet.create({

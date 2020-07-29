@@ -1,6 +1,6 @@
 import React from 'react';
 import {Layout, List, withStyles} from '@ui-kitten/components';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {TouchableOpacity} from 'react-native';
 
 export {ThemedLayout, ThemedList, ThemedCard};
 

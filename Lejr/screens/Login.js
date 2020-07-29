@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {StyleSheet, Platform} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-community/google-signin';
@@ -6,6 +6,7 @@ import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import {Alert} from 'react-native';
 import {Layout, Button, Spinner, Icon} from '@ui-kitten/components';
 import {iOSWebClientId, androidWebClientId, Screen} from '../util/Constants';
+import {MergeState} from '../util/UtilityMethods';
 
 GoogleSignin.configure({
   webClientId: Platform.OS === 'ios' ? iOSWebClientId : androidWebClientId,
@@ -15,88 +16,101 @@ const FacebookIcon = props => <Icon name="facebook" {...props} />;
 const GoogleIcon = props => <Icon name="google" {...props} />;
 const EmailIcon = props => <Icon name="email" {...props} />;
 
-export default function Login({navigation}) {
-  console.log('Arrived at Login');
+export default class Login extends Component {
+  constructor() {
+    super();
+    this.state = {
+      isLoggingIn: false,
+    };
+  }
 
-  const [IsLoggingIn, SetIsLoggingIn] = React.useState(false);
+  componentDidMount() {
+    console.log('Arrived at Login');
+  }
 
-  return (
-    <Layout style={Styles.container}>
-      <Layout style={Styles.loginItems}>
-        <Layout style={Styles.buffer} />
-        <Button
-          style={Styles.button}
-          onPress={() => {
-            console.log('Going to create an account');
-            navigation.navigate(Screen.CreateAccount);
-          }}
-          disabled={IsLoggingIn}
-          appearance="outline">
-          Create an account
-        </Button>
-        <Layout style={Styles.buffer} />
-        {Platform.OS === 'ios' && (
+  render() {
+    return (
+      <Layout style={Styles.container}>
+        <Layout style={Styles.loginItems}>
+          <Layout style={Styles.buffer} />
           <Button
             style={Styles.button}
             onPress={() => {
-              console.log('Going to Apple login');
+              console.log('Going to create an account');
+              this.props.navigation.navigate(Screen.CreateAccount, {
+                showConfirm: true,
+              });
             }}
-            disabled={IsLoggingIn}>
-            Sign in with Apple
+            disabled={this.state.isLoggingIn}
+            appearance="outline">
+            Create an account
           </Button>
-        )}
-        <Button
-          style={Styles.button}
-          accessoryLeft={FacebookIcon}
-          onPress={() => {
-            console.log('Going to Facebook login');
-            SetIsLoggingIn(true);
-            onFacebookButtonPress()
-              .then(
-                () => console.log('Signed in with Facebook'),
-                error => {
-                  onLoginError(error);
-                },
-              )
-              .finally(() => SetIsLoggingIn(false));
-          }}
-          disabled={IsLoggingIn}>
-          Sign in with Facebook
-        </Button>
-        <Button
-          style={Styles.button}
-          accessoryLeft={GoogleIcon}
-          onPress={() => {
-            console.log('Going to Google login');
-            SetIsLoggingIn(true);
-            onGoogleButtonPress()
-              .then(
-                () => console.log('Signed in with Google'),
-                error => {
-                  onLoginError(error);
-                },
-              )
-              .finally(() => SetIsLoggingIn(false));
-          }}
-          disabled={IsLoggingIn}>
-          Sign in with Google
-        </Button>
-        <Button
-          style={Styles.button}
-          accessoryLeft={EmailIcon}
-          onPress={() => {
-            console.log('Going to email login');
-            navigation.navigate(Screen.EmailLogin, {showConfirm: false});
-          }}
-          disabled={IsLoggingIn}>
-          Sign in with email
-        </Button>
-        <Layout style={Styles.loadingIndicator}>
-          {IsLoggingIn && <Spinner size="large" />}
+          <Layout style={Styles.buffer} />
+          {Platform.OS === 'ios' && (
+            <Button
+              style={Styles.button}
+              onPress={() => {
+                console.log('Going to Apple login');
+              }}
+              disabled={this.state.isLoggingIn}>
+              Sign in with Apple
+            </Button>
+          )}
+          <Button
+            style={Styles.button}
+            accessoryLeft={FacebookIcon}
+            onPress={() => {
+              console.log('Going to Facebook login');
+              MergeState(this, {isLoggingIn: true});
+              onFacebookButtonPress()
+                .then(
+                  () => console.log('Signed in with Facebook'),
+                  error => {
+                    onLoginError(error);
+                  },
+                )
+                .finally(() => MergeState(this, {isLoggingIn: false}));
+            }}
+            disabled={this.state.isLoggingIn}>
+            Sign in with Facebook
+          </Button>
+          <Button
+            style={Styles.button}
+            accessoryLeft={GoogleIcon}
+            onPress={() => {
+              console.log('Going to Google login');
+              MergeState(this, {isLoggingIn: true});
+              onGoogleButtonPress()
+                .then(
+                  () => console.log('Signed in with Google'),
+                  error => {
+                    onLoginError(error);
+                  },
+                )
+                .finally(() => MergeState(this, {isLoggingIn: false}));
+            }}
+            disabled={this.state.isLoggingIn}>
+            Sign in with Google
+          </Button>
+          <Button
+            style={Styles.button}
+            accessoryLeft={EmailIcon}
+            onPress={() => {
+              console.log('Going to email login');
+              this.props.navigation.navigate(Screen.EmailLogin, {
+                showConfirm: false,
+              });
+            }}
+            disabled={this.state.isLoggingIn}>
+            Sign in with email
+          </Button>
+          <Layout style={Styles.loadingIndicator}>
+            {this.state.isLoggingIn && <Spinner size="large" />}
+          </Layout>
         </Layout>
       </Layout>
-    </Layout>
-  );
+    );
+  }
 }
 
 function onLoginError(error) {

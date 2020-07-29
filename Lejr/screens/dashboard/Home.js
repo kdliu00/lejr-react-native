@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-  SafeAreaView,
-} from 'react-native';
+import {StyleSheet, Dimensions, SafeAreaView} from 'react-native';
 import {
   Layout,
   Text,
@@ -21,128 +16,122 @@ import {
   isPossibleObjectEmpty,
 } from '../../util/LocalData';
 import {Screen} from '../../util/Constants';
-import {ThemedLayout, ThemedList} from '../../util/ThemedComponents';
+import {
+  ThemedLayout,
+  ThemedList,
+  ThemedCard,
+} from '../../util/ThemedComponents';
+import {MergeState} from '../../util/UtilityMethods';
+import {Component} from 'react';
 
 const InviteIcon = props => <Icon name="person-add-outline" {...props} />;
 const MailIcon = props => <Icon name="email-outline" {...props} />;
 
-export default function Home({navigation}) {
-  console.log('Arrived at Home');
-
-  const VirtualReceiptData = safeGetListData(
-    LocalData.currentGroup.virtualReceipts,
-  );
-
-  const [IsLoading, SetIsLoading] = React.useState(false);
-  const [OverflowVisible, SetOverflowVisible] = React.useState(false);
-  const [SelectedGroup, SetSelectedGroup] = React.useState(
-    LocalData.currentGroup.groupName,
-  );
-
-  var groupElements = LocalData.user.groups.map(groupInfo => {
-    return (
-      <CustomMenuItem
-        key={groupInfo.groupId}
-        groupId={groupInfo.groupId}
-        groupName={groupInfo.groupName}
-        setSelectedGroup={SetSelectedGroup}
-        setOverflowVisible={SetOverflowVisible}
-        setIsLoading={SetIsLoading}
-      />
+export default class Home extends Component {
+  constructor() {
+    super();
+    this.virtualReceiptData = safeGetListData(
+      LocalData.currentGroup.virtualReceipts,
     );
-  });
+    this.state = {
+      isLoading: false,
+      overflowVisible: false,
+      selectedGroup: LocalData.currentGroup.groupName,
+    };
+    this.GroupElements = LocalData.user.groups.map(groupInfo => {
+      return (
+        <CustomMenuItem
+          key={groupInfo.groupId}
+          groupId={groupInfo.groupId}
+          groupName={groupInfo.groupName}
+          component={this}
+        />
+      );
+    });
+  }
 
-  const groupSelect = () => (
-    <Layout style={Styles.groupSelect}>
-      <Button
-        accessoryLeft={MailIcon}
-        appearance="ghost"
-        onPress={() => navigation.navigate(Screen.Invitations)}
-      />
-      <Text category="h5" onPress={() => SetOverflowVisible(true)}>
-        {SelectedGroup}
-      </Text>
-      <Button
-        accessoryLeft={InviteIcon}
-        appearance="ghost"
-        onPress={() =>
-          navigation.navigate(Screen.InviteToGroup, {GroupName: SelectedGroup})
-        }
-      />
-    </Layout>
-  );
+  componentDidMount() {
+    console.log('Arrived at Home');
+  }
 
-  return (
-    <ThemedLayout style={Styles.container}>
-      <SafeAreaView style={Styles.container}>
-        {IsLoading ? (
-          <ThemedLayout style={Styles.center}>
-            <Spinner size="large" />
-          </ThemedLayout>
-        ) : isPossibleObjectEmpty(VirtualReceiptData) ? (
-          <ThemedLayout style={Styles.center}>
-            <Text appearance="hint">No contributions</Text>
-          </ThemedLayout>
-        ) : (
-          <ThemedList
-            style={Styles.list}
-            contentContainerStyle={Styles.contentContainer}
-            data={VirtualReceiptData}
-            renderItem={ContributionCard}
-          />
-        )}
-        <OverflowMenu
-          style={Styles.overflowMenu}
-          visible={OverflowVisible}
-          anchor={groupSelect}
-          placement="top"
-          onBackdropPress={() => SetOverflowVisible(false)}>
-          {groupElements}
-        </OverflowMenu>
-      </SafeAreaView>
-    </ThemedLayout>
-  );
-}
-
-function onGroupPress(
-  groupId,
-  groupName,
-  setSelectedGroup,
-  setVisible,
-  setIsLoading,
-) {
-  setVisible(false);
-  if (LocalData.currentGroup.groupId !== groupId) {
-    setIsLoading(true);
-    setSelectedGroup(groupName);
-    loadGroupAsMain(groupId)
-      .catch(error => console.warn(error.message))
-      .finally(() => setIsLoading(false));
+  render() {
+    const GroupSelect = () => (
+      <Layout style={Styles.groupSelect}>
+        <Button
+          accessoryLeft={MailIcon}
+          appearance="ghost"
+          onPress={() => this.props.navigation.navigate(Screen.Invitations)}
+        />
+        <Text
+          category="h5"
+          onPress={() => MergeState(this, {overflowVisible: true})}>
+          {this.state.selectedGroup}
+        </Text>
+        <Button
+          accessoryLeft={InviteIcon}
+          appearance="ghost"
+          onPress={() =>
+            this.props.navigation.navigate(Screen.InviteToGroup, {
+              groupName: this.state.selectedGroup,
+            })
+          }
+        />
+      </Layout>
+    );
+    return (
+      <ThemedLayout style={Styles.container}>
+        <SafeAreaView style={Styles.container}>
+          {this.state.isLoading ? (
+            <ThemedLayout style={Styles.center}>
+              <Spinner size="large" />
+            </ThemedLayout>
+          ) : isPossibleObjectEmpty(this.virtualReceiptData) ? (
+            <ThemedLayout style={Styles.center}>
+              <Text appearance="hint">No contributions</Text>
+            </ThemedLayout>
+          ) : (
+            <ThemedList
+              style={Styles.list}
+              contentContainerStyle={Styles.contentContainer}
+              data={this.virtualReceiptData}
+              renderItem={ContributionCard}
+            />
+          )}
+          <OverflowMenu
+            style={Styles.overflowMenu}
+            visible={this.state.overflowVisible}
+            anchor={GroupSelect}
+            placement="top"
+            onBackdropPress={() => MergeState(this, {overflowVisible: false})}>
+            {this.GroupElements}
+          </OverflowMenu>
+        </SafeAreaView>
+      </ThemedLayout>
+    );
   }
 }
 
-const CustomMenuItem = ({
-  groupId,
-  groupName,
-  setSelectedGroup,
-  setOverflowVisible,
-  setIsLoading,
-}) => {
+function onGroupPress(groupId, groupName, component) {
+  var newState = {overflowVisible: false};
+  if (LocalData.currentGroup.groupId !== groupId) {
+    newState.isLoading = true;
+    newState.selectedGroup = groupName;
+    loadGroupAsMain(groupId)
+      .catch(error => console.warn(error.message))
+      .finally(() => MergeState(component, {isLoading: false}));
+  }
+  MergeState(component, newState);
+}
+
+const CustomMenuItem = ({groupId, groupName, component}) => {
   return (
-    <TouchableOpacity
-      onPress={() =>
-        onGroupPress(
-          groupId,
-          groupName,
-          setSelectedGroup,
-          setOverflowVisible,
-          setIsLoading,
-        )
-      }>
+    <ThemedCard
+      activeOpacity={1}
+      onPress={() => onGroupPress(groupId, groupName, component)}>
       <Layout style={Styles.overflowItem}>
         <Text category="h6">{groupName}</Text>
       </Layout>
-    </TouchableOpacity>
+    </ThemedCard>
   );
 };
 
