@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {Layout, Spinner} from '@ui-kitten/components';
-import {StackActions} from '@react-navigation/native';
+import {StackActions, useFocusEffect} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import {
   LocalData,
@@ -18,60 +18,69 @@ export default class Loading extends Component {
     super();
   }
 
-  componentDidMount() {
-    auth().onAuthStateChanged(user => {
-      if (user) {
-        firestore()
-          .collection(Collection.Users)
-          .doc(user.uid)
-          .get()
-          .then(doc => {
-            if (doc.exists) {
-              console.log('User document found');
-              LocalData.user = User.firestoreConverter.fromFirestore(doc);
-              handleScreen(this.props.navigation);
-            } else {
-              console.log('No document for user, creating new one');
-              if (LocalData.user == null) {
-                console.log('Creating new user object from auth');
-                LocalData.user = new User(
-                  user.uid,
-                  user.email,
-                  user.photoURL,
-                  user.displayName,
-                  [],
-                  [],
-                );
-              }
-              LocalData.user.userId = user.uid;
-              if (!user.photoURL) {
-                LocalData.user.profilePic = defaultProfilePic;
-              }
-              firestore()
-                .collection(Collection.Users)
-                .doc(user.uid)
-                .set(User.firestoreConverter.toFirestore(LocalData.user))
-                .then(
-                  () => {
-                    console.log('Successfully created new user document');
-                    handleScreen(this.props.navigation);
-                  },
-                  error => console.warn(error.message),
-                );
+  handleUserState(user) {
+    if (this.props.navigation.canGoBack()) {
+      this.props.navigation.dispatch(StackActions.popToTop());
+    }
+    if (user) {
+      firestore()
+        .collection(Collection.Users)
+        .doc(user.uid)
+        .get()
+        .then(doc => {
+          if (doc.exists) {
+            console.log('User document found');
+            LocalData.user = User.firestoreConverter.fromFirestore(doc);
+            handleScreen(this.props.navigation);
+          } else {
+            console.log('No document for user, creating new one');
+            if (LocalData.user == null) {
+              console.log('Creating new user object from auth');
+              LocalData.user = new User(
+                user.uid,
+                user.email,
+                user.photoURL,
+                user.displayName,
+                [],
+                [],
+              );
             }
-          })
-          .catch(error => {
-            console.warn(error.message);
-          });
+            LocalData.user.userId = user.uid;
+            if (!user.photoURL) {
+              LocalData.user.profilePic = defaultProfilePic;
+            }
+            firestore()
+              .collection(Collection.Users)
+              .doc(user.uid)
+              .set(User.firestoreConverter.toFirestore(LocalData.user))
+              .then(
+                () => {
+                  console.log('Successfully created new user document');
+                  handleScreen(this.props.navigation);
+                },
+                error => console.warn(error.message),
+              );
+          }
+        })
+        .catch(error => {
+          console.warn(error.message);
+        });
+    } else {
+      this.props.navigation.navigate(Screen.Login);
+    }
+  }
+
+  componentDidMount() {
+    console.log('Arrived at Loading');
+    auth().onAuthStateChanged(user => this.handleUserState(user));
+
+    this.props.navigation.addListener('focus', () => {
+      if (auth().currentUser) {
+        handleScreen(this.props.navigation);
       } else {
-        if (this.props.navigation.canGoBack()) {
-          this.props.navigation.dispatch(StackActions.popToTop());
-        }
         this.props.navigation.navigate(Screen.Login);
       }
     });
-
-    console.log('Arrived at Loading');
   }
 
   render() {

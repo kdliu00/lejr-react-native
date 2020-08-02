@@ -34,14 +34,14 @@ const InputField = ({
   value,
   ...rest
 }) => {
-  function validateField(text) {
+  function validateField(text: string) {
     setField(text);
     validationSchema
       .validateAt(fieldKey, fieldParams(text))
       .catch(error => {
         setFieldError(error.message);
       })
-      .then(valid => {
+      .then((valid: boolean) => {
         if (valid) {
           setFieldError('');
         }
@@ -68,7 +68,7 @@ const InputField = ({
 const Styles = StyleSheet.create({
   textInput: {
     width: '100%',
-    height: 36,
+    height: 40,
     marginTop: 3,
   },
   textInputWrapper: {
