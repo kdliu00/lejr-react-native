@@ -60,6 +60,7 @@ export default class Home extends Component {
         <Button
           accessoryLeft={MailIcon}
           appearance="ghost"
+          size="large"
           onPress={() => this.props.navigation.navigate(Screen.Invitations)}
         />
         <Text
@@ -70,6 +71,7 @@ export default class Home extends Component {
         <Button
           accessoryLeft={InviteIcon}
           appearance="ghost"
+          size="large"
           onPress={() =>
             this.props.navigation.navigate(Screen.InviteToGroup, {
               groupName: this.state.selectedGroup,
@@ -150,10 +152,10 @@ const Styles = StyleSheet.create({
     padding: 12,
   },
   overflowMenu: {
-    width: Dimensions.get('window').width * 0.99,
+    width: Dimensions.get('window').width * 0.98,
   },
   groupSelect: {
-    height: 56,
+    height: 72,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

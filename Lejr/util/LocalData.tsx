@@ -1,4 +1,10 @@
-import {User, Group, InviteInfo, GroupInfo} from './DataObjects';
+import {
+  User,
+  Group,
+  InviteInfo,
+  GroupInfo,
+  VirtualReceipt,
+} from './DataObjects';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import {Collection, ErrorCode} from './Constants';
@@ -19,6 +25,7 @@ export {
 class LocalData {
   static user: User = null;
   static currentGroup: Group = null;
+  static virtualReceipt: VirtualReceipt = null;
 }
 
 function signOut() {
@@ -27,6 +34,7 @@ function signOut() {
     .then(() => {
       console.log('User signed out');
       LocalData.user = null;
+      LocalData.currentGroup = null;
     });
 }
 

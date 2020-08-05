@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {Layout, Spinner} from '@ui-kitten/components';
-import {StackActions, useFocusEffect} from '@react-navigation/native';
+import {StackActions} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import {
   LocalData,
@@ -19,10 +19,7 @@ export default class Loading extends Component {
   }
 
   handleUserState(user) {
-    if (this.props.navigation.canGoBack()) {
-      this.props.navigation.dispatch(StackActions.popToTop());
-    }
-    if (user) {
+    if (user && !LocalData.user) {
       firestore()
         .collection(Collection.Users)
         .doc(user.uid)
@@ -65,6 +62,8 @@ export default class Loading extends Component {
         .catch(error => {
           console.warn(error.message);
         });
+    } else if (user && LocalData.user) {
+      handleScreen(this.props.navigation);
     } else {
       this.props.navigation.navigate(Screen.Login);
     }
@@ -72,14 +71,16 @@ export default class Loading extends Component {
 
   componentDidMount() {
     console.log('Arrived at Loading');
-    auth().onAuthStateChanged(user => this.handleUserState(user));
-
-    this.props.navigation.addListener('focus', () => {
-      if (auth().currentUser) {
-        handleScreen(this.props.navigation);
-      } else {
-        this.props.navigation.navigate(Screen.Login);
+    auth().onAuthStateChanged(() => {
+      //Go back to this screen, invokes onFocus() listener
+      if (this.props.navigation.canGoBack()) {
+        this.props.navigation.dispatch(StackActions.popToTop());
       }
+    });
+
+    //onFocus() listener
+    this.props.navigation.addListener('focus', () => {
+      this.handleUserState(auth().currentUser);
     });
   }
 
@@ -95,10 +96,12 @@ export default class Loading extends Component {
 function handleScreen(navigation) {
   if (isPossibleObjectEmpty(LocalData.user.groups)) {
     navigation.navigate(Screen.CreateGroup);
-  } else {
+  } else if (!LocalData.currentGroup) {
     loadGroupAsMain(LocalData.user.groups[0].groupId).then(() =>
       navigation.navigate(Screen.Dashboard),
     );
+  } else {
+    navigation.navigate(Screen.Dashboard);
   }
 }
 

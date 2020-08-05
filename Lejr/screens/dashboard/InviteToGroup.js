@@ -132,7 +132,7 @@ export default class InviteToGroup extends Component {
                 {this.state.message}
               </Text>
               <Text style={Styles.text}>
-                You can invite others to {this.groupName} using their email.
+                You can invite others to {this.groupName} using their email
               </Text>
             </Layout>
           </SafeAreaView>
