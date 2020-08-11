@@ -1,17 +1,17 @@
 import React, {Component} from 'react';
 import {Keyboard, TouchableWithoutFeedback, SafeAreaView} from 'react-native';
 import {Layout, Text, Button} from '@ui-kitten/components';
-import FormStyles from '../../util/FormStyles';
+import FormStyles from '../../../util/FormStyles';
 import {
   onValidationError,
   InputField,
   ButtonSpinner,
-} from '../../util/TextInputUI';
+} from '../../../util/TextInputUI';
 import * as yup from 'yup';
-import {Screen, ErrorCode} from '../../util/Constants';
+import {Screen, ErrorCode} from '../../../util/Constants';
 import {StyleSheet} from 'react-native';
-import {pushInvite, LocalData} from '../../util/LocalData';
-import {MergeState} from '../../util/UtilityMethods';
+import {pushInvite, LocalData} from '../../../util/LocalData';
+import {MergeState} from '../../../util/UtilityMethods';
 
 export default class InviteToGroup extends Component {
   constructor(props) {

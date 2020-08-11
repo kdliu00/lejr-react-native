@@ -1,17 +1,17 @@
 import React from 'react';
 import {StyleSheet, SafeAreaView, Alert} from 'react-native';
 import {Text, Layout, Button, Icon} from '@ui-kitten/components';
-import {Screen, ErrorCode} from '../../util/Constants';
+import {Screen, ErrorCode} from '../../../util/Constants';
 import {
   LocalData,
   safeGetListData,
   pushUserData,
   joinGroup,
   isPossibleObjectEmpty,
-} from '../../util/LocalData';
-import {ThemedList, ThemedCard} from '../../util/ThemedComponents';
+} from '../../../util/LocalData';
+import {ThemedList, ThemedCard} from '../../../util/ThemedComponents';
 import {Component} from 'react';
-import {MergeState} from '../../util/UtilityMethods';
+import {MergeState} from '../../../util/UtilityMethods';
 
 const AcceptIcon = props => <Icon name="checkmark-outline" {...props} />;
 const DenyIcon = props => <Icon name="close-outline" {...props} />;
@@ -128,7 +128,7 @@ const Styles = StyleSheet.create({
     width: '100%',
   },
   titleContainer: {
-    flex: 1,
+    marginVertical: 30,
     justifyContent: 'center',
     alignItems: 'center',
   },

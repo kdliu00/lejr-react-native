@@ -1,15 +1,31 @@
 import React, {Component} from 'react';
 import {StyleSheet, SafeAreaView} from 'react-native';
 import {Layout, Text, Button, Icon} from '@ui-kitten/components';
-import {ThemedLayout} from '../../util/ThemedComponents';
+import {ThemedLayout} from '../../../util/ThemedComponents';
+import {LocalData} from '../../../util/LocalData';
+import {VirtualReceipt, Item} from '../../../util/DataObjects';
+import {Screen} from '../../../util/Constants';
 
 const AddIcon = props => <Icon name="plus-outline" {...props} />;
 const TrashIcon = props => <Icon name="trash-2-outline" {...props} />;
-const SaveIcon = props => <Icon name="checkmark-circle-outline" {...props} />;
+const SaveIcon = props => <Icon name="cloud-upload-outline" {...props} />;
 
 export default class Contribution extends Component {
   constructor() {
     super();
+    if (LocalData.virtualReceipt == null) {
+      LocalData.virtualReceipt = new VirtualReceipt(
+        LocalData.user.userId,
+        '',
+        '',
+        '',
+        Date.now(),
+        [],
+        0,
+        new Map(),
+        '',
+      );
+    }
   }
 
   componentDidMount() {
@@ -36,6 +52,11 @@ export default class Contribution extends Component {
               style={Styles.button}
               appearance="ghost"
               accessoryLeft={AddIcon}
+              onPress={() =>
+                this.props.navigation.navigate(Screen.NewItem, {
+                  item: new Item('', 0, {}),
+                })
+              }
               size="large"
             />
             <Button

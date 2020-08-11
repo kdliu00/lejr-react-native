@@ -35,6 +35,7 @@ enum Screen {
   Settings = 'Settings',
   InviteToGroup = 'InviteToGroup',
   Invitations = 'Invitations',
+  NewItem = 'NewItem',
 }
 
 enum ErrorCode {

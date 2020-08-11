@@ -1,7 +1,7 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
-import {SafeAreaView, StyleSheet} from 'react-native';
+import {SafeAreaView} from 'react-native';
 import {
   BottomNavigation,
   BottomNavigationTab,
@@ -9,14 +9,17 @@ import {
   Layout,
 } from '@ui-kitten/components';
 
-import Home from './dashboard/Home';
+import Home from './dashboard/Home/Home';
 import Settings from './dashboard/Settings';
-import Contribution from './dashboard/Contribution';
+import Contribution from './dashboard/Contribution/Contribution';
 import FromImage from './dashboard/FromImage';
 import {Screen} from '../util/Constants';
 
-import InviteToGroup from './dashboard/InviteToGroup';
-import Invitations from './dashboard/Invitations';
+import InviteToGroup from './dashboard/Home/InviteToGroup';
+import Invitations from './dashboard/Home/Invitations';
+
+import NewItem from './dashboard/Contribution/NewItem';
+
 import {Component} from 'react';
 
 const MainStack = createBottomTabNavigator();
@@ -52,6 +55,7 @@ const DashboardScreen = () => (
     />
     <RootStack.Screen name={Screen.InviteToGroup} component={InviteToGroup} />
     <RootStack.Screen name={Screen.Invitations} component={Invitations} />
+    <RootStack.Screen name={Screen.NewItem} component={NewItem} />
   </RootStack.Navigator>
 );
 

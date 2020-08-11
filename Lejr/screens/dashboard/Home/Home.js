@@ -8,20 +8,20 @@ import {
   Button,
   Icon,
 } from '@ui-kitten/components';
-import {ContributionCard} from '../../util/ContributionUI';
+import {ContributionCard} from '../../../util/ContributionUI';
 import {
   LocalData,
   loadGroupAsMain,
   safeGetListData,
   isPossibleObjectEmpty,
-} from '../../util/LocalData';
-import {Screen} from '../../util/Constants';
+} from '../../../util/LocalData';
+import {Screen} from '../../../util/Constants';
 import {
   ThemedLayout,
   ThemedList,
   ThemedCard,
-} from '../../util/ThemedComponents';
-import {MergeState} from '../../util/UtilityMethods';
+} from '../../../util/ThemedComponents';
+import {MergeState} from '../../../util/UtilityMethods';
 import {Component} from 'react';
 
 const InviteIcon = props => <Icon name="person-add-outline" {...props} />;
