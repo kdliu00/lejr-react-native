@@ -86,6 +86,19 @@ export default class EmailLogin extends Component {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <Layout style={FormStyles.container}>
           <Layout style={FormStyles.loginButtons}>
+            <Button
+              style={FormStyles.button}
+              onPress={() => {
+                if (this.showConfirm) {
+                  this.props.navigation.navigate(Screen.CreateAccount);
+                } else {
+                  this.props.navigation.navigate(Screen.Login);
+                }
+              }}
+              appearance="outline"
+              disabled={this.state.isSubmitting}>
+              Go back
+            </Button>
             <Layout style={FormStyles.dynamicButton}>
               {this.state.isSubmitting ? (
                 <Button
@@ -149,19 +162,6 @@ export default class EmailLogin extends Component {
                 </Button>
               )}
             </Layout>
-            <Button
-              style={FormStyles.button}
-              onPress={() => {
-                if (this.showConfirm) {
-                  this.props.navigation.navigate(Screen.CreateAccount);
-                } else {
-                  this.props.navigation.navigate(Screen.Login);
-                }
-              }}
-              appearance="outline"
-              disabled={this.state.isSubmitting}>
-              Go back
-            </Button>
           </Layout>
           <Layout style={FormStyles.loginFields}>
             {this.showConfirm && (
@@ -271,15 +271,15 @@ function onEmailLoginError(error) {
 
   switch (code) {
     case 'email-already-in-use':
-      alertTitle = 'this.state.email Already In Use';
+      alertTitle = 'Email Already In Use';
       break;
 
     case 'invalid-email':
-      alertTitle = 'this.state.email Invalid';
+      alertTitle = 'Email Invalid';
       break;
 
     default:
-      alertTitle = 'this.state.email Login Error';
+      alertTitle = 'Email Login Error';
       break;
   }
 

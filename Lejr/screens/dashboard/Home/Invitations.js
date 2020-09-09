@@ -9,7 +9,7 @@ import {
   joinGroup,
   isPossibleObjectEmpty,
 } from '../../../util/LocalData';
-import {ThemedList, ThemedCard} from '../../../util/ThemedComponents';
+import {ThemedList, ThemedCard} from '../../../util/ComponentUtil';
 import {Component} from 'react';
 import {MergeState} from '../../../util/UtilityMethods';
 

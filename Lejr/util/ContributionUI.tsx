@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet} from 'react-native';
 import {Avatar, Card, Layout, Text} from '@ui-kitten/components';
 import {VirtualReceipt, Item} from './DataObjects';
-import {ThemedCard} from './ThemedComponents';
+import {ThemedCard} from './ComponentUtil';
 
 export {ContributionCard, ItemCard};
 

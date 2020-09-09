@@ -44,6 +44,12 @@ export default class CreateAccount extends Component {
           <Layout style={FormStyles.loginButtons}>
             <Button
               style={FormStyles.button}
+              onPress={() => this.props.navigation.navigate(Screen.Login)}
+              appearance="outline">
+              Go back
+            </Button>
+            <Button
+              style={FormStyles.button}
               onPress={() => {
                 console.log('Signing up with email');
                 this.validationSchema
@@ -76,12 +82,6 @@ export default class CreateAccount extends Component {
                   });
               }}>
               Next
-            </Button>
-            <Button
-              style={FormStyles.button}
-              onPress={() => this.props.navigation.navigate(Screen.Login)}
-              appearance="outline">
-              Go back
             </Button>
           </Layout>
           <Layout style={FormStyles.loginFields}>

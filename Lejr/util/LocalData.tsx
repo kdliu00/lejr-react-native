@@ -4,6 +4,7 @@ import {
   InviteInfo,
   GroupInfo,
   VirtualReceipt,
+  Item,
 } from './DataObjects';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
@@ -140,6 +141,7 @@ async function joinGroup(groupId: string) {
 
         //Create new mapping in group members
         groupToJoin.members[LocalData.user.userId] = 0.0;
+        groupToJoin.memberNames[LocalData.user.userId] = LocalData.user.name;
         firestore()
           .collection(Collection.Groups)
           .doc(groupId)

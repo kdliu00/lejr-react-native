@@ -20,7 +20,7 @@ import {
   ThemedLayout,
   ThemedList,
   ThemedCard,
-} from '../../../util/ThemedComponents';
+} from '../../../util/ComponentUtil';
 import {MergeState} from '../../../util/UtilityMethods';
 import {Component} from 'react';
 

@@ -1,5 +1,11 @@
 import React, {Component} from 'react';
-import {StyleSheet, Keyboard, SafeAreaView} from 'react-native';
+import {
+  StyleSheet,
+  Keyboard,
+  SafeAreaView,
+  Dimensions,
+  ScrollView,
+} from 'react-native';
 import {Layout, Text, Button} from '@ui-kitten/components';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import {InputField} from '../../../util/TextInputUI';
@@ -8,7 +14,8 @@ import {Screen} from '../../../util/Constants';
 import {Item} from '../../../util/DataObjects';
 import * as yup from 'yup';
 import {MergeState} from '../../../util/UtilityMethods';
-import {ThemedSlider} from '../../../util/ThemedComponents';
+import {SplitSlider} from '../../../util/ComponentUtil';
+import {LocalData} from '../../../util/LocalData';
 
 export default class NewItem extends Component {
   constructor(props) {
@@ -21,7 +28,6 @@ export default class NewItem extends Component {
       itemNameError: '',
       itemSplit: PassedItem.itemSplit,
       itemSplitError: '',
-      keyboard: false,
     };
     this.itemNameRef = React.createRef();
     this.itemCostRef = React.createRef();
@@ -35,19 +41,24 @@ export default class NewItem extends Component {
         .label('Item Name')
         .required(),
     });
-    this.keyboardOpen = this.keyboardOpen.bind(this);
-    this.keyboardClosed = this.keyboardClosed.bind(this);
+    this.keyboardOpen = false;
+
+    this.itemSplitPercent = {};
+    this.groupMemberIds = Object.keys(LocalData.currentGroup.members);
   }
 
   componentDidMount() {
     console.log('Arrived at NewItem!');
-    this.keyboardOpenListener = Keyboard.addListener(
-      'keyboardDidShow',
-      this.keyboardOpen,
-    );
+    this.keyboardOpenListener = Keyboard.addListener('keyboardDidShow', () => {
+      this.keyboardOpen = true;
+      this.forceUpdate();
+    });
     this.keyboardClosedListener = Keyboard.addListener(
       'keyboardDidHide',
-      this.keyboardClosed,
+      () => {
+        this.keyboardOpen = false;
+        this.forceUpdate();
+      },
     );
   }
 
@@ -56,38 +67,31 @@ export default class NewItem extends Component {
     this.keyboardClosedListener.remove();
   }
 
-  keyboardOpen() {
-    MergeState(this, {keyboard: true});
-  }
-
-  keyboardClosed() {
-    MergeState(this, {keyboard: false});
-  }
-
   render() {
+    this.splitSliders = this.groupMemberIds.map(userId => {
+      return (
+        <SplitSlider
+          sliderContainerStyle={Styles.sliderContainer}
+          sliderStyle={Styles.slider}
+          minimumValue={0}
+          maximumValue={100}
+          value={Math.round(100 / this.groupMemberIds.length)}
+          step={1}
+          userId={userId}
+          objectInstance={this}
+        />
+      );
+    });
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <Layout style={Styles.container}>
           <SafeAreaView style={Styles.container}>
-            <Layout style={FormStyles.loginButtons}>
-              <Button
-                style={FormStyles.button}
-                onPress={() =>
-                  this.props.navigation.navigate(Screen.Contribution)
-                }
-                appearance="outline">
-                Go back
-              </Button>
+            <Layout style={Styles.titleContainer}>
+              <Text style={Styles.titleText} category="h4">
+                Item Editor
+              </Text>
             </Layout>
-            <Layout style={FormStyles.loginFields}>
-              {!this.state.keyboard && (
-                <ThemedSlider
-                  style={Styles.slider}
-                  minimumValue={0}
-                  maximumValue={100}
-                  step={1}
-                />
-              )}
+            <Layout style={(FormStyles.loginFields, Styles.container)}>
               <InputField
                 fieldError={this.state.itemCostError}
                 refToPass={this.itemCostRef}
@@ -114,18 +118,25 @@ export default class NewItem extends Component {
                 setFieldError={value =>
                   MergeState(this, {itemNameError: value})
                 }
-                placeholder="name"
+                placeholder="item"
                 onSubmitEditing={() => {
                   Keyboard.dismiss();
                 }}
                 value={this.state.itemName}
-                autoFocus
               />
             </Layout>
-            <Layout style={Styles.titleContainer}>
-              <Text style={Styles.titleText} category="h4">
-                Item Editor
-              </Text>
+            <ScrollView style={Styles.scrollView}>
+              {!this.keyboardOpen && this.splitSliders}
+            </ScrollView>
+            <Layout style={FormStyles.loginButtons}>
+              <Button
+                style={FormStyles.button}
+                onPress={() =>
+                  this.props.navigation.navigate(Screen.Contribution)
+                }
+                appearance="outline">
+                Go back
+              </Button>
             </Layout>
           </SafeAreaView>
         </Layout>
@@ -137,19 +148,28 @@ export default class NewItem extends Component {
 const Styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    flexDirection: 'column-reverse',
+    flexDirection: 'column',
+  },
+  sliderContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  scrollView: {
+    margin: 30,
   },
   titleText: {
+    marginVertical: 30,
     textAlign: 'center',
     fontWeight: 'bold',
   },
   titleContainer: {
-    marginVertical: 30,
     justifyContent: 'center',
     alignItems: 'center',
+    width: Dimensions.get('window').width,
   },
   slider: {
-    width: 200,
-    height: 60,
+    width: Dimensions.get('window').width * 0.6,
+    height: 40,
   },
 });

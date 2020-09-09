@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {StyleSheet, SafeAreaView} from 'react-native';
 import {Layout, Text, Button, Icon} from '@ui-kitten/components';
-import {ThemedLayout} from '../../../util/ThemedComponents';
+import {ThemedLayout} from '../../../util/ComponentUtil';
 import {LocalData} from '../../../util/LocalData';
 import {VirtualReceipt, Item} from '../../../util/DataObjects';
 import {Screen} from '../../../util/Constants';

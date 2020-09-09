@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Dimensions} from 'react-native';
 
 const FormStyles = StyleSheet.create({
   container: {
@@ -12,9 +12,9 @@ const FormStyles = StyleSheet.create({
     flexDirection: 'column-reverse',
   },
   loginButtons: {
-    flex: 2,
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'space-evenly',
+    flexDirection: 'row',
     marginTop: 15,
     marginBottom: 40,
   },
@@ -25,6 +25,7 @@ const FormStyles = StyleSheet.create({
   },
   button: {
     margin: 10,
+    width: 100,
   },
 });
 export default FormStyles;

@@ -44,6 +44,12 @@ export default class InviteToGroup extends Component {
         <Layout style={Styles.container}>
           <SafeAreaView style={Styles.container}>
             <Layout style={FormStyles.loginButtons}>
+              <Button
+                style={FormStyles.button}
+                onPress={() => this.props.navigation.navigate(Screen.Home)}
+                appearance="outline">
+                Go back
+              </Button>
               <Layout style={FormStyles.dynamicButton}>
                 {this.state.isInviting ? (
                   <Button
@@ -101,16 +107,10 @@ export default class InviteToGroup extends Component {
                           }
                         });
                     }}>
-                    Invite to group
+                    Invite
                   </Button>
                 )}
               </Layout>
-              <Button
-                style={FormStyles.button}
-                onPress={() => this.props.navigation.navigate(Screen.Home)}
-                appearance="outline">
-                Go back
-              </Button>
             </Layout>
             <Layout style={FormStyles.loginFields}>
               <InputField
