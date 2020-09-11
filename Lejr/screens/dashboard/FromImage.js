@@ -12,13 +12,13 @@ export default class FromImage extends Component {
   componentDidMount() {
     console.log('Arrived at FromImage');
 
-    ImagePicker.openCamera({
-      width: 300,
-      height: 400,
-      cropping: true,
-    }).then(image => {
-      console.log(image);
-    });
+    // ImagePicker.openCamera({
+    //   width: 300,
+    //   height: 400,
+    //   cropping: true,
+    // }).then(image => {
+    //   console.log(image);
+    // });
   }
 
   render() {

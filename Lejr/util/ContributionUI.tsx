@@ -1,8 +1,12 @@
 import React from 'react';
 import {StyleSheet} from 'react-native';
-import {Avatar, Card, Layout, Text} from '@ui-kitten/components';
+import {Avatar, Layout, Text} from '@ui-kitten/components';
 import {VirtualReceipt, Item} from './DataObjects';
 import {ThemedCard} from './ComponentUtil';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {navigate} from '../RootNav';
+import {Screen} from './Constants';
+import {LocalData} from './LocalData';
 
 export {ContributionCard, ItemCard};
 
@@ -34,17 +38,26 @@ const ContributionCard = (info: any) => {
 
 const ItemCard = (info: any) => {
   const item: Item = info.item;
+  const index: number = info.index;
 
   return (
     <ThemedCard style={Styles.card}>
-      <Layout style={Styles.header}>
-        <Layout style={Styles.topLeft}>
-          <Text numberOfLines={1}>{item.itemName}</Text>
+      <TouchableOpacity
+        onPress={() =>
+          navigate(Screen.NewItem, {
+            item: LocalData.virtualReceipt.items[index],
+            vrIndex: index,
+          })
+        }>
+        <Layout style={Styles.header}>
+          <Layout style={Styles.topLeft}>
+            <Text numberOfLines={1}>{item.itemName}</Text>
+          </Layout>
+          <Layout style={Styles.topRight}>
+            <Text numberOfLines={1}>${item.itemCost.toString()}</Text>
+          </Layout>
         </Layout>
-        <Layout style={Styles.topRight}>
-          <Text numberOfLines={1}>${item.itemCost}</Text>
-        </Layout>
-      </Layout>
+      </TouchableOpacity>
     </ThemedCard>
   );
 };

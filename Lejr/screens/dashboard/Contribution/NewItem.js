@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import {Layout, Text, Button} from '@ui-kitten/components';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
-import {InputField} from '../../../util/TextInputUI';
+import {InputField, onValidationError} from '../../../util/TextInputUI';
 import FormStyles from '../../../util/FormStyles';
 import {Screen} from '../../../util/Constants';
 import {Item} from '../../../util/DataObjects';
@@ -25,24 +25,28 @@ export default class NewItem extends Component {
   constructor(props) {
     super(props);
     this.passedItem = this.props.route.params.item;
+    this.vrIndex = this.props.route.params.vrIndex;
     this.state = {
-      itemCost: this.passedItem.itemCost,
+      itemCost: this.passedItem.itemCost
+        ? this.passedItem.itemCost.toString()
+        : '',
       itemCostError: '',
       itemName: this.passedItem.itemName,
       itemNameError: '',
-      itemSplit: this.passedItem.itemSplit,
-      itemSplitError: '',
     };
     this.itemNameRef = React.createRef();
     this.itemCostRef = React.createRef();
     this.validationSchema = yup.object().shape({
       itemCost: yup
         .string()
-        .label('Item Cost')
+        .test('custom-is-number', 'Cost must be a number', function(value) {
+          return !isNaN(value);
+        })
+        .label('Cost')
         .required(),
       itemName: yup
         .string()
-        .label('Item Name')
+        .label('Item')
         .required(),
     });
     this.scrollHeight = new Animated.Value(SLIDER_SHOW);
@@ -133,7 +137,7 @@ export default class NewItem extends Component {
                   Keyboard.dismiss();
                 }}
                 value={this.state.itemName}
-                autoFocus
+                autoFocus={this.vrIndex == null}
               />
               <InputField
                 fieldError={this.state.itemCostError}
@@ -166,6 +170,40 @@ export default class NewItem extends Component {
                 }
                 appearance="outline">
                 Go back
+              </Button>
+              <Button
+                style={FormStyles.button}
+                onPress={() => {
+                  this.validationSchema
+                    .validate({
+                      itemName: this.state.itemName,
+                      itemCost: this.state.itemCost,
+                    })
+                    .catch(error =>
+                      onValidationError(error, [
+                        [this.itemNameRef, this.state.itemName],
+                        [this.itemCostRef, this.state.itemCost],
+                      ]),
+                    )
+                    .then(valid => {
+                      if (valid) {
+                        const UpdatedItem = new Item(
+                          this.state.itemName,
+                          Number(this.state.itemCost),
+                          this.itemSplitPercent,
+                        );
+                        if (this.vrIndex != null) {
+                          LocalData.virtualReceipt.items[
+                            this.vrIndex
+                          ] = UpdatedItem;
+                        } else {
+                          LocalData.virtualReceipt.items.push(UpdatedItem);
+                        }
+                        this.props.navigation.navigate(Screen.Contribution);
+                      }
+                    });
+                }}>
+                Save
               </Button>
             </Layout>
           </SafeAreaView>

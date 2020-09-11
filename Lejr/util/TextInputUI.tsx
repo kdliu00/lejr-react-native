@@ -10,9 +10,9 @@ const ButtonSpinner = props => (
   </Layout>
 );
 
-function onValidationError(error, fieldRefs) {
+function onValidationError(error: {message: any}, fieldRefs: any[][]) {
   console.warn(error.message);
-  fieldRefs.forEach(ref => ref[0].current.props.onChangeText(ref[1]));
+  fieldRefs.forEach((ref: any[]) => ref[0].current.props.onChangeText(ref[1]));
 }
 
 const InputFieldWrapper = ({fieldError, children}) => (
@@ -59,6 +59,7 @@ const InputField = ({
         enablesReturnKeyAutomatically={true}
         status={fieldError ? 'danger' : value ? 'success' : 'basic'}
         onChangeText={text => validateField(text)}
+        value={value}
         {...rest}
       />
     </InputFieldWrapper>

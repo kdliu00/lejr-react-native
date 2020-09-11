@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
-import {StyleSheet, SafeAreaView} from 'react-native';
+import {StyleSheet, SafeAreaView, Dimensions} from 'react-native';
 import {Layout, Text, Button, Icon} from '@ui-kitten/components';
-import {ThemedLayout} from '../../../util/ComponentUtil';
-import {LocalData} from '../../../util/LocalData';
+import {ThemedLayout, ThemedList} from '../../../util/ComponentUtil';
+import {isPossibleObjectEmpty, LocalData} from '../../../util/LocalData';
 import {VirtualReceipt, Item} from '../../../util/DataObjects';
 import {Screen} from '../../../util/Constants';
+import {ItemCard} from '../../../util/ContributionUI';
 
 const AddIcon = props => <Icon name="plus-outline" {...props} />;
 const TrashIcon = props => <Icon name="trash-2-outline" {...props} />;
@@ -40,9 +41,18 @@ export default class Contribution extends Component {
       <ThemedLayout style={Styles.container}>
         <SafeAreaView style={Styles.container}>
           <Layout style={Styles.itemList}>
-            <Text appearance="hint" style={Styles.placeholderText}>
-              Click on the plus button below to add an item
-            </Text>
+            {LocalData.virtualReceipt.items.length === 0 ? (
+              <Text appearance="hint" style={Styles.placeholderText}>
+                Click on the plus button below to add an item
+              </Text>
+            ) : (
+              <ThemedList
+                style={Styles.list}
+                contentContainerStyle={Styles.contentContainer}
+                data={LocalData.virtualReceipt.items}
+                renderItem={ItemCard}
+              />
+            )}
           </Layout>
           <Layout style={Styles.actionButtons}>
             <Button
@@ -98,5 +108,13 @@ const Styles = StyleSheet.create({
   placeholderText: {
     textAlign: 'center',
     marginHorizontal: 20,
+  },
+  contentContainer: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  list: {
+    width: Dimensions.get('window').width,
+    flex: 1,
   },
 });
