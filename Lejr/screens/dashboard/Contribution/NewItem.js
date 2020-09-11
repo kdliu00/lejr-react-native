@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   Dimensions,
   ScrollView,
+  Animated,
 } from 'react-native';
 import {Layout, Text, Button} from '@ui-kitten/components';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
@@ -15,18 +16,21 @@ import {Item} from '../../../util/DataObjects';
 import * as yup from 'yup';
 import {MergeState} from '../../../util/UtilityMethods';
 import {SplitSlider} from '../../../util/ComponentUtil';
-import {LocalData} from '../../../util/LocalData';
+import {isPossibleObjectEmpty, LocalData} from '../../../util/LocalData';
+
+const SLIDER_SHOW = Dimensions.get('window').height - 420;
+const SLIDER_HIDE = Math.round(SLIDER_SHOW * 0.4);
 
 export default class NewItem extends Component {
   constructor(props) {
     super(props);
-    const PassedItem = this.props.route.params.item;
+    this.passedItem = this.props.route.params.item;
     this.state = {
-      itemCost: PassedItem.itemCost,
+      itemCost: this.passedItem.itemCost,
       itemCostError: '',
-      itemName: PassedItem.itemName,
+      itemName: this.passedItem.itemName,
       itemNameError: '',
-      itemSplit: PassedItem.itemSplit,
+      itemSplit: this.passedItem.itemSplit,
       itemSplitError: '',
     };
     this.itemNameRef = React.createRef();
@@ -41,7 +45,7 @@ export default class NewItem extends Component {
         .label('Item Name')
         .required(),
     });
-    this.keyboardOpen = false;
+    this.scrollHeight = new Animated.Value(SLIDER_SHOW);
 
     this.itemSplitPercent = {};
     this.groupMemberIds = Object.keys(LocalData.currentGroup.members);
@@ -49,33 +53,55 @@ export default class NewItem extends Component {
 
   componentDidMount() {
     console.log('Arrived at NewItem!');
-    this.keyboardOpenListener = Keyboard.addListener('keyboardDidShow', () => {
-      this.keyboardOpen = true;
-      this.forceUpdate();
-    });
-    this.keyboardClosedListener = Keyboard.addListener(
+    this.keyboardDidShowSub = Keyboard.addListener(
+      'keyboardDidShow',
+      this.keyboardDidShow,
+    );
+    this.keyboardDidHideSub = Keyboard.addListener(
       'keyboardDidHide',
-      () => {
-        this.keyboardOpen = false;
-        this.forceUpdate();
-      },
+      this.keyboardDidHide,
     );
   }
 
   componentWillUnmount() {
-    this.keyboardOpenListener.remove();
-    this.keyboardClosedListener.remove();
+    this.keyboardDidShowSub.remove();
+    this.keyboardDidHideSub.remove();
   }
+
+  keyboardDidShow = event => {
+    Animated.parallel([
+      Animated.timing(this.scrollHeight, {
+        useNativeDriver: false,
+        duration: event.duration,
+        toValue: SLIDER_HIDE,
+      }),
+    ]).start();
+  };
+
+  keyboardDidHide = event => {
+    Animated.parallel([
+      Animated.timing(this.scrollHeight, {
+        useNativeDriver: false,
+        duration: event.duration,
+        toValue: SLIDER_SHOW,
+      }),
+    ]).start();
+  };
 
   render() {
     this.splitSliders = this.groupMemberIds.map(userId => {
       return (
         <SplitSlider
-          sliderContainerStyle={Styles.sliderContainer}
+          sliderLabel={Styles.sliderLabel}
           sliderStyle={Styles.slider}
+          sliderContainer={Styles.sliderContainer}
           minimumValue={0}
           maximumValue={100}
-          value={Math.round(100 / this.groupMemberIds.length)}
+          value={
+            isPossibleObjectEmpty(this.passedItem.itemSplit)
+              ? Math.round(100 / this.groupMemberIds.length)
+              : this.passedItem.itemSplit[userId]
+          }
           step={1}
           userId={userId}
           objectInstance={this}
@@ -91,7 +117,24 @@ export default class NewItem extends Component {
                 Item Editor
               </Text>
             </Layout>
-            <Layout style={(FormStyles.loginFields, Styles.container)}>
+            <Layout>
+              <InputField
+                fieldError={this.state.itemNameError}
+                refToPass={this.itemNameRef}
+                validationSchema={this.validationSchema}
+                fieldKey="itemName"
+                fieldParams={text => ({itemName: text})}
+                setField={value => MergeState(this, {itemName: value})}
+                setFieldError={value =>
+                  MergeState(this, {itemNameError: value})
+                }
+                placeholder="item"
+                onSubmitEditing={() => {
+                  Keyboard.dismiss();
+                }}
+                value={this.state.itemName}
+                autoFocus
+              />
               <InputField
                 fieldError={this.state.itemCostError}
                 refToPass={this.itemCostRef}
@@ -108,27 +151,14 @@ export default class NewItem extends Component {
                 }}
                 value={this.state.itemCost}
               />
-              <InputField
-                fieldError={this.state.itemNameError}
-                refToPass={this.itemNameRef}
-                validationSchema={this.validationSchema}
-                fieldKey="itemName"
-                fieldParams={text => ({itemName: text})}
-                setField={value => MergeState(this, {itemName: value})}
-                setFieldError={value =>
-                  MergeState(this, {itemNameError: value})
-                }
-                placeholder="item"
-                onSubmitEditing={() => {
-                  Keyboard.dismiss();
-                }}
-                value={this.state.itemName}
-              />
             </Layout>
-            <ScrollView style={Styles.scrollView}>
-              {!this.keyboardOpen && this.splitSliders}
-            </ScrollView>
-            <Layout style={FormStyles.loginButtons}>
+            <Animated.View
+              style={[Styles.scrollContainer, {height: this.scrollHeight}]}>
+              <ScrollView style={Styles.scrollView}>
+                {this.splitSliders}
+              </ScrollView>
+            </Animated.View>
+            <Layout style={FormStyles.buttonStyle}>
               <Button
                 style={FormStyles.button}
                 onPress={() =>
@@ -150,16 +180,31 @@ const Styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'column',
   },
-  sliderContainer: {
+  sliderLabel: {
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
   },
+  slider: {
+    justifyContent: 'center',
+    width: Dimensions.get('window').width * 0.6,
+    height: 40,
+  },
+  sliderContainer: {
+    alignItems: 'center',
+  },
   scrollView: {
-    margin: 30,
+    paddingTop: 10,
+  },
+  scrollContainer: {
+    width: Dimensions.get('window').width,
+    marginTop: 20,
+    borderTopWidth: 0.5,
+    borderBottomWidth: 0.5,
+    borderColor: 'lightgray',
   },
   titleText: {
-    marginVertical: 30,
+    marginTop: 30,
     textAlign: 'center',
     fontWeight: 'bold',
   },
@@ -167,9 +212,5 @@ const Styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: Dimensions.get('window').width,
-  },
-  slider: {
-    width: Dimensions.get('window').width * 0.6,
-    height: 40,
   },
 });

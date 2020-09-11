@@ -30,6 +30,9 @@ export default class Contribution extends Component {
 
   componentDidMount() {
     console.log('Arrived at Contribution');
+    this.props.navigation.addListener('focus', () => {
+      this.forceUpdate();
+    });
   }
 
   render() {

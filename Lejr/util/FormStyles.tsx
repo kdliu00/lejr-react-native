@@ -6,12 +6,12 @@ const FormStyles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'column-reverse',
   },
-  loginFields: {
+  fieldStyle: {
     flex: 5,
     alignItems: 'center',
     flexDirection: 'column-reverse',
   },
-  loginButtons: {
+  buttonStyle: {
     flex: 1,
     alignItems: 'center',
     flexDirection: 'row',

@@ -73,8 +73,8 @@ const SplitSlider = (props: any) => {
   const defaultPercent: number = props.value;
 
   return (
-    <ThemedLayout>
-      <ThemedLayout style={props.sliderContainerStyle}>
+    <ThemedLayout style={props.sliderContainer}>
+      <ThemedLayout style={props.sliderLabel}>
         <Text>
           {Object(LocalData.currentGroup.memberNames)[userId] +
             ' pays ' +
