@@ -96,6 +96,7 @@ export default class NewItem extends Component {
     this.splitSliders = this.groupMemberIds.map(userId => {
       return (
         <SplitSlider
+          key={userId}
           sliderLabel={Styles.sliderLabel}
           sliderStyle={Styles.slider}
           sliderContainer={Styles.sliderContainer}

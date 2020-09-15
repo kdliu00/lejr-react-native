@@ -43,7 +43,7 @@ export default class InviteToGroup extends Component {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <Layout style={Styles.container}>
           <SafeAreaView style={Styles.container}>
-            <Layout style={FormStyles.loginButtons}>
+            <Layout style={FormStyles.buttonStyle}>
               <Button
                 style={FormStyles.button}
                 onPress={() => this.props.navigation.navigate(Screen.Home)}
@@ -112,7 +112,7 @@ export default class InviteToGroup extends Component {
                 )}
               </Layout>
             </Layout>
-            <Layout style={FormStyles.loginFields}>
+            <Layout style={FormStyles.fieldStyle}>
               <InputField
                 fieldError={this.state.emailError}
                 refToPass={this.emailRef}

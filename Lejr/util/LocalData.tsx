@@ -4,7 +4,6 @@ import {
   InviteInfo,
   GroupInfo,
   VirtualReceipt,
-  Item,
 } from './DataObjects';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';

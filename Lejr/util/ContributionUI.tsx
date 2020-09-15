@@ -2,11 +2,11 @@ import React from 'react';
 import {StyleSheet} from 'react-native';
 import {Avatar, Layout, Text} from '@ui-kitten/components';
 import {VirtualReceipt, Item} from './DataObjects';
-import {ThemedCard} from './ComponentUtil';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {CustomSwipeable, DangerSwipe, ThemedCard} from './ComponentUtil';
 import {navigate} from '../RootNav';
 import {Screen} from './Constants';
 import {LocalData} from './LocalData';
+import Contribution from '../screens/dashboard/Contribution/Contribution';
 
 export {ContributionCard, ItemCard};
 
@@ -36,13 +36,34 @@ const ContributionCard = (info: any) => {
   );
 };
 
-const ItemCard = (info: any) => {
+const ItemCard = (
+  info: {item: Item; index: number},
+  component: Contribution,
+) => {
   const item: Item = info.item;
   const index: number = info.index;
 
+  const swipeableRef = React.createRef();
+  const closeSwipeable = () =>
+    (swipeableRef.current as CustomSwipeable).close();
+
+  const renderRightActions = () => {
+    return <DangerSwipe style={Styles.card} />;
+  };
+
   return (
-    <ThemedCard style={Styles.card}>
-      <TouchableOpacity
+    <CustomSwipeable
+      ref={swipeableRef as React.RefObject<any>}
+      renderRightActions={renderRightActions}
+      onSwipeableRightOpen={() => {
+        LocalData.virtualReceipt.items.splice(index, 1);
+        closeSwipeable();
+      }}
+      onSwipeableClose={() => {
+        component.forceUpdate();
+      }}>
+      <ThemedCard
+        style={Styles.card}
         onPress={() =>
           navigate(Screen.NewItem, {
             item: LocalData.virtualReceipt.items[index],
@@ -57,8 +78,8 @@ const ItemCard = (info: any) => {
             <Text numberOfLines={1}>${item.itemCost.toString()}</Text>
           </Layout>
         </Layout>
-      </TouchableOpacity>
-    </ThemedCard>
+      </ThemedCard>
+    </CustomSwipeable>
   );
 };
 

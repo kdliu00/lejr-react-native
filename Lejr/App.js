@@ -27,8 +27,6 @@ import {pushGroupData, pushUserData} from './util/LocalData';
 import {BackHandler} from 'react-native';
 import {Alert} from 'react-native';
 
-console.disableYellowBox = true;
-
 if (firebase.apps.length === 0) {
   firebase.initializeApp();
 }

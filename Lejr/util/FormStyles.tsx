@@ -1,4 +1,4 @@
-import {StyleSheet, Dimensions} from 'react-native';
+import {StyleSheet} from 'react-native';
 
 const FormStyles = StyleSheet.create({
   container: {
@@ -7,7 +7,7 @@ const FormStyles = StyleSheet.create({
     flexDirection: 'column-reverse',
   },
   fieldStyle: {
-    flex: 5,
+    flex: 2,
     alignItems: 'center',
     flexDirection: 'column-reverse',
   },

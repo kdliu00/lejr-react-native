@@ -85,7 +85,7 @@ export default class EmailLogin extends Component {
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <Layout style={FormStyles.container}>
-          <Layout style={FormStyles.loginButtons}>
+          <Layout style={FormStyles.buttonStyle}>
             <Button
               style={FormStyles.button}
               onPress={() => {
@@ -163,7 +163,7 @@ export default class EmailLogin extends Component {
               )}
             </Layout>
           </Layout>
-          <Layout style={FormStyles.loginFields}>
+          <Layout style={FormStyles.fieldStyle}>
             {this.showConfirm && (
               <InputField
                 fieldError={this.state.confirmPasswordError}

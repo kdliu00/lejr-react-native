@@ -3,7 +3,7 @@ export {
   iOSWebClientId,
   androidWebClientId,
   Collection,
-  Screen,
+  Screens as Screen,
   ErrorCode,
 };
 
@@ -22,7 +22,7 @@ enum Collection {
   Archives = 'archives',
 }
 
-enum Screen {
+enum Screens {
   Loading = 'Loading',
   Login = 'Login',
   EmailLogin = 'EmailLogin',

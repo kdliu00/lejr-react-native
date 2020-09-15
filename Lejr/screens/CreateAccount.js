@@ -41,7 +41,7 @@ export default class CreateAccount extends Component {
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <Layout style={FormStyles.container}>
-          <Layout style={FormStyles.loginButtons}>
+          <Layout style={FormStyles.buttonStyle}>
             <Button
               style={FormStyles.button}
               onPress={() => this.props.navigation.navigate(Screen.Login)}
@@ -84,7 +84,7 @@ export default class CreateAccount extends Component {
               Next
             </Button>
           </Layout>
-          <Layout style={FormStyles.loginFields}>
+          <Layout style={FormStyles.fieldStyle}>
             <InputField
               fieldError={this.state.lastNameError}
               refToPass={this.lastNameRef}

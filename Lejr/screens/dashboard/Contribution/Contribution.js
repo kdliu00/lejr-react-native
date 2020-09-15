@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {StyleSheet, SafeAreaView, Dimensions} from 'react-native';
 import {Layout, Text, Button, Icon} from '@ui-kitten/components';
 import {ThemedLayout, ThemedList} from '../../../util/ComponentUtil';
-import {isPossibleObjectEmpty, LocalData} from '../../../util/LocalData';
+import {LocalData} from '../../../util/LocalData';
 import {VirtualReceipt, Item} from '../../../util/DataObjects';
 import {Screen} from '../../../util/Constants';
 import {ItemCard} from '../../../util/ContributionUI';
@@ -14,6 +14,22 @@ const SaveIcon = props => <Icon name="cloud-upload-outline" {...props} />;
 export default class Contribution extends Component {
   constructor() {
     super();
+  }
+
+  componentDidMount() {
+    console.log('Arrived at Contribution');
+    this.props.navigation.addListener('focus', () => {
+      this.forceUpdate();
+    });
+  }
+
+  componentWillUnmount() {
+    if (LocalData.virtualReceipt.items.length === 0) {
+      LocalData.virtualReceipt = null;
+    }
+  }
+
+  render() {
     if (LocalData.virtualReceipt == null) {
       LocalData.virtualReceipt = new VirtualReceipt(
         LocalData.user.userId,
@@ -27,16 +43,6 @@ export default class Contribution extends Component {
         '',
       );
     }
-  }
-
-  componentDidMount() {
-    console.log('Arrived at Contribution');
-    this.props.navigation.addListener('focus', () => {
-      this.forceUpdate();
-    });
-  }
-
-  render() {
     return (
       <ThemedLayout style={Styles.container}>
         <SafeAreaView style={Styles.container}>
@@ -50,7 +56,7 @@ export default class Contribution extends Component {
                 style={Styles.list}
                 contentContainerStyle={Styles.contentContainer}
                 data={LocalData.virtualReceipt.items}
-                renderItem={ItemCard}
+                renderItem={info => ItemCard(info, this)}
               />
             )}
           </Layout>
