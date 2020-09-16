@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import {StyleSheet, SafeAreaView, Dimensions} from 'react-native';
 import {Layout, Text, Button, Icon} from '@ui-kitten/components';
-import {ThemedLayout, ThemedList} from '../../../util/ComponentUtil';
+import {ThemedLayout, ThemedScroll} from '../../../util/ComponentUtil';
 import {LocalData} from '../../../util/LocalData';
-import {VirtualReceipt, Item} from '../../../util/DataObjects';
+import {Item} from '../../../util/DataObjects';
 import {Screen} from '../../../util/Constants';
 import {ItemCard} from '../../../util/ContributionUI';
 
@@ -18,46 +18,41 @@ export default class Contribution extends Component {
 
   componentDidMount() {
     console.log('Arrived at Contribution');
-    this.props.navigation.addListener('focus', () => {
-      this.forceUpdate();
-    });
-  }
-
-  componentWillUnmount() {
-    if (LocalData.virtualReceipt.items.length === 0) {
-      LocalData.virtualReceipt = null;
-    }
   }
 
   render() {
-    if (LocalData.virtualReceipt == null) {
-      LocalData.virtualReceipt = new VirtualReceipt(
-        LocalData.user.userId,
-        '',
-        '',
-        '',
-        Date.now(),
-        [],
-        0,
-        new Map(),
-        '',
-      );
+    if (LocalData.items == null) {
+      LocalData.items = [
+        new Item('first', 12, {yoink: 100}),
+        new Item('second', 23, {yoink: 100}),
+        new Item('third', 34, {yoink: 100}),
+        new Item('fourth', 345, {yoink: 100}),
+        new Item('fifth', 22, {yoink: 100}),
+        new Item('sixth', 11, {yoink: 100}),
+        new Item('seventh', 2.1, {yoink: 100}),
+        new Item('eighth', 22.3, {yoink: 100}),
+        new Item('ninth', 4.1, {yoink: 100}),
+        new Item('tenth', 1, {yoink: 100}),
+        new Item('eleventh', 3, {yoink: 100}),
+        new Item('twelfth', 12, {yoink: 100}),
+      ];
     }
     return (
       <ThemedLayout style={Styles.container}>
         <SafeAreaView style={Styles.container}>
           <Layout style={Styles.itemList}>
-            {LocalData.virtualReceipt.items.length === 0 ? (
+            {LocalData.items.length === 0 ? (
               <Text appearance="hint" style={Styles.placeholderText}>
                 Click on the plus button below to add an item
               </Text>
             ) : (
-              <ThemedList
+              <ThemedScroll
                 style={Styles.list}
-                contentContainerStyle={Styles.contentContainer}
-                data={LocalData.virtualReceipt.items}
-                renderItem={info => ItemCard(info, this)}
-              />
+                contentContainerStyle={Styles.contentContainer}>
+                {LocalData.items.map((item, index) => {
+                  return <ItemCard key={index} item={item} index={index} />;
+                })}
+              </ThemedScroll>
             )}
           </Layout>
           <Layout style={Styles.actionButtons}>

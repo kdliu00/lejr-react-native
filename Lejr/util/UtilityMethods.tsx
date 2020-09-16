@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
+import AsyncStorage from '@react-native-community/async-storage';
+import {Alert} from 'react-native';
 
-export {MergeState};
+export {MergeState, StoreData, RetrieveData};
 
 /**
  * Non-destructive wrapper for setState() method.
@@ -9,4 +11,31 @@ export {MergeState};
  */
 function MergeState(component: Component, value: Object) {
   component.setState({...component.state, ...value});
+}
+
+/**
+ * Stores and persists data locally.
+ * @param key storage key
+ * @param value storage value
+ */
+async function StoreData(key: string, value: any) {
+  try {
+    const jsonValue = JSON.stringify(value);
+    await AsyncStorage.setItem(key, jsonValue);
+  } catch (e) {
+    Alert.alert('Error', 'Could not save data.');
+  }
+}
+
+/**
+ * Retrieves data that was stored locally. Returns null if no data for key.
+ * @param key storage key
+ */
+async function RetrieveData(key: string) {
+  try {
+    const jsonValue = await AsyncStorage.getItem(key);
+    return jsonValue != null ? JSON.parse(jsonValue) : null;
+  } catch (e) {
+    Alert.alert('Error', 'Could not load data.');
+  }
 }

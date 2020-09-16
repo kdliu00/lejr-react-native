@@ -49,7 +49,7 @@ export default class Dashboard extends Component {
 const DashboardScreen = () => (
   <RootStack.Navigator mode="modal" screenOptions={{headerShown: false}}>
     <RootStack.Screen
-      name="DashboardMain"
+      name={Screen.DashboardMain}
       component={TabNavigatorComponent}
       options={{headerShown: false}}
     />

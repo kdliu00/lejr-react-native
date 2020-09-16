@@ -1,9 +1,6 @@
 import React from 'react';
 import {Layout, List, withStyles, Text, Icon} from '@ui-kitten/components';
-import {
-  RectButton,
-  TouchableWithoutFeedback,
-} from 'react-native-gesture-handler';
+import {RectButton, ScrollView} from 'react-native-gesture-handler';
 import Slider from '@react-native-community/slider';
 import NewItem from '../screens/dashboard/Contribution/NewItem';
 import {LocalData} from './LocalData';
@@ -11,7 +8,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 export {
   ThemedLayout,
-  ThemedList,
+  ThemedScroll,
   ThemedCard,
   ThemedSlider,
   SplitSlider,
@@ -19,14 +16,12 @@ export {
   DangerSwipe,
 };
 
-const RemoveIcon = props => <Icon name="close-outline" {...props} />;
-
 const RectButtonWrapper = (props: any) => {
   const {eva, style, ...restProps} = props;
 
   return (
     <RectButton {...restProps} style={[eva.style.container, style]}>
-      <Text style={eva.style.text}>Swipe to delete</Text>
+      <Text style={eva.style.text}>Slide to delete</Text>
     </RectButton>
   );
 };
@@ -52,12 +47,12 @@ const ThemedLayout = withStyles(LayoutWrapper, theme => ({
   },
 }));
 
-const ListWrapper = (props: any) => {
+const ScrollWrapper = (props: any) => {
   const {eva, style, ...restProps} = props;
 
-  return <List {...restProps} style={[eva.style.container, style]} />;
+  return <ScrollView {...restProps} style={[eva.style.container, style]} />;
 };
-const ThemedList = withStyles(ListWrapper, theme => ({
+const ThemedScroll = withStyles(ScrollWrapper, theme => ({
   container: {
     backgroundColor: theme['background-basic-color-1'],
   },
@@ -66,12 +61,7 @@ const ThemedList = withStyles(ListWrapper, theme => ({
 const CardWrapper = (props: any) => {
   const {eva, style, ...restProps} = props;
 
-  return (
-    <TouchableWithoutFeedback
-      {...restProps}
-      style={[eva.style.container, style]}
-    />
-  );
+  return <RectButton {...restProps} style={[eva.style.container, style]} />;
 };
 const ThemedCard = withStyles(CardWrapper, theme => ({
   container: {

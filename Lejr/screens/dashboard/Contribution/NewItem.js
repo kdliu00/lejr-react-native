@@ -39,7 +39,7 @@ export default class NewItem extends Component {
     this.validationSchema = yup.object().shape({
       itemCost: yup
         .string()
-        .test('custom-is-number', 'Cost must be a number', function(value) {
+        .test('is-number', 'Cost must be a number', function(value) {
           return !isNaN(value);
         })
         .label('Cost')
@@ -67,7 +67,7 @@ export default class NewItem extends Component {
     );
   }
 
-  componentWillUnmount() {
+  async componentWillUnmount() {
     this.keyboardDidShowSub.remove();
     this.keyboardDidHideSub.remove();
   }
@@ -194,11 +194,9 @@ export default class NewItem extends Component {
                           this.itemSplitPercent,
                         );
                         if (this.vrIndex != null) {
-                          LocalData.virtualReceipt.items[
-                            this.vrIndex
-                          ] = UpdatedItem;
+                          LocalData.items[this.vrIndex] = UpdatedItem;
                         } else {
-                          LocalData.virtualReceipt.items.push(UpdatedItem);
+                          LocalData.items.push(UpdatedItem);
                         }
                         this.props.navigation.navigate(Screen.Contribution);
                       }

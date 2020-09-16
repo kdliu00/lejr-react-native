@@ -1,11 +1,14 @@
 export {
+  ItemsKey,
   defaultProfilePic,
   iOSWebClientId,
   androidWebClientId,
   Collection,
-  Screens as Screen,
+  Screen,
   ErrorCode,
 };
+
+const ItemsKey = 'persistent_items';
 
 const defaultProfilePic =
   'https://firebasestorage.googleapis.com/v0/b/lejr-fa6e3.appspot.com/o/default-profile-pic.jpg?alt=media&token=1ae60215-ca49-4da5-b759-d2fb56e33dd2';
@@ -22,13 +25,14 @@ enum Collection {
   Archives = 'archives',
 }
 
-enum Screens {
+enum Screen {
   Loading = 'Loading',
   Login = 'Login',
   EmailLogin = 'EmailLogin',
   CreateAccount = 'CreateAccount',
   CreateGroup = 'CreateGroup',
   Dashboard = 'Dashboard',
+  DashboardMain = 'DashboardMain',
   Home = 'Home',
   Contribution = 'Contribution',
   FromImage = 'FromImage',
