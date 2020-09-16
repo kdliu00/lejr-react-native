@@ -166,9 +166,7 @@ export default class NewItem extends Component {
             <Layout style={FormStyles.buttonStyle}>
               <Button
                 style={FormStyles.button}
-                onPress={() =>
-                  this.props.navigation.navigate(Screen.Contribution)
-                }
+                onPress={() => this.props.navigation.goBack()}
                 appearance="outline">
                 Go back
               </Button>
@@ -198,7 +196,8 @@ export default class NewItem extends Component {
                         } else {
                           LocalData.items.push(UpdatedItem);
                         }
-                        this.props.navigation.navigate(Screen.Contribution);
+                        LocalData.container.forceUpdate();
+                        this.props.navigation.goBack();
                       }
                     });
                 }}>
@@ -236,8 +235,6 @@ const Styles = StyleSheet.create({
   scrollContainer: {
     width: Dimensions.get('window').width,
     marginTop: 20,
-    borderTopWidth: 0.5,
-    borderBottomWidth: 0.5,
     borderColor: 'lightgray',
   },
   titleText: {

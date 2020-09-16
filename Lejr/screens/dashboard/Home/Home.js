@@ -89,7 +89,7 @@ export default class Home extends Component {
             </ThemedLayout>
           ) : isPossibleObjectEmpty(this.virtualReceiptData) ? (
             <ThemedLayout style={Styles.center}>
-              <Text appearance="hint">No contributions</Text>
+              <Text appearance="hint">No contributions yet</Text>
             </ThemedLayout>
           ) : (
             <ThemedList

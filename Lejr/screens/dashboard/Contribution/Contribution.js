@@ -18,6 +18,7 @@ export default class Contribution extends Component {
 
   componentDidMount() {
     console.log('Arrived at Contribution');
+    LocalData.container = this;
   }
 
   render() {
@@ -50,7 +51,9 @@ export default class Contribution extends Component {
                 style={Styles.list}
                 contentContainerStyle={Styles.contentContainer}>
                 {LocalData.items.map((item, index) => {
-                  return <ItemCard key={index} item={item} index={index} />;
+                  if (item != null) {
+                    return <ItemCard key={index} item={item} index={index} />;
+                  }
                 })}
               </ThemedScroll>
             )}
@@ -66,11 +69,11 @@ export default class Contribution extends Component {
               style={Styles.button}
               appearance="ghost"
               accessoryLeft={AddIcon}
-              onPress={() =>
-                this.props.navigation.navigate(Screen.NewItem, {
+              onPress={() => {
+                this.props.navigation.push(Screen.NewItem, {
                   item: new Item('', 0, {}),
-                })
-              }
+                });
+              }}
               size="large"
             />
             <Button

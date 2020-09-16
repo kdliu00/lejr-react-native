@@ -3,6 +3,7 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import {Collection, ErrorCode} from './Constants';
 import {Alert} from 'react-native';
+import Contribution from '../screens/dashboard/Contribution/Contribution';
 
 export {
   LocalData,
@@ -20,6 +21,7 @@ class LocalData {
   static user: User = null;
   static currentGroup: Group = null;
   static items: Item[] = null;
+  static container: Contribution = null;
 }
 
 function signOut() {

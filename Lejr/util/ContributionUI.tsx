@@ -81,7 +81,7 @@ const ItemCard = (props: any) => {
           shiftAnim.start();
         }}
         onSwipeableRightOpen={() => {
-          LocalData.items.splice(index, 1);
+          LocalData.items[index] = null;
           closeSwipeable();
         }}>
         <ThemedCard
