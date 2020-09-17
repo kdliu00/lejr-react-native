@@ -4,10 +4,10 @@ import {Avatar, Layout, Text} from '@ui-kitten/components';
 import {VirtualReceipt, Item} from './DataObjects';
 import {DangerSwipe, ThemedCard, CustomSwipeable} from './ComponentUtil';
 import {navigate} from '../RootNav';
-import {Screen} from './Constants';
-import Contribution from '../screens/dashboard/Contribution/Contribution';
+import {ItemsKey, Screen} from './Constants';
 import Animated, {Easing} from 'react-native-reanimated';
 import {LocalData} from './LocalData';
+import {StoreData} from './UtilityMethods';
 
 export {ContributionCard, ItemCard};
 
@@ -77,11 +77,11 @@ const ItemCard = (props: any) => {
         ref={swipeableRef as React.RefObject<any>}
         renderRightActions={renderRightActions}
         onSwipeableRightWillOpen={() => {
+          LocalData.items[index] = null;
           shrinkAnim.start();
           shiftAnim.start();
         }}
         onSwipeableRightOpen={() => {
-          LocalData.items[index] = null;
           closeSwipeable();
           if (LocalData.items.filter(item => item != null).length == 0) {
             LocalData.items = [];

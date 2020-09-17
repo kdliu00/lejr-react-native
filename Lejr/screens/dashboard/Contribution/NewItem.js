@@ -17,9 +17,10 @@ import {
 import FormStyles from '../../../util/FormStyles';
 import {Item} from '../../../util/DataObjects';
 import * as yup from 'yup';
-import {MergeState} from '../../../util/UtilityMethods';
+import {MergeState, StoreData} from '../../../util/UtilityMethods';
 import {SplitSlider} from '../../../util/ComponentUtil';
 import {isPossibleObjectEmpty, LocalData} from '../../../util/LocalData';
+import {ItemsKey} from '../../../util/Constants';
 
 const SLIDER_SHOW = Dimensions.get('window').height - 420;
 const SLIDER_HIDE = Math.round(SLIDER_SHOW * 0.4);
@@ -211,6 +212,7 @@ export default class NewItem extends Component {
                           LocalData.items = LocalData.items.filter(
                             item => item != null,
                           );
+                          StoreData(ItemsKey, LocalData.items);
                           LocalData.container.forceUpdate();
                           setTimeout(() => this.props.navigation.goBack(), 500);
                         } else {

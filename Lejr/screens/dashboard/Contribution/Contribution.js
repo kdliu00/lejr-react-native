@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
-import {StyleSheet, SafeAreaView, Dimensions} from 'react-native';
+import {StyleSheet, SafeAreaView, Dimensions, Alert} from 'react-native';
 import {Layout, Text, Button, Icon} from '@ui-kitten/components';
 import {ThemedLayout, ThemedScroll} from '../../../util/ComponentUtil';
 import {LocalData} from '../../../util/LocalData';
 import {Item} from '../../../util/DataObjects';
-import {Screen} from '../../../util/Constants';
+import {ItemsKey, Screen} from '../../../util/Constants';
 import {ItemCard} from '../../../util/ContributionUI';
+import {StoreData} from '../../../util/UtilityMethods';
 
 const AddIcon = props => <Icon name="plus-outline" {...props} />;
 const TrashIcon = props => <Icon name="trash-2-outline" {...props} />;
@@ -24,6 +25,7 @@ export default class Contribution extends Component {
   render() {
     if (LocalData.items == null) {
       LocalData.items = [];
+      StoreData(ItemsKey, LocalData.items);
     }
     return (
       <ThemedLayout style={Styles.container}>
@@ -50,6 +52,29 @@ export default class Contribution extends Component {
               style={Styles.button}
               appearance="ghost"
               accessoryLeft={TrashIcon}
+              onPress={() =>
+                Alert.alert(
+                  'Delete All Items',
+                  'Are you sure you want to delete all items? This action cannot be undone.',
+                  [
+                    {
+                      text: 'Yes',
+                      onPress: () => {
+                        console.log('Deleting items');
+                        LocalData.items = [];
+                        StoreData(ItemsKey, LocalData.items);
+                        LocalData.container.forceUpdate();
+                      },
+                      style: 'cancel',
+                    },
+                    {
+                      text: 'No',
+                      onPress: () => console.log('Not deleting items'),
+                    },
+                  ],
+                  {cancelable: false},
+                )
+              }
               size="large"
             />
             <Button
