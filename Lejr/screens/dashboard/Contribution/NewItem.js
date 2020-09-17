@@ -9,9 +9,12 @@ import {
 } from 'react-native';
 import {Layout, Text, Button} from '@ui-kitten/components';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
-import {InputField, onValidationError} from '../../../util/TextInputUI';
+import {
+  ButtonSpinner,
+  InputField,
+  onValidationError,
+} from '../../../util/TextInputUI';
 import FormStyles from '../../../util/FormStyles';
-import {Screen} from '../../../util/Constants';
 import {Item} from '../../../util/DataObjects';
 import * as yup from 'yup';
 import {MergeState} from '../../../util/UtilityMethods';
@@ -33,6 +36,7 @@ export default class NewItem extends Component {
       itemCostError: '',
       itemName: this.passedItem.itemName,
       itemNameError: '',
+      isSubmitting: false,
     };
     this.itemNameRef = React.createRef();
     this.itemCostRef = React.createRef();
@@ -170,39 +174,53 @@ export default class NewItem extends Component {
                 appearance="outline">
                 Go back
               </Button>
-              <Button
-                style={FormStyles.button}
-                onPress={() => {
-                  this.validationSchema
-                    .validate({
-                      itemName: this.state.itemName,
-                      itemCost: this.state.itemCost,
-                    })
-                    .catch(error =>
-                      onValidationError(error, [
-                        [this.itemNameRef, this.state.itemName],
-                        [this.itemCostRef, this.state.itemCost],
-                      ]),
-                    )
-                    .then(valid => {
-                      if (valid) {
-                        const UpdatedItem = new Item(
-                          this.state.itemName,
-                          Number(this.state.itemCost),
-                          this.itemSplitPercent,
-                        );
-                        if (this.vrIndex != null) {
-                          LocalData.items[this.vrIndex] = UpdatedItem;
+              {this.state.isSubmitting ? (
+                <Button
+                  style={FormStyles.button}
+                  accessoryLeft={ButtonSpinner}
+                  appearance="ghost"
+                />
+              ) : (
+                <Button
+                  style={FormStyles.button}
+                  onPress={() => {
+                    MergeState(this, {isSubmitting: true});
+                    this.validationSchema
+                      .validate({
+                        itemName: this.state.itemName,
+                        itemCost: this.state.itemCost,
+                      })
+                      .catch(error =>
+                        onValidationError(error, [
+                          [this.itemNameRef, this.state.itemName],
+                          [this.itemCostRef, this.state.itemCost],
+                        ]),
+                      )
+                      .then(valid => {
+                        if (valid) {
+                          const UpdatedItem = new Item(
+                            this.state.itemName,
+                            Number(this.state.itemCost),
+                            this.itemSplitPercent,
+                          );
+                          if (this.vrIndex != null) {
+                            LocalData.items[this.vrIndex] = UpdatedItem;
+                          } else {
+                            LocalData.items.push(UpdatedItem);
+                          }
+                          LocalData.items = LocalData.items.filter(
+                            item => item != null,
+                          );
+                          LocalData.container.forceUpdate();
+                          setTimeout(() => this.props.navigation.goBack(), 500);
                         } else {
-                          LocalData.items.push(UpdatedItem);
+                          MergeState(this, {isSubmitting: false});
                         }
-                        LocalData.container.forceUpdate();
-                        this.props.navigation.goBack();
-                      }
-                    });
-                }}>
-                Save
-              </Button>
+                      });
+                  }}>
+                  Save
+                </Button>
+              )}
             </Layout>
           </SafeAreaView>
         </Layout>

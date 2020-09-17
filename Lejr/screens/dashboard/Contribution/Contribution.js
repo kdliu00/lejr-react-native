@@ -23,20 +23,7 @@ export default class Contribution extends Component {
 
   render() {
     if (LocalData.items == null) {
-      LocalData.items = [
-        new Item('first', 12, {yoink: 100}),
-        new Item('second', 23, {yoink: 100}),
-        new Item('third', 34, {yoink: 100}),
-        new Item('fourth', 345, {yoink: 100}),
-        new Item('fifth', 22, {yoink: 100}),
-        new Item('sixth', 11, {yoink: 100}),
-        new Item('seventh', 2.1, {yoink: 100}),
-        new Item('eighth', 22.3, {yoink: 100}),
-        new Item('ninth', 4.1, {yoink: 100}),
-        new Item('tenth', 1, {yoink: 100}),
-        new Item('eleventh', 3, {yoink: 100}),
-        new Item('twelfth', 12, {yoink: 100}),
-      ];
+      LocalData.items = [];
     }
     return (
       <ThemedLayout style={Styles.container}>

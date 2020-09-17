@@ -83,6 +83,10 @@ const ItemCard = (props: any) => {
         onSwipeableRightOpen={() => {
           LocalData.items[index] = null;
           closeSwipeable();
+          if (LocalData.items.filter(item => item != null).length == 0) {
+            LocalData.items = [];
+            LocalData.container.forceUpdate();
+          }
         }}>
         <ThemedCard
           style={Styles.itemCard}
