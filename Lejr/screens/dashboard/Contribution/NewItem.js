@@ -19,8 +19,11 @@ import {Item} from '../../../util/DataObjects';
 import * as yup from 'yup';
 import {MergeState, StoreData} from '../../../util/UtilityMethods';
 import {SplitSlider} from '../../../util/ComponentUtil';
-import {isPossibleObjectEmpty, LocalData} from '../../../util/LocalData';
-import {ItemsKey} from '../../../util/Constants';
+import {
+  getKeyForCurrentGroupItems,
+  isPossibleObjectEmpty,
+  LocalData,
+} from '../../../util/LocalData';
 
 const SLIDER_SHOW = Dimensions.get('window').height - 420;
 const SLIDER_HIDE = Math.round(SLIDER_SHOW * 0.4);
@@ -109,7 +112,7 @@ export default class NewItem extends Component {
           maximumValue={100}
           value={
             isPossibleObjectEmpty(this.passedItem.itemSplit)
-              ? Math.round(100 / this.groupMemberIds.length)
+              ? Math.round(10000 / this.groupMemberIds.length) / 100
               : this.passedItem.itemSplit[userId]
           }
           step={1}
@@ -186,6 +189,13 @@ export default class NewItem extends Component {
                   style={FormStyles.button}
                   onPress={() => {
                     MergeState(this, {isSubmitting: true});
+                    // if (
+                    //   Object.values(this.itemSplitPercent).reduce(
+                    //     (a, b) => a + b,
+                    //     0,
+                    //   ) != 100
+                    // )
+                    console.log(this.itemSplitPercent);
                     this.validationSchema
                       .validate({
                         itemName: this.state.itemName,
@@ -212,7 +222,10 @@ export default class NewItem extends Component {
                           LocalData.items = LocalData.items.filter(
                             item => item != null,
                           );
-                          StoreData(ItemsKey, LocalData.items);
+                          StoreData(
+                            getKeyForCurrentGroupItems(),
+                            LocalData.items,
+                          );
                           LocalData.container.forceUpdate();
                           setTimeout(() => this.props.navigation.goBack(), 500);
                         } else {

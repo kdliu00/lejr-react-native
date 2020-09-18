@@ -4,10 +4,9 @@ import {Avatar, Layout, Text} from '@ui-kitten/components';
 import {VirtualReceipt, Item} from './DataObjects';
 import {DangerSwipe, ThemedCard, CustomSwipeable} from './ComponentUtil';
 import {navigate} from '../RootNav';
-import {ItemsKey, Screen} from './Constants';
+import {Screen} from './Constants';
 import Animated, {Easing} from 'react-native-reanimated';
 import {LocalData} from './LocalData';
-import {StoreData} from './UtilityMethods';
 
 export {ContributionCard, ItemCard};
 
@@ -63,7 +62,9 @@ const ItemCard = (props: any) => {
   };
 
   const renderRightActions = () => {
-    return <DangerSwipe style={Styles.itemCard} />;
+    return (
+      <DangerSwipe style={Styles.itemCard} renderLabel="Slide to delete" />
+    );
   };
 
   return (

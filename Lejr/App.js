@@ -22,8 +22,13 @@ import CreateAccount from './screens/CreateAccount';
 import CreateGroup from './screens/CreateGroup';
 
 import {default as theme} from './eva-theme.json';
-import {ItemsKey, Screen} from './util/Constants';
-import {LocalData, pushGroupData, pushUserData} from './util/LocalData';
+import {Screen} from './util/Constants';
+import {
+  getKeyForCurrentGroupItems,
+  LocalData,
+  pushGroupData,
+  pushUserData,
+} from './util/LocalData';
 import {BackHandler} from 'react-native';
 import {Alert} from 'react-native';
 import {StoreData} from './util/UtilityMethods';
@@ -40,7 +45,7 @@ const Stack = createStackNavigator();
 
 AppState.addEventListener('change', () => {
   console.log('Focus changed, saving data');
-  StoreData(ItemsKey, LocalData.items);
+  StoreData(getKeyForCurrentGroupItems(), LocalData.items);
   pushUserData();
   pushGroupData();
 });

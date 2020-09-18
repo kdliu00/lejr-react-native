@@ -9,9 +9,16 @@ import {
   joinGroup,
   isPossibleObjectEmpty,
 } from '../../../util/LocalData';
-import {ThemedList, ThemedCard} from '../../../util/ComponentUtil';
+import {
+  CustomSwipeable,
+  DangerSwipe,
+  SuccessSwipe,
+  ThemedCard,
+  ThemedScroll,
+} from '../../../util/ComponentUtil';
 import {Component} from 'react';
 import {MergeState} from '../../../util/UtilityMethods';
+import Animated, {Easing} from 'react-native-reanimated';
 
 const AcceptIcon = props => <Icon name="checkmark-outline" {...props} />;
 const DenyIcon = props => <Icon name="close-outline" {...props} />;
@@ -19,49 +26,85 @@ const DenyIcon = props => <Icon name="close-outline" {...props} />;
 export default class Invitations extends Component {
   constructor() {
     super();
-    this.state = {
-      inviteData: LocalData.user.invites,
-    };
   }
 
-  InvitationCard = info => {
-    const item = info.item;
+  InvitationCard = props => {
+    const RENDER_HEIGHT = 72;
+
+    const item = props.item;
+    const index = props.index;
+    const renderScaleY = new Animated.Value(1);
+    const offsetY = new Animated.Value(RENDER_HEIGHT);
+    const animDuration = 500;
+    const swipeableRef = React.createRef();
+
+    const shrinkAnim = Animated.timing(renderScaleY, {
+      duration: animDuration,
+      toValue: 0,
+      easing: Easing.out(Easing.exp),
+    });
+    const shiftAnim = Animated.timing(offsetY, {
+      duration: animDuration,
+      toValue: 0,
+      easing: Easing.out(Easing.exp),
+    });
+
+    const closeSwipeable = () => {
+      swipeableRef.current.close();
+    };
+
+    const renderRightActions = () => {
+      return <DangerSwipe style={Styles.card} renderLabel="Slide to delete" />;
+    };
+    const renderLeftActions = () => {
+      return <SuccessSwipe style={Styles.card} renderLabel="Slide to accept" />;
+    };
 
     return (
-      <ThemedCard activeOpacity={1} style={Styles.card} disabled={true}>
-        <Layout style={Styles.innerContainer}>
-          <Button
-            size="small"
-            accessoryRight={DenyIcon}
-            appearance="outline"
-            status="danger"
-            onPress={() => removeInvitation(info.index, this)}
-          />
-          <Text style={Styles.text}>
-            {item.fromName} invited you to {item.groupName}
-          </Text>
-          <Button
-            size="small"
-            accessoryRight={AcceptIcon}
-            appearance="filled"
-            status="success"
-            onPress={() => {
-              joinGroup(item.groupId).then(
-                () => removeInvitation(info.index, this),
-                error => {
-                  console.warn(error.message);
-                  if (error.message !== ErrorCode.DoesNotExist) {
-                    Alert.alert(
-                      'Join Group Error',
-                      'Failed to join group. Please try again.',
-                    );
-                  }
-                },
-              );
-            }}
-          />
-        </Layout>
-      </ThemedCard>
+      <Animated.View
+        style={{
+          height: offsetY,
+          scaleY: renderScaleY,
+        }}>
+        <CustomSwipeable
+          childrenContainerStyle={{height: RENDER_HEIGHT}}
+          ref={swipeableRef}
+          renderRightActions={renderRightActions}
+          renderLeftActions={renderLeftActions}
+          onSwipeableWillOpen={() => {
+            shrinkAnim.start();
+            shiftAnim.start();
+          }}
+          onSwipeableRightOpen={() => {
+            closeSwipeable();
+            removeInvitation(index, this);
+          }}
+          onSwipeableLeftOpen={() => {
+            closeSwipeable();
+            joinGroup(item.groupId).then(
+              () => removeInvitation(index, this),
+              error => {
+                console.warn(error.message);
+                if (error.message !== ErrorCode.DoesNotExist) {
+                  Alert.alert(
+                    'Join Group Error',
+                    'Failed to join group. Please try again.',
+                  );
+                }
+              },
+            );
+          }}>
+          <ThemedCard style={Styles.card} enabled={false}>
+            <Layout style={Styles.innerContainer}>
+              <AcceptIcon />
+              <Text style={Styles.text} numberOfLines={2}>
+                {item.fromName} invited you to {item.groupName}
+              </Text>
+              <DenyIcon />
+            </Layout>
+          </ThemedCard>
+        </CustomSwipeable>
+      </Animated.View>
     );
   };
 
@@ -79,19 +122,28 @@ export default class Invitations extends Component {
             </Text>
           </Layout>
           <Layout style={Styles.listContainer}>
-            {isPossibleObjectEmpty(this.state.inviteData) ? (
+            {isPossibleObjectEmpty(LocalData.user.invites) ? (
               <Layout style={Styles.container}>
                 <Text style={Styles.text} appearance="hint">
                   No invitations
                 </Text>
               </Layout>
             ) : (
-              <ThemedList
+              <ThemedScroll
                 style={Styles.list}
-                contentContainerStyle={Styles.contentContainer}
-                data={this.state.inviteData}
-                renderItem={this.InvitationCard}
-              />
+                contentContainerStyle={Styles.contentContainer}>
+                {LocalData.user.invites.map((item, index) => {
+                  if (item != null) {
+                    return (
+                      <this.InvitationCard
+                        key={index}
+                        item={item}
+                        index={index}
+                      />
+                    );
+                  }
+                })}
+              </ThemedScroll>
             )}
           </Layout>
           <Layout style={Styles.buttonContainer}>
@@ -108,10 +160,10 @@ export default class Invitations extends Component {
 }
 
 function removeInvitation(index, component) {
-  console.log('Removed invitation ' + index);
   LocalData.user.invites.splice(index, 1);
   pushUserData();
-  MergeState(component, {inviteData: safeGetListData(LocalData.user.invites)});
+  component.forceUpdate();
+  console.log('Removed invitation ' + index);
 }
 
 const Styles = StyleSheet.create({
@@ -139,17 +191,16 @@ const Styles = StyleSheet.create({
     flex: 2,
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 20,
+    margin: 10,
   },
   contentContainer: {
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
   card: {
-    marginVertical: 6,
-    marginHorizontal: 6,
+    paddingHorizontal: 8,
+    marginVertical: 4,
     borderRadius: 8,
-    borderWidth: 1,
     flex: 1,
   },
   innerContainer: {
@@ -157,6 +208,7 @@ const Styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
+    backgroundColor: 'transparent',
     margin: 10,
   },
   text: {

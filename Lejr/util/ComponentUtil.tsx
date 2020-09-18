@@ -1,5 +1,5 @@
 import React from 'react';
-import {Layout, List, withStyles, Text, Icon} from '@ui-kitten/components';
+import {Layout, withStyles, Text} from '@ui-kitten/components';
 import {RectButton, ScrollView} from 'react-native-gesture-handler';
 import Slider from '@react-native-community/slider';
 import NewItem from '../screens/dashboard/Contribution/NewItem';
@@ -14,6 +14,7 @@ export {
   SplitSlider,
   CustomSwipeable,
   DangerSwipe,
+  SuccessSwipe,
 };
 
 const RectButtonWrapper = (props: any) => {
@@ -21,7 +22,7 @@ const RectButtonWrapper = (props: any) => {
 
   return (
     <RectButton {...restProps} style={[eva.style.container, style]}>
-      <Text style={eva.style.text}>Slide to delete</Text>
+      <Text style={eva.style.text}>{restProps.renderLabel}</Text>
     </RectButton>
   );
 };
@@ -29,6 +30,16 @@ const DangerSwipe = withStyles(RectButtonWrapper, theme => ({
   container: {
     backgroundColor: theme['color-danger-500'],
     flexDirection: 'row-reverse',
+    alignItems: 'center',
+  },
+  text: {
+    color: theme['background-basic-color-3'],
+  },
+}));
+const SuccessSwipe = withStyles(RectButtonWrapper, theme => ({
+  container: {
+    backgroundColor: theme['color-success-500'],
+    flexDirection: 'row',
     alignItems: 'center',
   },
   text: {
@@ -65,7 +76,7 @@ const CardWrapper = (props: any) => {
 };
 const ThemedCard = withStyles(CardWrapper, theme => ({
   container: {
-    backgroundColor: theme['background-basic-color-1'],
+    backgroundColor: theme['color-primary-100'],
     borderColor: theme['color-basic-500'],
   },
 }));
@@ -94,6 +105,7 @@ const SplitSlider = (props: any) => {
   const userId: string = props.userId;
   const objectInstance: NewItem = props.objectInstance;
   const defaultPercent: number = props.value;
+  objectInstance.itemSplitPercent[userId] = defaultPercent;
 
   return (
     <ThemedLayout style={props.sliderContainer}>
@@ -101,9 +113,7 @@ const SplitSlider = (props: any) => {
         <Text>
           {Object(LocalData.currentGroup.memberNames)[userId] +
             ' pays ' +
-            (objectInstance.itemSplitPercent[userId] != null
-              ? objectInstance.itemSplitPercent[userId]
-              : defaultPercent) +
+            Math.round(objectInstance.itemSplitPercent[userId]) +
             '%'}
         </Text>
       </ThemedLayout>

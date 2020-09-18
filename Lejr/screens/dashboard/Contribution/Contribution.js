@@ -2,9 +2,9 @@ import React, {Component} from 'react';
 import {StyleSheet, SafeAreaView, Dimensions, Alert} from 'react-native';
 import {Layout, Text, Button, Icon} from '@ui-kitten/components';
 import {ThemedLayout, ThemedScroll} from '../../../util/ComponentUtil';
-import {LocalData} from '../../../util/LocalData';
+import {getKeyForCurrentGroupItems, LocalData} from '../../../util/LocalData';
 import {Item} from '../../../util/DataObjects';
-import {ItemsKey, Screen} from '../../../util/Constants';
+import {Screen} from '../../../util/Constants';
 import {ItemCard} from '../../../util/ContributionUI';
 import {StoreData} from '../../../util/UtilityMethods';
 
@@ -25,12 +25,12 @@ export default class Contribution extends Component {
   render() {
     if (LocalData.items == null) {
       LocalData.items = [];
-      StoreData(ItemsKey, LocalData.items);
+      StoreData(getKeyForCurrentGroupItems(), LocalData.items);
     }
     return (
       <ThemedLayout style={Styles.container}>
         <SafeAreaView style={Styles.container}>
-          <Layout style={Styles.itemList}>
+          <ThemedLayout style={Styles.itemList}>
             {LocalData.items.length === 0 ? (
               <Text appearance="hint" style={Styles.placeholderText}>
                 Click on the plus button below to add an item
@@ -46,7 +46,7 @@ export default class Contribution extends Component {
                 })}
               </ThemedScroll>
             )}
-          </Layout>
+          </ThemedLayout>
           <Layout style={Styles.actionButtons}>
             <Button
               style={Styles.button}
@@ -62,7 +62,10 @@ export default class Contribution extends Component {
                       onPress: () => {
                         console.log('Deleting items');
                         LocalData.items = [];
-                        StoreData(ItemsKey, LocalData.items);
+                        StoreData(
+                          getKeyForCurrentGroupItems(),
+                          LocalData.items,
+                        );
                         LocalData.container.forceUpdate();
                       },
                       style: 'cancel',

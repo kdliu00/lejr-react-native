@@ -1,12 +1,13 @@
 import {User, Group, InviteInfo, GroupInfo, Item} from './DataObjects';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import {Collection, ErrorCode} from './Constants';
+import {Collection, ErrorCode, ItemsKey} from './Constants';
 import {Alert} from 'react-native';
 import Contribution from '../screens/dashboard/Contribution/Contribution';
 
 export {
   LocalData,
+  getKeyForCurrentGroupItems,
   signOut,
   pushUserData,
   pushGroupData,
@@ -22,6 +23,12 @@ class LocalData {
   static currentGroup: Group = null;
   static items: Item[] = null;
   static container: Contribution = null;
+}
+
+function getKeyForCurrentGroupItems() {
+  return (
+    ItemsKey + (LocalData.currentGroup ? LocalData.currentGroup.groupId : null)
+  );
 }
 
 function signOut() {
@@ -114,6 +121,7 @@ async function pushInvite(fromName: string, email: string) {
  * @param groupId
  */
 async function joinGroup(groupId: string) {
+  console.log('Attempting to join group');
   return firestore()
     .collection(Collection.Groups)
     .doc(groupId)
@@ -140,7 +148,10 @@ async function joinGroup(groupId: string) {
         firestore()
           .collection(Collection.Groups)
           .doc(groupId)
-          .update({members: groupToJoin.members})
+          .update({
+            members: groupToJoin.members,
+            memberNames: groupToJoin.memberNames,
+          })
           .then(
             () => console.log('Successfully updated group'),
             error => console.warn(error.message),

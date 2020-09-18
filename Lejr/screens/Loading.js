@@ -8,14 +8,10 @@ import {
   LocalData,
   isPossibleObjectEmpty,
   loadGroupAsMain,
+  getKeyForCurrentGroupItems,
 } from '../util/LocalData';
 import {User} from '../util/DataObjects';
-import {
-  defaultProfilePic,
-  Collection,
-  Screen,
-  ItemsKey,
-} from '../util/Constants';
+import {defaultProfilePic, Collection, Screen} from '../util/Constants';
 import {Component} from 'react';
 import {RetrieveData, StoreData} from '../util/UtilityMethods';
 
@@ -26,7 +22,6 @@ export default class Loading extends Component {
 
   handleUserState(user) {
     if (user && !LocalData.user) {
-      RetrieveData(ItemsKey).then(value => (LocalData.items = value));
       firestore()
         .collection(Collection.Users)
         .doc(user.uid)
@@ -70,9 +65,9 @@ export default class Loading extends Component {
           console.warn(error.message);
         });
     } else if (user && LocalData.user) {
-      handleScreen(this.props.navigation);
+      setTimeout(() => handleScreen(this.props.navigation), 500);
     } else {
-      StoreData(ItemsKey, null);
+      StoreData(getKeyForCurrentGroupItems(), null);
       this.props.navigation.navigate(Screen.Login);
     }
   }

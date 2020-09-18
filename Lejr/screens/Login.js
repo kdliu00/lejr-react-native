@@ -116,10 +116,10 @@ export default class Login extends Component {
 function onLoginError(error) {
   console.warn(error);
 
+  const errorString = JSON.stringify(error).toLowerCase();
   if (
-    JSON.stringify(error)
-      .toLowerCase()
-      .includes('user canceled')
+    errorString.includes('user canceled') ||
+    errorString.includes('sign in action cancelled')
   ) {
     return;
   }
