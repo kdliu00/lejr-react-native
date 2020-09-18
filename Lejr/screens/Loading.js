@@ -11,9 +11,14 @@ import {
   getKeyForCurrentGroupItems,
 } from '../util/LocalData';
 import {User} from '../util/DataObjects';
-import {defaultProfilePic, Collection, Screen} from '../util/Constants';
+import {
+  defaultProfilePic,
+  Collection,
+  Screen,
+  CurrentGroupKey,
+} from '../util/Constants';
 import {Component} from 'react';
-import {StoreData} from '../util/UtilityMethods';
+import {RetrieveData, StoreData} from '../util/UtilityMethods';
 
 export default class Loading extends Component {
   constructor() {
@@ -30,6 +35,7 @@ export default class Loading extends Component {
           if (doc.exists) {
             console.log('User document found');
             LocalData.user = User.firestoreConverter.fromFirestore(doc);
+            LocalData.userCopy = JSON.parse(JSON.stringify(LocalData.user));
             handleScreen(this.props.navigation);
           } else {
             console.log('No document for user, creating new one');
@@ -68,6 +74,7 @@ export default class Loading extends Component {
       setTimeout(() => handleScreen(this.props.navigation), 500);
     } else {
       StoreData(getKeyForCurrentGroupItems(), null);
+      StoreData(CurrentGroupKey, null);
       this.props.navigation.navigate(Screen.Login);
     }
   }
@@ -100,9 +107,11 @@ function handleScreen(navigation) {
   if (isPossibleObjectEmpty(LocalData.user.groups)) {
     navigation.navigate(Screen.CreateGroup);
   } else if (!LocalData.currentGroup) {
-    loadGroupAsMain(LocalData.user.groups[0].groupId).then(() =>
-      navigation.navigate(Screen.Dashboard),
-    );
+    RetrieveData(CurrentGroupKey).then(value => {
+      loadGroupAsMain(
+        value == null ? LocalData.user.groups[0].groupId : value,
+      ).then(() => navigation.navigate(Screen.Dashboard));
+    });
   } else {
     navigation.navigate(Screen.Dashboard);
   }

@@ -47,7 +47,6 @@ AppState.addEventListener('change', () => {
   console.log('Focus changed, saving data');
   StoreData(getKeyForCurrentGroupItems(), LocalData.items);
   pushUserData();
-  pushGroupData();
 });
 
 BackHandler.addEventListener('hardwareBackPress', () => {

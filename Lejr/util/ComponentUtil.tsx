@@ -1,10 +1,11 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {Layout, withStyles, Text} from '@ui-kitten/components';
 import {RectButton, ScrollView} from 'react-native-gesture-handler';
 import Slider from '@react-native-community/slider';
 import NewItem from '../screens/dashboard/Contribution/NewItem';
 import {LocalData} from './LocalData';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import {MergeState} from './UtilityMethods';
 
 export {
   ThemedLayout,
@@ -83,12 +84,22 @@ const ThemedScroll = withStyles(ScrollWrapper, theme => ({
 const CardWrapper = (props: any) => {
   const {eva, style, ...restProps} = props;
 
-  return <RectButton {...restProps} style={[eva.style.container, style]} />;
+  return (
+    <RectButton
+      {...restProps}
+      style={[
+        eva.style.container,
+        style,
+        {
+          backgroundColor: eva.theme[props.customBackground],
+        },
+      ]}
+    />
+  );
 };
 const ThemedCard = withStyles(CardWrapper, theme => ({
   container: {
     backgroundColor: theme['color-primary-100'],
-    borderColor: theme['color-basic-500'],
   },
 }));
 
@@ -112,33 +123,53 @@ const ThemedSlider = withStyles(SliderWrapper, theme => ({
   },
 }));
 
-const SplitSlider = (props: any) => {
-  const userId: string = props.userId;
-  const objectInstance: NewItem = props.objectInstance;
-  const defaultPercent: number = props.value;
-  objectInstance.itemSplitPercent[userId] = defaultPercent;
+class SplitSlider extends Component {
+  userId: string;
+  objectInstance: NewItem;
+  displayPercent: number;
+  passProps: any;
 
-  return (
-    <ThemedLayout style={props.sliderContainer}>
-      <ThemedLayout style={props.sliderLabel}>
-        <Text>
-          {Object(LocalData.currentGroup.memberNames)[userId] +
-            ' pays ' +
-            Math.round(objectInstance.itemSplitPercent[userId]) +
-            '%'}
-        </Text>
+  constructor(props: Readonly<{}>) {
+    super(props);
+    this.passProps = this.props as any;
+    this.userId = this.passProps.userId;
+    this.objectInstance = this.passProps.objectInstance;
+    this.state = {
+      displayPercent: this.passProps.value,
+    };
+  }
+
+  componentDidMount() {
+    this.updatePercent((this.state as any).displayPercent);
+  }
+
+  updatePercent(value: number) {
+    this.objectInstance.itemSplitPercent[this.userId] = value;
+  }
+
+  render() {
+    return (
+      <ThemedLayout style={this.passProps.sliderContainer}>
+        <ThemedLayout style={this.passProps.sliderLabel}>
+          <Text>
+            {LocalData.currentGroup.memberNames[this.userId] +
+              ' pays ' +
+              Math.round((this.state as any).displayPercent) +
+              '%'}
+          </Text>
+        </ThemedLayout>
+        <ThemedSlider
+          {...this.passProps}
+          style={this.passProps.sliderStyle}
+          onValueChange={(value: number) => {
+            this.updatePercent(value);
+            MergeState(this, {displayPercent: value});
+          }}
+        />
       </ThemedLayout>
-      <ThemedSlider
-        {...props}
-        style={props.sliderStyle}
-        onValueChange={(value: number) => {
-          objectInstance.itemSplitPercent[userId] = value;
-          objectInstance.forceUpdate();
-        }}
-      />
-    </ThemedLayout>
-  );
-};
+    );
+  }
+}
 
 class CustomSwipeable extends Swipeable {
   close = () => {

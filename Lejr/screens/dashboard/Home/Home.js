@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, SafeAreaView, Dimensions} from 'react-native';
+import {StyleSheet, SafeAreaView} from 'react-native';
 import {Layout, Text, Button, Icon} from '@ui-kitten/components';
 import {ContributionCard} from '../../../util/ContributionUI';
 import {
@@ -9,7 +9,7 @@ import {
   isPossibleObjectEmpty,
   getKeyForCurrentGroupItems,
 } from '../../../util/LocalData';
-import {Screen} from '../../../util/Constants';
+import {Screen, CurrentGroupKey} from '../../../util/Constants';
 import {
   ThemedLayout,
   ThemedList,
@@ -18,6 +18,7 @@ import {
 } from '../../../util/ComponentUtil';
 import {RetrieveData, StoreData} from '../../../util/UtilityMethods';
 import Animated, {Easing} from 'react-native-reanimated';
+import {RectButton} from 'react-native-gesture-handler';
 
 const InviteIcon = props => <Icon name="person-add-outline" {...props} />;
 const MailIcon = props => <Icon name="email-outline" {...props} />;
@@ -101,14 +102,14 @@ export default class Home extends Component {
               size="large"
               onPress={() => this.props.navigation.navigate(Screen.Invitations)}
             />
-            <Layout style={Styles.center}>
-              <Text
-                numberOfLines={1}
-                category="h5"
-                onPress={() => this.toggleGroupSelect()}>
+            <ThemedCard
+              style={Styles.groupLabel}
+              customBackground="background-basic-color-1"
+              onPress={() => this.toggleGroupSelect()}>
+              <Text numberOfLines={1} category="h5">
                 {this.selectedGroup}
               </Text>
-            </Layout>
+            </ThemedCard>
             <Button
               accessoryLeft={InviteIcon}
               appearance="ghost"
@@ -129,6 +130,7 @@ export default class Home extends Component {
 function onGroupPress(groupId, component) {
   StoreData(getKeyForCurrentGroupItems(), LocalData.items);
   if (LocalData.currentGroup.groupId !== groupId) {
+    StoreData(CurrentGroupKey, groupId);
     loadGroupAsMain(groupId)
       .catch(error => console.warn(error.message))
       .finally(() => component.props.navigation.popToTop());
@@ -154,6 +156,13 @@ const Styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  groupLabel: {
+    paddingVertical: 10,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+  },
   groupItem: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -162,7 +171,7 @@ const Styles = StyleSheet.create({
     borderRadius: 8,
   },
   groupSelect: {
-    height: 72,
+    height: 64,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

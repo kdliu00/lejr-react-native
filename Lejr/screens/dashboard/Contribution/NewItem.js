@@ -5,7 +5,7 @@ import {
   SafeAreaView,
   Dimensions,
   ScrollView,
-  Animated,
+  Alert,
 } from 'react-native';
 import {Layout, Text, Button} from '@ui-kitten/components';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
@@ -24,6 +24,7 @@ import {
   isPossibleObjectEmpty,
   LocalData,
 } from '../../../util/LocalData';
+import Animated, {Easing} from 'react-native-reanimated';
 
 const SLIDER_SHOW = Dimensions.get('window').height - 420;
 const SLIDER_HIDE = Math.round(SLIDER_SHOW * 0.4);
@@ -41,7 +42,9 @@ export default class NewItem extends Component {
       itemName: this.passedItem.itemName,
       itemNameError: '',
       isSubmitting: false,
+      renderHeight: new Animated.Value(SLIDER_SHOW),
     };
+    this.scrollExpanded = true;
     this.itemNameRef = React.createRef();
     this.itemCostRef = React.createRef();
     this.validationSchema = yup.object().shape({
@@ -57,9 +60,9 @@ export default class NewItem extends Component {
         .label('Item')
         .required(),
     });
-    this.scrollHeight = new Animated.Value(SLIDER_SHOW);
 
-    this.itemSplitPercent = {};
+    this.itemSplitPercent =
+      this.passedItem == null ? {} : this.passedItem.itemSplit;
     this.groupMemberIds = Object.keys(LocalData.currentGroup.members);
   }
 
@@ -80,25 +83,23 @@ export default class NewItem extends Component {
     this.keyboardDidHideSub.remove();
   }
 
-  keyboardDidShow = event => {
-    Animated.parallel([
-      Animated.timing(this.scrollHeight, {
-        useNativeDriver: false,
-        duration: event.duration,
-        toValue: SLIDER_HIDE,
-      }),
-    ]).start();
+  keyboardDidShow = () => {
+    this.toggleAnim();
   };
 
-  keyboardDidHide = event => {
-    Animated.parallel([
-      Animated.timing(this.scrollHeight, {
-        useNativeDriver: false,
-        duration: event.duration,
-        toValue: SLIDER_SHOW,
-      }),
-    ]).start();
+  keyboardDidHide = () => {
+    this.toggleAnim();
   };
+
+  toggleAnim() {
+    const {renderHeight} = this.state;
+    Animated.timing(renderHeight, {
+      duration: 100,
+      toValue: this.scrollExpanded ? SLIDER_HIDE : SLIDER_SHOW,
+      easing: Easing.inOut(Easing.linear),
+    }).start();
+    this.scrollExpanded = !this.scrollExpanded;
+  }
 
   render() {
     this.splitSliders = this.groupMemberIds.map(userId => {
@@ -111,9 +112,9 @@ export default class NewItem extends Component {
           minimumValue={0}
           maximumValue={100}
           value={
-            isPossibleObjectEmpty(this.passedItem.itemSplit)
+            isPossibleObjectEmpty(this.itemSplitPercent)
               ? Math.round(10000 / this.groupMemberIds.length) / 100
-              : this.passedItem.itemSplit[userId]
+              : this.itemSplitPercent[userId]
           }
           step={1}
           userId={userId}
@@ -166,7 +167,10 @@ export default class NewItem extends Component {
               />
             </Layout>
             <Animated.View
-              style={[Styles.scrollContainer, {height: this.scrollHeight}]}>
+              style={[
+                Styles.scrollContainer,
+                {height: this.state.renderHeight},
+              ]}>
               <ScrollView style={Styles.scrollView}>
                 {this.splitSliders}
               </ScrollView>
@@ -189,13 +193,6 @@ export default class NewItem extends Component {
                   style={FormStyles.button}
                   onPress={() => {
                     MergeState(this, {isSubmitting: true});
-                    // if (
-                    //   Object.values(this.itemSplitPercent).reduce(
-                    //     (a, b) => a + b,
-                    //     0,
-                    //   ) != 100
-                    // )
-                    console.log(this.itemSplitPercent);
                     this.validationSchema
                       .validate({
                         itemName: this.state.itemName,
@@ -208,26 +205,45 @@ export default class NewItem extends Component {
                         ]),
                       )
                       .then(valid => {
+                        const total = Math.round(
+                          Object.values(this.itemSplitPercent).reduce(
+                            (a, b) => a + b,
+                            0,
+                          ),
+                        );
                         if (valid) {
-                          const UpdatedItem = new Item(
-                            this.state.itemName,
-                            Number(this.state.itemCost),
-                            this.itemSplitPercent,
-                          );
-                          if (this.vrIndex != null) {
-                            LocalData.items[this.vrIndex] = UpdatedItem;
+                          if (total !== 100) {
+                            MergeState(this, {isSubmitting: false});
+                            Alert.alert(
+                              'Percentage Error',
+                              'The individual percentages only add up to ' +
+                                total +
+                                '%. Make sure they add up to 100%.',
+                            );
                           } else {
-                            LocalData.items.push(UpdatedItem);
+                            const UpdatedItem = new Item(
+                              this.state.itemName,
+                              Number(this.state.itemCost),
+                              this.itemSplitPercent,
+                            );
+                            if (this.vrIndex != null) {
+                              LocalData.items[this.vrIndex] = UpdatedItem;
+                            } else {
+                              LocalData.items.push(UpdatedItem);
+                            }
+                            LocalData.items = LocalData.items.filter(
+                              item => item != null,
+                            );
+                            StoreData(
+                              getKeyForCurrentGroupItems(),
+                              LocalData.items,
+                            );
+                            LocalData.container.forceUpdate();
+                            setTimeout(
+                              () => this.props.navigation.goBack(),
+                              500,
+                            );
                           }
-                          LocalData.items = LocalData.items.filter(
-                            item => item != null,
-                          );
-                          StoreData(
-                            getKeyForCurrentGroupItems(),
-                            LocalData.items,
-                          );
-                          LocalData.container.forceUpdate();
-                          setTimeout(() => this.props.navigation.goBack(), 500);
                         } else {
                           MergeState(this, {isSubmitting: false});
                         }
@@ -257,12 +273,13 @@ const Styles = StyleSheet.create({
   slider: {
     justifyContent: 'center',
     width: Dimensions.get('window').width * 0.6,
-    height: 40,
+    height: 50,
   },
   sliderContainer: {
     alignItems: 'center',
   },
   scrollView: {
+    flex: 1,
     paddingTop: 10,
   },
   scrollContainer: {

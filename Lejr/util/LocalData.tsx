@@ -23,6 +23,7 @@ class LocalData {
   static currentGroup: Group = null;
   static items: Item[] = null;
   static container: Contribution = null;
+  static userCopy: User = null;
 }
 
 function getKeyForCurrentGroupItems() {
@@ -163,8 +164,22 @@ async function joinGroup(groupId: string) {
     });
 }
 
+function getUpdatedKeyValuesOnly(reference: any, compare: any) {
+  var updated = {};
+  if (reference != null) {
+    Object.keys(reference).forEach(key => {
+      const compareValue = compare[key];
+      if (JSON.stringify(reference[key]) != JSON.stringify(compareValue)) {
+        updated[key] = compareValue;
+      }
+    });
+  }
+  return updated;
+}
+
 function pushUserData() {
-  if (LocalData.user)
+  const updated = getUpdatedKeyValuesOnly(LocalData.userCopy, LocalData.user);
+  if (LocalData.user && !isPossibleObjectEmpty(updated))
     firestore()
       .collection(Collection.Users)
       .doc(LocalData.user.userId)
