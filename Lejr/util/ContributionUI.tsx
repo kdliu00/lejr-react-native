@@ -41,8 +41,8 @@ const ItemCard = (props: any) => {
 
   const item: Item = props.item;
   const index: number = props.index;
-  const renderScaleY = new Animated.Value(1);
-  const offsetY = new Animated.Value(RENDER_HEIGHT);
+  const renderScaleY = new Animated.Value<number>(1);
+  const offsetY = new Animated.Value<number>(RENDER_HEIGHT);
   const animDuration = 500;
   const swipeableRef = React.createRef();
 
@@ -51,7 +51,7 @@ const ItemCard = (props: any) => {
     toValue: 0,
     easing: Easing.out(Easing.exp),
   });
-  const shiftAnim = Animated.timing(offsetY as Animated.Value<number>, {
+  const shiftAnim = Animated.timing(offsetY, {
     duration: animDuration,
     toValue: 0,
     easing: Easing.out(Easing.exp),

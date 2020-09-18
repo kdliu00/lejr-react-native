@@ -19,6 +19,7 @@ function MergeState(component: Component, value: Object) {
  * @param value storage value
  */
 async function StoreData(key: string, value: any) {
+  console.log('Storing data for key ' + key);
   try {
     const jsonValue = JSON.stringify(value);
     await AsyncStorage.setItem(key, jsonValue);
@@ -32,6 +33,7 @@ async function StoreData(key: string, value: any) {
  * @param key storage key
  */
 async function RetrieveData(key: string) {
+  console.log('Retrieving data for key ' + key);
   try {
     const jsonValue = await AsyncStorage.getItem(key);
     return jsonValue != null ? JSON.parse(jsonValue) : null;

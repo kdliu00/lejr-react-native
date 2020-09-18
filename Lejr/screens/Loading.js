@@ -13,7 +13,7 @@ import {
 import {User} from '../util/DataObjects';
 import {defaultProfilePic, Collection, Screen} from '../util/Constants';
 import {Component} from 'react';
-import {RetrieveData, StoreData} from '../util/UtilityMethods';
+import {StoreData} from '../util/UtilityMethods';
 
 export default class Loading extends Component {
   constructor() {

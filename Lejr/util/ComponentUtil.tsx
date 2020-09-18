@@ -61,7 +61,18 @@ const ThemedLayout = withStyles(LayoutWrapper, theme => ({
 const ScrollWrapper = (props: any) => {
   const {eva, style, ...restProps} = props;
 
-  return <ScrollView {...restProps} style={[eva.style.container, style]} />;
+  return (
+    <ScrollView
+      {...restProps}
+      style={[
+        eva.style.container,
+        style,
+        {
+          backgroundColor: eva.theme[props.customBackground],
+        },
+      ]}
+    />
+  );
 };
 const ThemedScroll = withStyles(ScrollWrapper, theme => ({
   container: {
