@@ -19,6 +19,10 @@ function MergeState(component: Component, value: Object) {
  * @param value storage value
  */
 async function StoreData(key: string, value: any) {
+  if (key == null) {
+    console.log('Storage key was null');
+    return;
+  }
   console.log('Storing data for key ' + key);
   try {
     const jsonValue = JSON.stringify(value);

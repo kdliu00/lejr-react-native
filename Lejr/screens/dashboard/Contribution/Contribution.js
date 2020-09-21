@@ -4,7 +4,7 @@ import {Layout, Text, Button, Icon} from '@ui-kitten/components';
 import {ThemedLayout, ThemedScroll} from '../../../util/ComponentUtil';
 import {getKeyForCurrentGroupItems, LocalData} from '../../../util/LocalData';
 import {Item} from '../../../util/DataObjects';
-import {Screen} from '../../../util/Constants';
+import {BannerHeight, Screen} from '../../../util/Constants';
 import {ItemCard} from '../../../util/ContributionUI';
 import {StoreData} from '../../../util/UtilityMethods';
 
@@ -15,6 +15,7 @@ const SaveIcon = props => <Icon name="cloud-upload-outline" {...props} />;
 export default class Contribution extends Component {
   constructor() {
     super();
+    this.totalRef = React.createRef();
   }
 
   componentDidMount() {
@@ -30,6 +31,9 @@ export default class Contribution extends Component {
     return (
       <ThemedLayout style={Styles.container}>
         <SafeAreaView style={Styles.container}>
+          <ThemedLayout style={Styles.banner}>
+            <TotalText ref={this.totalRef} />
+          </ThemedLayout>
           <ThemedLayout style={Styles.itemList}>
             {LocalData.items.length === 0 ? (
               <Text appearance="hint" style={Styles.placeholderText}>
@@ -41,13 +45,20 @@ export default class Contribution extends Component {
                 contentContainerStyle={Styles.contentContainer}>
                 {LocalData.items.map((item, index) => {
                   if (item != null) {
-                    return <ItemCard key={index} item={item} index={index} />;
+                    return (
+                      <ItemCard
+                        key={index}
+                        item={item}
+                        index={index}
+                        totalRef={this.totalRef}
+                      />
+                    );
                   }
                 })}
               </ThemedScroll>
             )}
           </ThemedLayout>
-          <Layout style={Styles.actionButtons}>
+          <Layout style={Styles.banner}>
             <Button
               style={Styles.button}
               appearance="ghost"
@@ -60,7 +71,7 @@ export default class Contribution extends Component {
                     {
                       text: 'Yes',
                       onPress: () => {
-                        console.log('Deleting items');
+                        console.log('Deleting all items');
                         LocalData.items = [];
                         StoreData(
                           getKeyForCurrentGroupItems(),
@@ -104,6 +115,21 @@ export default class Contribution extends Component {
   }
 }
 
+class TotalText extends Component {
+  render() {
+    return (
+      <Text style={Styles.titleText} category="h4">
+        Total: $
+        {LocalData.items
+          .map(item => {
+            return item ? item.itemCost : 0;
+          })
+          .reduce((a, b) => a + b, 0)}
+      </Text>
+    );
+  }
+}
+
 const Styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -115,8 +141,13 @@ const Styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  actionButtons: {
-    height: 72,
+  titleText: {
+    marginTop: 10,
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  banner: {
+    height: BannerHeight,
     alignItems: 'center',
     justifyContent: 'space-around',
     flexDirection: 'row',

@@ -216,9 +216,9 @@ export default class NewItem extends Component {
                             MergeState(this, {isSubmitting: false});
                             Alert.alert(
                               'Percentage Error',
-                              'The individual percentages only add up to ' +
+                              'These percentages add up to ' +
                                 total +
-                                '%. Make sure they add up to 100%.',
+                                '%. Please make sure they add up to 100%.',
                             );
                           } else {
                             const UpdatedItem = new Item(

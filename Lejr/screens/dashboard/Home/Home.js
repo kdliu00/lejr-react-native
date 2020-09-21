@@ -9,7 +9,7 @@ import {
   isPossibleObjectEmpty,
   getKeyForCurrentGroupItems,
 } from '../../../util/LocalData';
-import {Screen, CurrentGroupKey} from '../../../util/Constants';
+import {Screen, CurrentGroupKey, BannerHeight} from '../../../util/Constants';
 import {
   ThemedLayout,
   ThemedList,
@@ -18,7 +18,6 @@ import {
 } from '../../../util/ComponentUtil';
 import {RetrieveData, StoreData} from '../../../util/UtilityMethods';
 import Animated, {Easing} from 'react-native-reanimated';
-import {RectButton} from 'react-native-gesture-handler';
 
 const InviteIcon = props => <Icon name="person-add-outline" {...props} />;
 const MailIcon = props => <Icon name="email-outline" {...props} />;
@@ -72,7 +71,7 @@ export default class Home extends Component {
         <SafeAreaView style={Styles.container}>
           {isPossibleObjectEmpty(this.virtualReceiptData) ? (
             <ThemedLayout style={Styles.center}>
-              <Text appearance="hint">No contributions yet</Text>
+              <Text appearance="hint">No group purchases yet</Text>
             </ThemedLayout>
           ) : (
             <ThemedList
@@ -167,11 +166,12 @@ const Styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 12,
-    margin: 8,
+    marginHorizontal: 8,
+    marginVertical: 4,
     borderRadius: 8,
   },
   groupSelect: {
-    height: 64,
+    height: BannerHeight,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -185,7 +185,7 @@ const Styles = StyleSheet.create({
     paddingVertical: 4,
   },
   scrollView: {
-    paddingTop: 2,
+    paddingTop: 6,
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
   },

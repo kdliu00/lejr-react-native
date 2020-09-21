@@ -27,9 +27,9 @@ class LocalData {
 }
 
 function getKeyForCurrentGroupItems() {
-  return (
-    ItemsKey + (LocalData.currentGroup ? LocalData.currentGroup.groupId : null)
-  );
+  return LocalData.currentGroup
+    ? ItemsKey + LocalData.currentGroup.groupId
+    : null;
 }
 
 function signOut() {
@@ -166,7 +166,7 @@ async function joinGroup(groupId: string) {
 
 function getUpdatedKeyValuesOnly(reference: any, compare: any) {
   var updated = {};
-  if (reference != null) {
+  if (reference != null && compare != null) {
     Object.keys(reference).forEach(key => {
       const compareValue = compare[key];
       if (JSON.stringify(reference[key]) != JSON.stringify(compareValue)) {

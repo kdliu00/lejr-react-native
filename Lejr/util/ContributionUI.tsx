@@ -41,6 +41,7 @@ const ItemCard = (props: any) => {
 
   const item: Item = props.item;
   const index: number = props.index;
+  const totalRef: React.RefObject<any> = props.totalRef;
   const renderScaleY = new Animated.Value<number>(1);
   const offsetY = new Animated.Value<number>(RENDER_HEIGHT);
   const animDuration = 500;
@@ -79,6 +80,7 @@ const ItemCard = (props: any) => {
         renderRightActions={renderRightActions}
         onSwipeableRightWillOpen={() => {
           LocalData.items[index] = null;
+          totalRef.current.forceUpdate();
           shrinkAnim.start();
           shiftAnim.start();
         }}

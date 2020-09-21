@@ -69,7 +69,9 @@ const ScrollWrapper = (props: any) => {
         eva.style.container,
         style,
         {
-          backgroundColor: eva.theme[props.customBackground],
+          backgroundColor: props.customBackground
+            ? eva.theme[props.customBackground]
+            : eva.style.container.backgroundColor,
         },
       ]}
     />
@@ -91,7 +93,9 @@ const CardWrapper = (props: any) => {
         eva.style.container,
         style,
         {
-          backgroundColor: eva.theme[props.customBackground],
+          backgroundColor: props.customBackground
+            ? eva.theme[props.customBackground]
+            : eva.style.container.backgroundColor,
         },
       ]}
     />

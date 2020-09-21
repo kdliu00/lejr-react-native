@@ -21,6 +21,7 @@ import Invitations from './dashboard/Home/Invitations';
 import NewItem from './dashboard/Contribution/NewItem';
 
 import {Component} from 'react';
+import ContribDetails from './dashboard/Contribution/ContribDetails';
 
 const MainStack = createBottomTabNavigator();
 const RootStack = createStackNavigator();
@@ -56,6 +57,7 @@ const DashboardScreen = () => (
     <RootStack.Screen name={Screen.InviteToGroup} component={InviteToGroup} />
     <RootStack.Screen name={Screen.Invitations} component={Invitations} />
     <RootStack.Screen name={Screen.NewItem} component={NewItem} />
+    <RootStack.Screen name={Screen.ContribDetails} component={ContribDetails} />
   </RootStack.Navigator>
 );
 

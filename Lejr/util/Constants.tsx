@@ -1,4 +1,5 @@
 export {
+  BannerHeight,
   ItemsKey,
   CurrentGroupKey,
   defaultProfilePic,
@@ -8,6 +9,8 @@ export {
   Screen,
   ErrorCode,
 };
+
+const BannerHeight = 64;
 
 const ItemsKey = 'items_key_';
 const CurrentGroupKey = 'current_group_id';
@@ -42,6 +45,7 @@ enum Screen {
   InviteToGroup = 'InviteToGroup',
   Invitations = 'Invitations',
   NewItem = 'NewItem',
+  ContribDetails = 'ContribDetails',
 }
 
 enum ErrorCode {
