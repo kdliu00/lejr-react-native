@@ -38,6 +38,7 @@ enum Collection {
 }
 
 enum Screen {
+  Parent = 'Parent',
   Loading = 'Loading',
   Login = 'Login',
   EmailLogin = 'EmailLogin',

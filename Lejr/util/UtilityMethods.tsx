@@ -23,18 +23,23 @@ function MergeState(component: Component, value: Object) {
 
 /**
  * Stores and persists data locally.
+ * Passing in null for value deletes the data at key.
  * @param key storage key
  * @param value storage value
  */
 async function StoreData(key: string, value: any) {
   if (key == null) {
-    console.warn('Storage key was null');
+    console.log('Storage key was null, value not saved: ' + value);
     return;
   }
   console.log('Storing data for key ' + key);
   try {
-    const jsonValue = JSON.stringify(value);
-    await AsyncStorage.setItem(key, jsonValue);
+    if (value == null) {
+      await AsyncStorage.removeItem(key);
+    } else {
+      const jsonValue = JSON.stringify(value);
+      await AsyncStorage.setItem(key, jsonValue);
+    }
   } catch (e) {
     Alert.alert('Error', 'Could not save data.');
   }
@@ -45,14 +50,10 @@ async function StoreData(key: string, value: any) {
  * @param key storage key
  */
 async function RetrieveData(key: string) {
-  if (key == null) {
-    console.warn('Retrieval key was null');
-    return;
-  }
   console.log('Retrieving data for key ' + key);
   try {
     const jsonValue = await AsyncStorage.getItem(key);
-    return jsonValue != null ? JSON.parse(jsonValue) : null;
+    return jsonValue == null ? null : JSON.parse(jsonValue);
   } catch (e) {
     Alert.alert('Error', 'Could not load data.');
   }

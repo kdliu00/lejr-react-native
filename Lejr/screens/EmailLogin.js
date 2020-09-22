@@ -99,7 +99,7 @@ export default class EmailLogin extends Component {
               disabled={this.state.isSubmitting}>
               Go back
             </Button>
-            <Layout style={FormStyles.dynamicButton}>
+            <Layout>
               {this.state.isSubmitting ? (
                 <Button
                   style={FormStyles.button}

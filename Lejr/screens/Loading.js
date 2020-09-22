@@ -89,7 +89,6 @@ export default class Loading extends Component {
   }
 
   componentDidMount() {
-    console.log('Arrived at Loading');
     auth().onAuthStateChanged(() => {
       //Go back to this screen, invokes onFocus() listener
       if (this.props.navigation.canGoBack()) {
@@ -116,7 +115,7 @@ export default class Loading extends Component {
 
 function handleScreen(navigation) {
   if (isPossibleObjectEmpty(LocalData.user.groups)) {
-    navigation.navigate(Screen.CreateGroup);
+    navigation.navigate(Screen.CreateGroup, {welcome: true});
   } else if (!LocalData.currentGroup) {
     RetrieveData(Key.CurrentGroup).then(value => {
       loadGroupAsMain(

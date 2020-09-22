@@ -9,7 +9,7 @@ import {
   pushGroupData,
   isPossibleObjectEmpty,
 } from '../util/LocalData';
-import {Collection, Screen} from '../util/Constants';
+import {AnimKeyboardDuration, Collection, Screen} from '../util/Constants';
 import {GroupInfo, Group} from '../util/DataObjects';
 import * as yup from 'yup';
 import {
@@ -22,7 +22,7 @@ import {MergeState} from '../util/UtilityMethods';
 import {Component} from 'react';
 
 export default class CreateGroup extends Component {
-  constructor() {
+  constructor(props) {
     super();
     this.state = {
       isCreating: false,
@@ -36,6 +36,8 @@ export default class CreateGroup extends Component {
         .label('Group name')
         .required(),
     });
+
+    this.welcome = props.route.params ? props.route.params.welcome : false;
   }
 
   componentDidMount() {
@@ -47,15 +49,33 @@ export default class CreateGroup extends Component {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <Layout style={Styles.container}>
           <Layout style={Styles.textContainer}>
-            <Layout style={Styles.textSubContainer}>
+            {LocalData.user.groups.length === 0 ? (
+              <Layout>
+                <Layout style={Styles.textSubContainer}>
+                  <Text style={Styles.text} category="h6">
+                    It looks like you're not in a group yet!
+                  </Text>
+                  <Text style={Styles.text}>
+                    You can create one here or accept an invitation to another
+                    group.
+                  </Text>
+                </Layout>
+                <Layout style={Styles.iconContainer}>
+                  <Button
+                    appearance="ghost"
+                    size="large"
+                    onPress={() =>
+                      this.props.navigation.navigate(Screen.Invitations)
+                    }>
+                    See invitations
+                  </Button>
+                </Layout>
+              </Layout>
+            ) : (
               <Text style={Styles.text} category="h6">
-                It looks like you're not in a group yet!
+                Create a group
               </Text>
-              <Text style={Styles.text}>
-                You can create one here or accept an invitation to another
-                group.
-              </Text>
-            </Layout>
+            )}
           </Layout>
           <Layout style={Styles.buttonContainer}>
             <InputField
@@ -73,14 +93,24 @@ export default class CreateGroup extends Component {
               value={this.state.groupName}
             />
             <Layout style={FormStyles.buttonStyle}>
-              <Button
-                style={FormStyles.button}
-                appearance="outline"
-                disabled={this.state.isCreating}
-                onPress={() => signOut()}>
-                Sign out
-              </Button>
-              <Layout style={FormStyles.dynamicButton}>
+              {this.welcome ? (
+                <Button
+                  style={FormStyles.button}
+                  appearance="outline"
+                  disabled={this.state.isCreating}
+                  onPress={() => signOut()}>
+                  Sign out
+                </Button>
+              ) : (
+                <Button
+                  style={FormStyles.button}
+                  appearance="outline"
+                  disabled={this.state.isCreating}
+                  onPress={() => this.props.navigation.pop()}>
+                  Go back
+                </Button>
+              )}
+              <Layout>
                 {this.state.isCreating ? (
                   <Button
                     style={FormStyles.button}
@@ -106,19 +136,19 @@ export default class CreateGroup extends Component {
                             ).then(
                               () => {
                                 console.log('Succesfully created group');
-                                this.props.navigation.navigate(
-                                  Screen.Dashboard,
+                                setTimeout(
+                                  () => this.props.navigation.popToTop(),
+                                  AnimKeyboardDuration,
                                 );
                               },
-                              error =>
+                              error => {
                                 console.warn(
                                   'Group creation failed: ' + error.message,
-                                ),
+                                );
+                                MergeState(this, {isCreating: false});
+                              },
                             );
                           }
-                        })
-                        .finally(() => {
-                          MergeState(this, {isCreating: false});
                         });
                     }}>
                     Create
@@ -176,5 +206,8 @@ const Styles = StyleSheet.create({
   text: {
     textAlign: 'center',
     marginTop: 5,
+  },
+  iconContainer: {
+    marginTop: 15,
   },
 });

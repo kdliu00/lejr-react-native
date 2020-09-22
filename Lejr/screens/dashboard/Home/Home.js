@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {StyleSheet, SafeAreaView} from 'react-native';
 import {Layout, Text, Button, Icon} from '@ui-kitten/components';
-import {ContributionCard} from '../../../util/ContributionUI';
+import {ContributionCard, MailIcon} from '../../../util/ContributionUI';
 import {
   LocalData,
   loadGroupAsMain,
@@ -25,7 +25,6 @@ import {RetrieveData, StoreData} from '../../../util/UtilityMethods';
 import Animated, {Easing} from 'react-native-reanimated';
 
 const InviteIcon = props => <Icon name="person-add-outline" {...props} />;
-const MailIcon = props => <Icon name="email-outline" {...props} />;
 const GROUP_RENDER_HEIGHT = 150;
 
 export default class Home extends Component {
@@ -56,12 +55,12 @@ export default class Home extends Component {
 
   componentDidMount() {
     console.log('Arrived at Home');
+    LocalData.home = this;
     this.props.navigation.addListener('blur', () => {
       if (this.groupSelectExpanded) {
         this.toggleGroupSelect();
       }
     });
-    LocalData.home = this;
   }
 
   toggleGroupSelect() {

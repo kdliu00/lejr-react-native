@@ -16,7 +16,6 @@ import FromImage from './dashboard/FromImage';
 import {Screen} from '../util/Constants';
 
 import InviteToGroup from './dashboard/Home/InviteToGroup';
-import Invitations from './dashboard/Home/Invitations';
 
 import NewItem from './dashboard/Contribution/NewItem';
 
@@ -24,7 +23,7 @@ import {Component} from 'react';
 import ContribDetails from './dashboard/Contribution/ContribDetails';
 
 const MainStack = createBottomTabNavigator();
-const RootStack = createStackNavigator();
+const ModalStack = createStackNavigator();
 
 const HomeIcon = props => <Icon name="home-outline" {...props} />;
 const ContributionIcon = props => (
@@ -48,17 +47,19 @@ export default class Dashboard extends Component {
 }
 
 const DashboardScreen = () => (
-  <RootStack.Navigator mode="modal" screenOptions={{headerShown: false}}>
-    <RootStack.Screen
+  <ModalStack.Navigator mode="modal" screenOptions={{headerShown: false}}>
+    <ModalStack.Screen
       name={Screen.DashboardMain}
       component={TabNavigatorComponent}
       options={{headerShown: false}}
     />
-    <RootStack.Screen name={Screen.InviteToGroup} component={InviteToGroup} />
-    <RootStack.Screen name={Screen.Invitations} component={Invitations} />
-    <RootStack.Screen name={Screen.NewItem} component={NewItem} />
-    <RootStack.Screen name={Screen.ContribDetails} component={ContribDetails} />
-  </RootStack.Navigator>
+    <ModalStack.Screen name={Screen.InviteToGroup} component={InviteToGroup} />
+    <ModalStack.Screen name={Screen.NewItem} component={NewItem} />
+    <ModalStack.Screen
+      name={Screen.ContribDetails}
+      component={ContribDetails}
+    />
+  </ModalStack.Navigator>
 );
 
 const TabNavigatorComponent = () => (

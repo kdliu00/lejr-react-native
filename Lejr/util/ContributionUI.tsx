@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleSheet} from 'react-native';
-import {Avatar, Layout, Text} from '@ui-kitten/components';
+import {Avatar, Icon, Layout, Text} from '@ui-kitten/components';
 import {VirtualReceipt, Item} from './DataObjects';
 import {DangerSwipe, ThemedCard, CustomSwipeable} from './ComponentUtil';
 import {navigate} from '../RootNav';
@@ -9,7 +9,9 @@ import Animated, {Easing} from 'react-native-reanimated';
 import {LocalData} from './LocalData';
 import {getMoneyFormatString} from './UtilityMethods';
 
-export {ContributionCard, ItemCard, PurchaseSplit};
+export {ContributionCard, ItemCard, PurchaseSplit, MailIcon};
+
+const MailIcon = props => <Icon name="email-outline" {...props} />;
 
 const ContributionCard = (props: any) => {
   const vr: VirtualReceipt = props.vr;

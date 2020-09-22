@@ -18,11 +18,6 @@ const FormStyles = StyleSheet.create({
     marginTop: 15,
     marginBottom: 40,
   },
-  dynamicButton: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   button: {
     margin: 10,
     width: 100,

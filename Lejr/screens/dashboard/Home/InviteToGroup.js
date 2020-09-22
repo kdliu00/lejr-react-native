@@ -50,7 +50,7 @@ export default class InviteToGroup extends Component {
                 appearance="outline">
                 Go back
               </Button>
-              <Layout style={FormStyles.dynamicButton}>
+              <Layout>
                 {this.state.isInviting ? (
                   <Button
                     style={FormStyles.button}

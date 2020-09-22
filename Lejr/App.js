@@ -20,6 +20,7 @@ import Dashboard from './screens/Dashboard';
 import EmailLogin from './screens/EmailLogin';
 import CreateAccount from './screens/CreateAccount';
 import CreateGroup from './screens/CreateGroup';
+import Invitations from './screens/dashboard/Home/Invitations';
 
 import {default as theme} from './eva-theme.json';
 import {Screen} from './util/Constants';
@@ -44,9 +45,10 @@ firebase.apps.forEach(app => {
 });
 
 const Stack = createStackNavigator();
+const RootStack = createStackNavigator();
 
-AppState.addEventListener('change', () => {
-  console.log('App focus changed, saving data');
+AppState.addEventListener('blur', () => {
+  console.log('App blurred, saving data');
   StoreData(getKeyForCurrentGroupItems(), LocalData.items);
   pushUserData();
 });
@@ -81,24 +83,39 @@ export default function App() {
       <IconRegistry icons={EvaIconsPack} />
       <ApplicationProvider {...eva} theme={{...eva.light, ...theme}}>
         <NavigationContainer ref={navigationRef}>
-          <Stack.Navigator
-            initialRouteName={Screen.Loading}
+          <RootStack.Navigator
+            mode="modal"
             screenOptions={{headerShown: false, gestureEnabled: false}}>
-            <Stack.Screen name={Screen.Loading} component={Loading} />
-            <Stack.Screen name={Screen.Login} component={Login} />
-            <Stack.Screen name={Screen.EmailLogin} component={EmailLogin} />
-            <Stack.Screen
-              name={Screen.CreateAccount}
-              component={CreateAccount}
+            <RootStack.Screen
+              name={Screen.Parent}
+              component={ParentStack}
+              options={{headerShown: false}}
             />
-            <Stack.Screen name={Screen.CreateGroup} component={CreateGroup} />
-            <Stack.Screen name={Screen.Dashboard} component={Dashboard} />
-          </Stack.Navigator>
+            <RootStack.Screen
+              name={Screen.Invitations}
+              component={Invitations}
+            />
+          </RootStack.Navigator>
         </NavigationContainer>
       </ApplicationProvider>
     </KeyboardAvoidingView>
   );
 }
+
+const ParentStack = () => {
+  return (
+    <Stack.Navigator
+      initialRouteName={Screen.Loading}
+      screenOptions={{headerShown: false, gestureEnabled: false}}>
+      <Stack.Screen name={Screen.Loading} component={Loading} />
+      <Stack.Screen name={Screen.Login} component={Login} />
+      <Stack.Screen name={Screen.EmailLogin} component={EmailLogin} />
+      <Stack.Screen name={Screen.CreateAccount} component={CreateAccount} />
+      <Stack.Screen name={Screen.CreateGroup} component={CreateGroup} />
+      <Stack.Screen name={Screen.Dashboard} component={Dashboard} />
+    </Stack.Navigator>
+  );
+};
 
 const Styles = StyleSheet.create({
   container: {

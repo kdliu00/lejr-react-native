@@ -263,7 +263,7 @@ function getUpdatedKeyValuesOnly(reference: any, compare: any) {
 
 function pushUserData() {
   const updated = getUpdatedKeyValuesOnly(LocalData.userCopy, LocalData.user);
-  if (LocalData.user && !isPossibleObjectEmpty(updated))
+  if (LocalData.user && !isPossibleObjectEmpty(updated)) {
     firestore()
       .collection(Collection.Users)
       .doc(LocalData.user.userId)
@@ -280,6 +280,9 @@ function pushUserData() {
           }
         },
       );
+  } else {
+    console.log('No changes in user data, user data not pushed');
+  }
 }
 
 function pushGroupData() {

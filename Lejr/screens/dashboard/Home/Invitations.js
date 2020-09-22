@@ -1,10 +1,9 @@
 import React from 'react';
 import {StyleSheet, SafeAreaView, Alert} from 'react-native';
 import {Text, Layout, Button, Icon} from '@ui-kitten/components';
-import {Screen, ErrorCode, AnimDefaultDuration} from '../../../util/Constants';
+import {ErrorCode, AnimDefaultDuration} from '../../../util/Constants';
 import {
   LocalData,
-  safeGetListData,
   pushUserData,
   joinGroup,
   isPossibleObjectEmpty,
@@ -17,7 +16,6 @@ import {
   ThemedScroll,
 } from '../../../util/ComponentUtil';
 import {Component} from 'react';
-import {MergeState} from '../../../util/UtilityMethods';
 import Animated, {Easing} from 'react-native-reanimated';
 
 const AcceptIcon = props => <Icon name="checkmark-outline" {...props} />;
@@ -81,7 +79,10 @@ export default class Invitations extends Component {
           onSwipeableLeftOpen={() => {
             closeSwipeable();
             joinGroup(item.groupId).then(
-              () => removeInvitation(index, this),
+              () => {
+                removeInvitation(index, this);
+                this.props.navigation.popToTop();
+              },
               error => {
                 console.warn(error.message);
                 if (error.message !== ErrorCode.DoesNotExist) {
@@ -147,7 +148,7 @@ export default class Invitations extends Component {
           </Layout>
           <Layout style={Styles.buttonContainer}>
             <Button
-              onPress={() => this.props.navigation.navigate(Screen.Home)}
+              onPress={() => this.props.navigation.goBack()}
               appearance="outline">
               Go back
             </Button>

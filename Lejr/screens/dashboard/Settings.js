@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {StyleSheet, SafeAreaView} from 'react-native';
 import {Button, Text, Avatar, Layout} from '@ui-kitten/components';
 import {LocalData, signOut} from '../../util/LocalData';
+import {Screen} from '../../util/Constants';
 
 export default class Settings extends Component {
   constructor() {
@@ -24,12 +25,22 @@ export default class Settings extends Component {
           />
           <Text category="h6">{LocalData.user.name}</Text>
           <Text>{LocalData.user.email}</Text>
-          <Button
-            style={Styles.button}
-            appearance="outline"
-            onPress={() => signOut()}>
-            Sign out
-          </Button>
+          <Layout style={Styles.buttonContainer}>
+            <Button
+              style={Styles.button}
+              appearance="outline"
+              onPress={() =>
+                this.props.navigation.navigate(Screen.CreateGroup)
+              }>
+              Create group
+            </Button>
+            <Button
+              style={Styles.button}
+              appearance="filled"
+              onPress={() => signOut()}>
+              Sign out
+            </Button>
+          </Layout>
         </SafeAreaView>
       </Layout>
     );
@@ -43,7 +54,10 @@ const Styles = StyleSheet.create({
     justifyContent: 'center',
   },
   button: {
-    marginTop: 40,
+    margin: 10,
+  },
+  buttonContainer: {
+    marginTop: 20,
   },
   avatar: {
     width: 96,
