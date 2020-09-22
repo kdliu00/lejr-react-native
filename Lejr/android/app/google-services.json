@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "746843927000-g5lqj37a96sf9uu5sega4qp1fceglcap.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kdlg.lejr",
+            "certificate_hash": "ff0a1271f1e345d5f0933778c90392997ef7cd00"
+          }
+        },
+        {
+          "client_id": "746843927000-8jhfum7uv41fid7ajebohtl4nururb5v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kdlg.lejr",
+            "certificate_hash": "8f8ddabc2fc09d2d6ec62a6467f4200c2e9da695"
+          }
+        },
+        {
           "client_id": "746843927000-1kd2tbmtr59ba41i9k4bk2gr8252jhau.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -32,10 +48,10 @@
               "client_type": 3
             },
             {
-              "client_id": "746843927000-njpaqjb56bsl16lrdk3t45krlin8a0ve.apps.googleusercontent.com",
+              "client_id": "746843927000-6biufia12op03j4ma7522it3s81nim8b.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.lejr"
+                "bundle_id": "com.kdlg.lejr"
               }
             }
           ]
