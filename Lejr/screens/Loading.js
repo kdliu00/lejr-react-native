@@ -9,13 +9,15 @@ import {
   isPossibleObjectEmpty,
   loadGroupAsMain,
   getKeyForCurrentGroupItems,
+  deleteAllItems,
 } from '../util/LocalData';
 import {User} from '../util/DataObjects';
 import {
   defaultProfilePic,
   Collection,
   Screen,
-  CurrentGroupKey,
+  AnimDefaultDuration,
+  Key,
 } from '../util/Constants';
 import {Component} from 'react';
 import {RetrieveData, StoreData} from '../util/UtilityMethods';
@@ -26,7 +28,10 @@ export default class Loading extends Component {
   }
 
   handleUserState(user) {
-    if (user && !LocalData.user) {
+    if (
+      user &&
+      (!LocalData.user || !(LocalData.user ? LocalData.user.userId : null))
+    ) {
       firestore()
         .collection(Collection.Users)
         .doc(user.uid)
@@ -71,10 +76,14 @@ export default class Loading extends Component {
           console.warn(error.message);
         });
     } else if (user && LocalData.user) {
-      setTimeout(() => handleScreen(this.props.navigation), 500);
+      setTimeout(
+        () => handleScreen(this.props.navigation),
+        AnimDefaultDuration,
+      );
     } else {
       StoreData(getKeyForCurrentGroupItems(), null);
-      StoreData(CurrentGroupKey, null);
+      StoreData(Key.CurrentGroup, null);
+      deleteAllItems(false);
       this.props.navigation.navigate(Screen.Login);
     }
   }
@@ -84,12 +93,14 @@ export default class Loading extends Component {
     auth().onAuthStateChanged(() => {
       //Go back to this screen, invokes onFocus() listener
       if (this.props.navigation.canGoBack()) {
+        console.log('Return to Loading');
         this.props.navigation.dispatch(StackActions.popToTop());
       }
     });
 
     //onFocus() listener
     this.props.navigation.addListener('focus', () => {
+      console.log('Arrived at Loading');
       this.handleUserState(auth().currentUser);
     });
   }
@@ -107,7 +118,7 @@ function handleScreen(navigation) {
   if (isPossibleObjectEmpty(LocalData.user.groups)) {
     navigation.navigate(Screen.CreateGroup);
   } else if (!LocalData.currentGroup) {
-    RetrieveData(CurrentGroupKey).then(value => {
+    RetrieveData(Key.CurrentGroup).then(value => {
       loadGroupAsMain(
         value == null ? LocalData.user.groups[0].groupId : value,
       ).then(() => navigation.navigate(Screen.Dashboard));

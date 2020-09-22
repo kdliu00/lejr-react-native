@@ -1,19 +1,19 @@
 export {
   BannerHeight,
-  ItemsKey,
-  CurrentGroupKey,
+  AnimDefaultDuration,
+  AnimKeyboardDuration,
   defaultProfilePic,
   iOSWebClientId,
   androidWebClientId,
+  Key,
   Collection,
   Screen,
   ErrorCode,
 };
 
-const BannerHeight = 64;
-
-const ItemsKey = 'items_key_';
-const CurrentGroupKey = 'current_group_id';
+const AnimDefaultDuration = 400;
+const AnimKeyboardDuration = 200;
+const BannerHeight = 72;
 
 const defaultProfilePic =
   'https://firebasestorage.googleapis.com/v0/b/lejr-fa6e3.appspot.com/o/default-profile-pic.jpg?alt=media&token=1ae60215-ca49-4da5-b759-d2fb56e33dd2';
@@ -23,6 +23,13 @@ const iOSWebClientId =
 
 const androidWebClientId =
   '746843927000-1kd2tbmtr59ba41i9k4bk2gr8252jhau.apps.googleusercontent.com';
+
+enum Key {
+  Items = 'items_key_',
+  CurrentGroup = 'current_group_id',
+  VirtualReceipts = 'virtualReceipts',
+  Timestamp = 'timestamp',
+}
 
 enum Collection {
   Users = 'users',
@@ -53,4 +60,5 @@ enum ErrorCode {
   UserDuplicate = 'UserDuplicate',
   InvalidId = 'InvalidId',
   DoesNotExist = 'DoesNotExist',
+  DatabaseError = 'DatabaseError',
 }

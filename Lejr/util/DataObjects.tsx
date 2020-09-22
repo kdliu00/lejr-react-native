@@ -1,4 +1,4 @@
-export {User, GroupInfo, InviteInfo, Group, VirtualReceipt, Item, Archive};
+export {User, GroupInfo, InviteInfo, Group, VirtualReceipt, Item};
 
 class User {
   userId: string;
@@ -103,7 +103,6 @@ class Group {
   groupName: string;
   members: Map<string, number>;
   memberNames: Map<string, string>;
-  virtualReceipts: VirtualReceipt[];
   archives: string[];
 
   constructor(
@@ -111,14 +110,12 @@ class Group {
     groupName: string,
     members: Map<string, number>,
     memberNames: Map<string, string>,
-    virtualReceipts: VirtualReceipt[],
     archives: string[],
   ) {
     this.groupId = groupId;
     this.groupName = groupName;
     this.members = members;
     this.memberNames = memberNames;
-    this.virtualReceipts = virtualReceipts;
     this.archives = archives;
   }
 
@@ -129,7 +126,6 @@ class Group {
         groupName: group.groupName,
         members: group.members,
         memberNames: group.memberNames,
-        virtualReceipts: group.virtualReceipts,
         archives: group.archives,
       };
     },
@@ -140,7 +136,6 @@ class Group {
         data.groupName,
         data.members,
         data.memberNames,
-        data.virtualReceipts,
         data.archives,
       );
     },
@@ -151,8 +146,7 @@ class VirtualReceipt {
   buyerId: string;
   virtualReceiptId: string;
   memo: string;
-  storeName: string;
-  dateAdded: Date;
+  timestamp: number;
   items: Item[];
   total: number;
   totalSplit: Map<string, number>;
@@ -162,8 +156,7 @@ class VirtualReceipt {
     buyerId: string,
     virtualReceiptId: string,
     memo: string,
-    storeName: string,
-    dateAdded: Date,
+    timestamp: number,
     items: Item[],
     total: number,
     totalSplit: Map<string, number>,
@@ -172,13 +165,40 @@ class VirtualReceipt {
     this.buyerId = buyerId;
     this.virtualReceiptId = virtualReceiptId;
     this.memo = memo;
-    this.storeName = storeName;
-    this.dateAdded = dateAdded;
+    this.timestamp = timestamp;
     this.items = items;
     this.total = total;
     this.totalSplit = totalSplit;
     this.receiptImage = receiptImage;
   }
+
+  static firestoreConverter = {
+    toFirestore: function(vr: VirtualReceipt) {
+      return {
+        buyerId: vr.buyerId,
+        virtualReceiptId: vr.virtualReceiptId,
+        memo: vr.memo,
+        timestamp: vr.timestamp,
+        items: vr.items,
+        total: vr.total,
+        totalSplit: vr.totalSplit,
+        receiptImage: vr.receiptImage,
+      };
+    },
+    fromFirestore: function(snapshot: {data: () => any}) {
+      const data = snapshot.data();
+      return new VirtualReceipt(
+        data.buyerId,
+        data.virtualReceiptId,
+        data.memo,
+        data.timestamp,
+        data.items,
+        data.total,
+        data.totalSplit,
+        data.receiptImage,
+      );
+    },
+  };
 }
 
 class Item {
@@ -194,24 +214,5 @@ class Item {
     this.itemName = itemName;
     this.itemCost = itemCost;
     this.itemSplit = itemSplit;
-  }
-}
-
-class Archive {
-  dateStart: Date;
-  dateEnd: Date;
-  virtualReceipts: VirtualReceipt[];
-  endBalances: Map<string, number>;
-
-  constructor(
-    dateStart: Date,
-    dateEnd: Date,
-    virtualReceipts: VirtualReceipt[],
-    endBalances: Map<string, number>,
-  ) {
-    this.dateStart = dateStart;
-    this.dateEnd = dateEnd;
-    this.virtualReceipts = virtualReceipts;
-    this.endBalances = endBalances;
   }
 }

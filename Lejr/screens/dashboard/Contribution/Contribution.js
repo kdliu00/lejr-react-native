@@ -2,11 +2,22 @@ import React, {Component} from 'react';
 import {StyleSheet, SafeAreaView, Dimensions, Alert} from 'react-native';
 import {Layout, Text, Button, Icon} from '@ui-kitten/components';
 import {ThemedLayout, ThemedScroll} from '../../../util/ComponentUtil';
-import {getKeyForCurrentGroupItems, LocalData} from '../../../util/LocalData';
-import {Item} from '../../../util/DataObjects';
+import {
+  deleteAllItems,
+  filterItemCosts,
+  getKeyForCurrentGroupItems,
+  LocalData,
+} from '../../../util/LocalData';
+import {Item, VirtualReceipt} from '../../../util/DataObjects';
 import {BannerHeight, Screen} from '../../../util/Constants';
 import {ItemCard} from '../../../util/ContributionUI';
-import {StoreData} from '../../../util/UtilityMethods';
+import {
+  getMoneyFormatString,
+  getTotal,
+  nearestHundredth,
+  removeNullsFromList,
+  StoreData,
+} from '../../../util/UtilityMethods';
 
 const AddIcon = props => <Icon name="plus-outline" {...props} />;
 const TrashIcon = props => <Icon name="trash-2-outline" {...props} />;
@@ -72,12 +83,7 @@ export default class Contribution extends Component {
                       text: 'Yes',
                       onPress: () => {
                         console.log('Deleting all items');
-                        LocalData.items = [];
-                        StoreData(
-                          getKeyForCurrentGroupItems(),
-                          LocalData.items,
-                        );
-                        LocalData.container.forceUpdate();
+                        deleteAllItems();
                       },
                       style: 'cancel',
                     },
@@ -95,17 +101,27 @@ export default class Contribution extends Component {
               style={Styles.button}
               appearance="ghost"
               accessoryLeft={AddIcon}
-              onPress={() => {
-                this.props.navigation.push(Screen.NewItem, {
+              onPress={() =>
+                this.props.navigation.navigate(Screen.NewItem, {
                   item: new Item('', 0, {}),
-                });
-              }}
+                })
+              }
               size="large"
             />
             <Button
               style={Styles.button}
               appearance="ghost"
               accessoryLeft={SaveIcon}
+              onPress={() => {
+                if (removeNullsFromList(LocalData.items).length === 0) {
+                  Alert.alert(
+                    'No Items',
+                    'There are no items to upload. Please add at least one item before uploading.',
+                  );
+                } else {
+                  this.props.navigation.navigate(Screen.ContribDetails);
+                }
+              }}
               size="large"
             />
           </Layout>
@@ -120,11 +136,7 @@ class TotalText extends Component {
     return (
       <Text style={Styles.titleText} category="h4">
         Total: $
-        {LocalData.items
-          .map(item => {
-            return item ? item.itemCost : 0;
-          })
-          .reduce((a, b) => a + b, 0)}
+        {getMoneyFormatString(nearestHundredth(getTotal(filterItemCosts())))}
       </Text>
     );
   }

@@ -8,11 +8,16 @@ import {
   safeGetListData,
   isPossibleObjectEmpty,
   getKeyForCurrentGroupItems,
+  deleteAllItems,
 } from '../../../util/LocalData';
-import {Screen, CurrentGroupKey, BannerHeight} from '../../../util/Constants';
+import {
+  Screen,
+  Key,
+  BannerHeight,
+  AnimDefaultDuration,
+} from '../../../util/Constants';
 import {
   ThemedLayout,
-  ThemedList,
   ThemedCard,
   ThemedScroll,
 } from '../../../util/ComponentUtil';
@@ -33,9 +38,7 @@ export default class Home extends Component {
       renderHeight: new Animated.Value(0),
     };
     this.groupSelectExpanded = false;
-    this.virtualReceiptData = safeGetListData(
-      LocalData.currentGroup.virtualReceipts,
-    );
+    this.virtualReceiptData = safeGetListData(LocalData.virtualReceipts);
     this.selectedGroup = LocalData.currentGroup.groupName;
     this.GroupElements = LocalData.user.groups
       .filter(groupInfo => groupInfo.groupId !== LocalData.currentGroup.groupId)
@@ -53,12 +56,18 @@ export default class Home extends Component {
 
   componentDidMount() {
     console.log('Arrived at Home');
+    this.props.navigation.addListener('blur', () => {
+      if (this.groupSelectExpanded) {
+        this.toggleGroupSelect();
+      }
+    });
+    LocalData.home = this;
   }
 
   toggleGroupSelect() {
     const {renderHeight} = this.state;
     Animated.timing(renderHeight, {
-      duration: 500,
+      duration: AnimDefaultDuration,
       toValue: this.groupSelectExpanded ? 0 : GROUP_RENDER_HEIGHT,
       easing: Easing.inOut(Easing.exp),
     }).start();
@@ -74,12 +83,18 @@ export default class Home extends Component {
               <Text appearance="hint">No group purchases yet</Text>
             </ThemedLayout>
           ) : (
-            <ThemedList
+            <ThemedScroll
               style={Styles.container}
-              contentContainerStyle={Styles.contentContainer}
-              data={this.virtualReceiptData}
-              renderItem={ContributionCard}
-            />
+              contentContainerStyle={Styles.contentContainer}>
+              {LocalData.virtualReceipts.map(virtualReceipt => {
+                return (
+                  <ContributionCard
+                    key={virtualReceipt.virtualReceiptId}
+                    vr={virtualReceipt}
+                  />
+                );
+              })}
+            </ThemedScroll>
           )}
           <Animated.View style={{height: this.state.renderHeight}}>
             <ThemedScroll
@@ -103,7 +118,7 @@ export default class Home extends Component {
             />
             <ThemedCard
               style={Styles.groupLabel}
-              customBackground="background-basic-color-1"
+              customBackground="background-basic-color-2"
               onPress={() => this.toggleGroupSelect()}>
               <Text numberOfLines={1} category="h5">
                 {this.selectedGroup}
@@ -127,13 +142,15 @@ export default class Home extends Component {
 }
 
 function onGroupPress(groupId, component) {
-  StoreData(getKeyForCurrentGroupItems(), LocalData.items);
-  if (LocalData.currentGroup.groupId !== groupId) {
-    StoreData(CurrentGroupKey, groupId);
-    loadGroupAsMain(groupId)
-      .catch(error => console.warn(error.message))
-      .finally(() => component.props.navigation.popToTop());
+  if (LocalData.currentGroup.groupId === groupId) {
+    console.warn('Already loaded this group, invalid action');
+    return;
   }
+  deleteAllItems(false);
+  StoreData(Key.CurrentGroup, groupId);
+  loadGroupAsMain(groupId)
+    .catch(error => console.warn(error.message))
+    .finally(() => component.props.navigation.popToTop());
 }
 
 const CustomMenuItem = ({groupId, groupName, component}) => {

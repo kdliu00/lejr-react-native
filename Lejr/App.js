@@ -26,25 +26,27 @@ import {Screen} from './util/Constants';
 import {
   getKeyForCurrentGroupItems,
   LocalData,
-  pushGroupData,
   pushUserData,
 } from './util/LocalData';
 import {BackHandler} from 'react-native';
 import {Alert} from 'react-native';
 import {StoreData} from './util/UtilityMethods';
+import {LogBox} from 'react-native';
+
+LogBox.ignoreAllLogs();
 
 if (firebase.apps.length === 0) {
   firebase.initializeApp();
 }
 
 firebase.apps.forEach(app => {
-  console.log('App name: ', app.name);
+  console.log('Loading Firebase app: ', app.name);
 });
 
 const Stack = createStackNavigator();
 
 AppState.addEventListener('change', () => {
-  console.log('Focus changed, saving data');
+  console.log('App focus changed, saving data');
   StoreData(getKeyForCurrentGroupItems(), LocalData.items);
   pushUserData();
 });

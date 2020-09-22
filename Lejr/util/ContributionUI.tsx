@@ -4,33 +4,46 @@ import {Avatar, Layout, Text} from '@ui-kitten/components';
 import {VirtualReceipt, Item} from './DataObjects';
 import {DangerSwipe, ThemedCard, CustomSwipeable} from './ComponentUtil';
 import {navigate} from '../RootNav';
-import {Screen} from './Constants';
+import {AnimDefaultDuration, Screen} from './Constants';
 import Animated, {Easing} from 'react-native-reanimated';
 import {LocalData} from './LocalData';
+import {getMoneyFormatString} from './UtilityMethods';
 
-export {ContributionCard, ItemCard};
+export {ContributionCard, ItemCard, PurchaseSplit};
 
-const ContributionCard = (info: any) => {
-  const item: VirtualReceipt = info.item;
+const ContributionCard = (props: any) => {
+  const vr: VirtualReceipt = props.vr;
 
   return (
-    <ThemedCard style={Styles.contribCard}>
+    <ThemedCard
+      style={Styles.contribCard}
+      onPress={() => {
+        LocalData.currentVR = vr;
+        LocalData.items = vr.items;
+        LocalData.container.forceUpdate();
+        setTimeout(() => navigate(Screen.Contribution), 150);
+      }}>
       <Layout style={Styles.header}>
         <Layout style={Styles.topLeft}>
-          <Text numberOfLines={1}>{item.memo}</Text>
+          <Text numberOfLines={1}>{vr.memo}</Text>
         </Layout>
         <Layout style={Styles.topRight}>
-          <Text numberOfLines={1}>${item.total}</Text>
+          <Text numberOfLines={1}>${vr.total}</Text>
         </Layout>
       </Layout>
       <Layout style={Styles.footer}>
-        {new Array(5).fill(
-          <Avatar
-            style={Styles.avatar}
-            size="tiny"
-            source={require('../icon.png')}
-          />,
-        )}
+        {Object.keys(vr.totalSplit).map(userId => {
+          var initials =
+            LocalData.currentGroup.memberNames[userId].match(/\b\w/g) || [];
+          initials = (
+            (initials.shift() || '') + (initials.pop() || '')
+          ).toUpperCase();
+          return (
+            <Text style={Styles.splitText} key={userId}>
+              {initials}: {Math.round(vr.totalSplit[userId])}%
+            </Text>
+          );
+        })}
       </Layout>
     </ThemedCard>
   );
@@ -44,16 +57,15 @@ const ItemCard = (props: any) => {
   const totalRef: React.RefObject<any> = props.totalRef;
   const renderScaleY = new Animated.Value<number>(1);
   const offsetY = new Animated.Value<number>(RENDER_HEIGHT);
-  const animDuration = 500;
   const swipeableRef = React.createRef();
 
   const shrinkAnim = Animated.timing(renderScaleY, {
-    duration: animDuration,
+    duration: AnimDefaultDuration,
     toValue: 0,
     easing: Easing.out(Easing.exp),
   });
   const shiftAnim = Animated.timing(offsetY, {
-    duration: animDuration,
+    duration: AnimDefaultDuration,
     toValue: 0,
     easing: Easing.out(Easing.exp),
   });
@@ -104,12 +116,36 @@ const ItemCard = (props: any) => {
               <Text numberOfLines={1}>{item.itemName}</Text>
             </Layout>
             <Layout style={Styles.topRight}>
-              <Text numberOfLines={1}>${item.itemCost.toString()}</Text>
+              <Text numberOfLines={1}>
+                ${getMoneyFormatString(item.itemCost)}
+              </Text>
             </Layout>
           </Layout>
         </ThemedCard>
       </CustomSwipeable>
     </Animated.View>
+  );
+};
+
+const PurchaseSplit = (props: any) => {
+  return (
+    <Layout style={Styles.purchaseSplit}>
+      <Layout style={Styles.topLeft}>
+        <Text numberOfLines={1} category="h6">
+          {props.userName}
+        </Text>
+      </Layout>
+      <Layout style={Styles.topRight}>
+        <Text numberOfLines={1} category="h6">
+          ${getMoneyFormatString(props.userTotal)}
+        </Text>
+      </Layout>
+      <Layout style={Styles.topRight}>
+        <Text numberOfLines={1} category="h6">
+          {props.userTotalPercent}%
+        </Text>
+      </Layout>
+    </Layout>
   );
 };
 
@@ -135,13 +171,13 @@ const Styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.0)',
   },
   topLeft: {
-    flex: 3,
+    flex: 5,
     flexDirection: 'row',
     marginRight: 8,
     backgroundColor: 'rgba(0, 0, 0, 0.0)',
   },
   topRight: {
-    flex: 1,
+    flex: 2,
     flexDirection: 'row-reverse',
     backgroundColor: 'rgba(0, 0, 0, 0.0)',
   },
@@ -154,5 +190,14 @@ const Styles = StyleSheet.create({
   avatar: {
     marginLeft: 8,
     marginRight: 8,
+  },
+  purchaseSplit: {
+    height: 42,
+    flexDirection: 'row',
+    paddingHorizontal: 40,
+    alignItems: 'center',
+  },
+  splitText: {
+    marginRight: 14,
   },
 });

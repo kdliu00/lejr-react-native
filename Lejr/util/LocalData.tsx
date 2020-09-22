@@ -1,19 +1,32 @@
-import {User, Group, InviteInfo, GroupInfo, Item} from './DataObjects';
+import {
+  User,
+  Group,
+  InviteInfo,
+  GroupInfo,
+  Item,
+  VirtualReceipt,
+} from './DataObjects';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import {Collection, ErrorCode, ItemsKey} from './Constants';
+import {Collection, ErrorCode, Key} from './Constants';
 import {Alert} from 'react-native';
 import Contribution from '../screens/dashboard/Contribution/Contribution';
+import {StoreData} from './UtilityMethods';
+import Home from '../screens/dashboard/Home/Home';
 
 export {
   LocalData,
+  deleteAllItems,
+  filterItemCosts,
   getKeyForCurrentGroupItems,
   signOut,
   pushUserData,
   pushGroupData,
   safeGetListData,
   isPossibleObjectEmpty,
+  uploadVirtualReceipt,
   loadGroupAsMain,
+  getVirtualReceiptsForGroup,
   pushInvite,
   joinGroup,
 };
@@ -24,11 +37,29 @@ class LocalData {
   static items: Item[] = null;
   static container: Contribution = null;
   static userCopy: User = null;
+  static virtualReceipts: VirtualReceipt[] = null;
+  static currentVR: VirtualReceipt = null;
+  static home: Home = null;
+}
+
+function deleteAllItems(forceUpdate: boolean = true) {
+  LocalData.currentVR = null;
+  LocalData.items = [];
+  StoreData(getKeyForCurrentGroupItems(), LocalData.items);
+  if (forceUpdate) {
+    LocalData.container.forceUpdate();
+  }
+}
+
+function filterItemCosts() {
+  return LocalData.items.map(item => {
+    return item ? item.itemCost : 0;
+  });
 }
 
 function getKeyForCurrentGroupItems() {
   return LocalData.currentGroup
-    ? ItemsKey + LocalData.currentGroup.groupId
+    ? Key.Items + LocalData.currentGroup.groupId
     : null;
 }
 
@@ -42,18 +73,68 @@ function signOut() {
     });
 }
 
+async function uploadVirtualReceipt(vr: VirtualReceipt) {
+  var docId = vr.virtualReceiptId
+    ? vr.virtualReceiptId
+    : firestore()
+        .collection(Collection.Groups)
+        .doc().id;
+
+  vr.virtualReceiptId = docId;
+
+  return firestore()
+    .collection(Collection.Groups)
+    .doc(LocalData.currentGroup.groupId)
+    .collection(Key.VirtualReceipts)
+    .doc(docId)
+    .set(VirtualReceipt.firestoreConverter.toFirestore(vr))
+    .then(
+      () => console.log('Successfully uploaded virtual receipt'),
+      error => {
+        console.error('Virtual receipt upload failed: ' + error.message);
+        Alert.alert(
+          'Database Error',
+          'We were not able to upload your purchase. Please reload the app and try again.',
+        );
+        throw new Error(ErrorCode.DatabaseError);
+      },
+    );
+}
+
 async function loadGroupAsMain(groupId: string) {
+  return Promise.all([
+    firestore()
+      .collection(Collection.Groups)
+      .doc(groupId)
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          console.log('Group document found');
+          LocalData.currentGroup = Group.firestoreConverter.fromFirestore(doc);
+        } else {
+          throw new Error(ErrorCode.InvalidId);
+        }
+      }),
+    getVirtualReceiptsForGroup(groupId),
+  ]);
+}
+
+async function getVirtualReceiptsForGroup(groupId: string) {
+  console.log('Retrieving virtual receipts for group: ' + groupId);
   return firestore()
     .collection(Collection.Groups)
     .doc(groupId)
+    .collection(Key.VirtualReceipts)
+    .orderBy(Key.Timestamp, 'desc')
+    .limit(20)
     .get()
-    .then(doc => {
-      if (doc.exists) {
-        console.log('Group document found');
-        LocalData.currentGroup = Group.firestoreConverter.fromFirestore(doc);
-      } else {
-        throw new Error(ErrorCode.InvalidId);
-      }
+    .then(querySnapshot => {
+      LocalData.virtualReceipts = [];
+      querySnapshot.forEach(doc => {
+        LocalData.virtualReceipts.push(
+          VirtualReceipt.firestoreConverter.fromFirestore(doc),
+        );
+      });
     });
 }
 
@@ -67,6 +148,9 @@ function safeGetListData(data: any): Array<any> {
 }
 
 function isPossibleObjectEmpty(data: any) {
+  if (data == null) {
+    return true;
+  }
   return Object.keys(data).length === 0;
 }
 
@@ -187,7 +271,7 @@ function pushUserData() {
       .then(
         () => console.log('Successfully pushed user data'),
         error => {
-          console.warn('Push user data failed: ' + error.message);
+          console.error('Push user data failed: ' + error.message);
           if (error.code != 'firestore/permission-denied') {
             Alert.alert(
               'Database Error',
@@ -207,7 +291,7 @@ function pushGroupData() {
       .then(
         () => console.log('Successfully pushed group data'),
         error => {
-          console.warn('Push group data failed: ' + error.message);
+          console.error('Push group data failed: ' + error.message);
           Alert.alert(
             'Database Error',
             'We were not able to save your group data. Please reload the app and try again.',

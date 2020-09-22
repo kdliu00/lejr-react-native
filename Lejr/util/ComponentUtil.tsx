@@ -61,21 +61,9 @@ const ThemedLayout = withStyles(LayoutWrapper, theme => ({
 
 const ScrollWrapper = (props: any) => {
   const {eva, style, ...restProps} = props;
+  overrideBackgroundColor(eva, props);
 
-  return (
-    <ScrollView
-      {...restProps}
-      style={[
-        eva.style.container,
-        style,
-        {
-          backgroundColor: props.customBackground
-            ? eva.theme[props.customBackground]
-            : eva.style.container.backgroundColor,
-        },
-      ]}
-    />
-  );
+  return <ScrollView {...restProps} style={[eva.style.container, style]} />;
 };
 const ThemedScroll = withStyles(ScrollWrapper, theme => ({
   container: {
@@ -85,21 +73,9 @@ const ThemedScroll = withStyles(ScrollWrapper, theme => ({
 
 const CardWrapper = (props: any) => {
   const {eva, style, ...restProps} = props;
+  overrideBackgroundColor(eva, props);
 
-  return (
-    <RectButton
-      {...restProps}
-      style={[
-        eva.style.container,
-        style,
-        {
-          backgroundColor: props.customBackground
-            ? eva.theme[props.customBackground]
-            : eva.style.container.backgroundColor,
-        },
-      ]}
-    />
-  );
+  return <RectButton {...restProps} style={[eva.style.container, style]} />;
 };
 const ThemedCard = withStyles(CardWrapper, theme => ({
   container: {
@@ -189,4 +165,10 @@ class CustomSwipeable extends Swipeable {
       onSwipeableClose();
     }
   };
+}
+
+function overrideBackgroundColor(eva: any, props: any) {
+  if (props.customBackground) {
+    eva.style.container.backgroundColor = eva.theme[props.customBackground];
+  }
 }

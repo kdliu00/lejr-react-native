@@ -6,9 +6,9 @@ import {
   Dimensions,
   ScrollView,
   Alert,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {Layout, Text, Button} from '@ui-kitten/components';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import {
   ButtonSpinner,
   InputField,
@@ -17,7 +17,11 @@ import {
 import FormStyles from '../../../util/FormStyles';
 import {Item} from '../../../util/DataObjects';
 import * as yup from 'yup';
-import {MergeState, StoreData} from '../../../util/UtilityMethods';
+import {
+  MergeState,
+  removeNullsFromList,
+  StoreData,
+} from '../../../util/UtilityMethods';
 import {SplitSlider} from '../../../util/ComponentUtil';
 import {
   getKeyForCurrentGroupItems,
@@ -25,15 +29,19 @@ import {
   LocalData,
 } from '../../../util/LocalData';
 import Animated, {Easing} from 'react-native-reanimated';
+import {
+  AnimDefaultDuration,
+  AnimKeyboardDuration,
+} from '../../../util/Constants';
 
-const SLIDER_SHOW = Dimensions.get('window').height - 420;
+const SLIDER_SHOW = Dimensions.get('screen').height - 450;
 const SLIDER_HIDE = Math.round(SLIDER_SHOW * 0.4);
 
 export default class NewItem extends Component {
   constructor(props) {
-    super(props);
-    this.passedItem = this.props.route.params.item;
-    this.vrIndex = this.props.route.params.vrIndex;
+    super();
+    this.passedItem = props.route.params.item;
+    this.vrIndex = props.route.params.vrIndex;
     this.state = {
       itemCost: this.passedItem.itemCost
         ? this.passedItem.itemCost.toString()
@@ -94,7 +102,7 @@ export default class NewItem extends Component {
   toggleAnim() {
     const {renderHeight} = this.state;
     Animated.timing(renderHeight, {
-      duration: 100,
+      duration: AnimKeyboardDuration,
       toValue: this.scrollExpanded ? SLIDER_HIDE : SLIDER_SHOW,
       easing: Easing.inOut(Easing.linear),
     }).start();
@@ -126,7 +134,7 @@ export default class NewItem extends Component {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <Layout style={Styles.container}>
           <SafeAreaView style={Styles.container}>
-            <Layout style={Styles.titleContainer}>
+            <Layout>
               <Text style={Styles.titleText} category="h4">
                 Item Editor
               </Text>
@@ -231,8 +239,8 @@ export default class NewItem extends Component {
                             } else {
                               LocalData.items.push(UpdatedItem);
                             }
-                            LocalData.items = LocalData.items.filter(
-                              item => item != null,
+                            LocalData.items = removeNullsFromList(
+                              LocalData.items,
                             );
                             StoreData(
                               getKeyForCurrentGroupItems(),
@@ -241,7 +249,7 @@ export default class NewItem extends Component {
                             LocalData.container.forceUpdate();
                             setTimeout(
                               () => this.props.navigation.goBack(),
-                              500,
+                              AnimDefaultDuration,
                             );
                           }
                         } else {
@@ -285,16 +293,10 @@ const Styles = StyleSheet.create({
   scrollContainer: {
     width: Dimensions.get('window').width,
     marginTop: 20,
-    borderColor: 'lightgray',
   },
   titleText: {
     marginTop: 30,
     textAlign: 'center',
     fontWeight: 'bold',
-  },
-  titleContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: Dimensions.get('window').width,
   },
 });

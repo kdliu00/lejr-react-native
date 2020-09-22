@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyleSheet, SafeAreaView, Alert} from 'react-native';
 import {Text, Layout, Button, Icon} from '@ui-kitten/components';
-import {Screen, ErrorCode} from '../../../util/Constants';
+import {Screen, ErrorCode, AnimDefaultDuration} from '../../../util/Constants';
 import {
   LocalData,
   safeGetListData,
@@ -35,16 +35,15 @@ export default class Invitations extends Component {
     const index = props.index;
     const renderScaleY = new Animated.Value(1);
     const offsetY = new Animated.Value(RENDER_HEIGHT);
-    const animDuration = 500;
     const swipeableRef = React.createRef();
 
     const shrinkAnim = Animated.timing(renderScaleY, {
-      duration: animDuration,
+      duration: AnimDefaultDuration,
       toValue: 0,
       easing: Easing.out(Easing.exp),
     });
     const shiftAnim = Animated.timing(offsetY, {
-      duration: animDuration,
+      duration: AnimDefaultDuration,
       toValue: 0,
       easing: Easing.out(Easing.exp),
     });

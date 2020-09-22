@@ -72,55 +72,60 @@ export default class CreateGroup extends Component {
               }}
               value={this.state.groupName}
             />
-            <Layout style={FormStyles.dynamicButton}>
-              {this.state.isCreating ? (
-                <Button
-                  style={FormStyles.button}
-                  accessoryLeft={ButtonSpinner}
-                  appearance="ghost"
-                />
-              ) : (
-                <Button
-                  onPress={() => {
-                    MergeState(this, {isCreating: true});
-                    this.validationSchema
-                      .validate({groupName: this.state.groupName})
-                      .catch(error =>
-                        onValidationError(error, [
-                          [this.groupNameRef, this.state.groupName],
-                        ]),
-                      )
-                      .then(valid => {
-                        if (valid) {
-                          Promise.all(
-                            CreateNewGroup(this.state.groupName),
-                          ).then(
-                            () => {
-                              console.log('Succesfully created group');
-                              this.props.navigation.navigate(Screen.Dashboard);
-                            },
-                            error =>
-                              console.warn(
-                                'Group creation failed: ' + error.message,
-                              ),
-                          );
-                        }
-                      })
-                      .finally(() => {
-                        MergeState(this, {isCreating: false});
-                      });
-                  }}>
-                  Create group
-                </Button>
-              )}
+            <Layout style={FormStyles.buttonStyle}>
+              <Button
+                style={FormStyles.button}
+                appearance="outline"
+                disabled={this.state.isCreating}
+                onPress={() => signOut()}>
+                Sign out
+              </Button>
+              <Layout style={FormStyles.dynamicButton}>
+                {this.state.isCreating ? (
+                  <Button
+                    style={FormStyles.button}
+                    accessoryLeft={ButtonSpinner}
+                    appearance="ghost"
+                  />
+                ) : (
+                  <Button
+                    style={FormStyles.button}
+                    onPress={() => {
+                      MergeState(this, {isCreating: true});
+                      this.validationSchema
+                        .validate({groupName: this.state.groupName})
+                        .catch(error =>
+                          onValidationError(error, [
+                            [this.groupNameRef, this.state.groupName],
+                          ]),
+                        )
+                        .then(valid => {
+                          if (valid) {
+                            Promise.all(
+                              CreateNewGroup(this.state.groupName),
+                            ).then(
+                              () => {
+                                console.log('Succesfully created group');
+                                this.props.navigation.navigate(
+                                  Screen.Dashboard,
+                                );
+                              },
+                              error =>
+                                console.warn(
+                                  'Group creation failed: ' + error.message,
+                                ),
+                            );
+                          }
+                        })
+                        .finally(() => {
+                          MergeState(this, {isCreating: false});
+                        });
+                    }}>
+                    Create
+                  </Button>
+                )}
+              </Layout>
             </Layout>
-            <Button
-              style={Styles.button}
-              appearance="outline"
-              disabled={this.state.isCreating}
-              onPress={() => signOut()}>
-              Sign out
-            </Button>
           </Layout>
         </Layout>
       </TouchableWithoutFeedback>
@@ -133,7 +138,7 @@ async function CreateNewGroup(newGroupName) {
     .collection(Collection.Groups)
     .doc().id;
 
-  var newGroupObject = new Group(newGroupId, newGroupName, new Map(), [], []);
+  var newGroupObject = new Group(newGroupId, newGroupName, {}, {}, []);
   newGroupObject.members[LocalData.user.userId] = 0.0;
 
   LocalData.currentGroup = newGroupObject;
@@ -156,7 +161,7 @@ const Styles = StyleSheet.create({
   buttonContainer: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     marginBottom: 54,
   },
   textContainer: {

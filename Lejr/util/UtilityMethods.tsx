@@ -2,7 +2,15 @@ import React, {Component} from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 import {Alert} from 'react-native';
 
-export {MergeState, StoreData, RetrieveData};
+export {
+  MergeState,
+  StoreData,
+  RetrieveData,
+  nearestHundredth,
+  getTotal,
+  getMoneyFormatString,
+  removeNullsFromList,
+};
 
 /**
  * Non-destructive wrapper for setState() method.
@@ -20,7 +28,7 @@ function MergeState(component: Component, value: Object) {
  */
 async function StoreData(key: string, value: any) {
   if (key == null) {
-    console.log('Storage key was null');
+    console.warn('Storage key was null');
     return;
   }
   console.log('Storing data for key ' + key);
@@ -37,6 +45,10 @@ async function StoreData(key: string, value: any) {
  * @param key storage key
  */
 async function RetrieveData(key: string) {
+  if (key == null) {
+    console.warn('Retrieval key was null');
+    return;
+  }
   console.log('Retrieving data for key ' + key);
   try {
     const jsonValue = await AsyncStorage.getItem(key);
@@ -44,4 +56,43 @@ async function RetrieveData(key: string) {
   } catch (e) {
     Alert.alert('Error', 'Could not load data.');
   }
+}
+
+/**
+ * Sums a list of numbers
+ * @param list list of numbers
+ */
+function getTotal(list: number[]) {
+  return list.reduce((a, b) => a + b, 0);
+}
+
+/**
+ * Converts to nearest hundredth
+ * @param num number to round
+ */
+function nearestHundredth(num: number) {
+  return Math.round(100 * num) / 100;
+}
+
+/**
+ * Rounds and formats string to include zeros down to hundredths
+ * @param amount money amount
+ */
+function getMoneyFormatString(amount: number) {
+  var returnString = amount.toString();
+  const h = amount * 100;
+  if (h % 100 != 0) {
+    if (h % 10 == 0) {
+      returnString += '0';
+    }
+  }
+  return returnString;
+}
+
+/**
+ * Filters out nulls and returns filtered list
+ * @param list list to filter
+ */
+function removeNullsFromList(list: any[]) {
+  return list.filter(item => item != null);
 }
