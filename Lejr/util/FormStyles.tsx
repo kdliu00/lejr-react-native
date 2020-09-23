@@ -10,7 +10,7 @@ const FormStyles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    flexDirection: 'column',
+    flexDirection: 'column-reverse',
   },
   buttonStyle: {
     alignItems: 'center',

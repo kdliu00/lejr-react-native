@@ -77,7 +77,7 @@ export default class Contribution extends Component {
               onPress={() =>
                 Alert.alert(
                   'Delete All Items',
-                  'Are you sure you want to delete all items? This action cannot be undone.',
+                  'Are you sure you want to delete all items and reset the current purchase? This action is local and cannot be undone.',
                   [
                     {
                       text: 'Yes',

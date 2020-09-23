@@ -113,6 +113,9 @@ export default class InviteToGroup extends Component {
               </Layout>
             </Layout>
             <Layout style={FormStyles.fieldStyle}>
+              <Text style={Styles.text} status={this.state.textStatus}>
+                {this.state.message}
+              </Text>
               <InputField
                 fieldError={this.state.emailError}
                 refToPass={this.emailRef}
@@ -128,9 +131,6 @@ export default class InviteToGroup extends Component {
                 value={this.state.email}
                 autoFocus
               />
-              <Text style={Styles.text} status={this.state.textStatus}>
-                {this.state.message}
-              </Text>
               <Text style={Styles.text}>
                 You can invite others to {this.groupName} using their email
               </Text>

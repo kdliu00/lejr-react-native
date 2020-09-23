@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {StyleSheet} from 'react-native';
 import {Avatar, Icon, Layout, Text} from '@ui-kitten/components';
 import {VirtualReceipt, Item} from './DataObjects';
@@ -11,7 +11,7 @@ import {getMoneyFormatString} from './UtilityMethods';
 
 export {ContributionCard, ItemCard, PurchaseSplit, MailIcon};
 
-const MailIcon = props => <Icon name="email-outline" {...props} />;
+const MailIcon = (props: any) => <Icon name="email-outline" {...props} />;
 
 const ContributionCard = (props: any) => {
   const vr: VirtualReceipt = props.vr;
@@ -22,7 +22,9 @@ const ContributionCard = (props: any) => {
       onPress={() => {
         LocalData.currentVR = vr;
         LocalData.items = vr.items;
-        LocalData.container.forceUpdate();
+        if (LocalData.container != null) {
+          LocalData.container.forceUpdate();
+        }
         setTimeout(() => navigate(Screen.Contribution), 150);
       }}>
       <Layout style={Styles.header}>
@@ -51,83 +53,99 @@ const ContributionCard = (props: any) => {
   );
 };
 
-const ItemCard = (props: any) => {
-  const RENDER_HEIGHT = 56;
+class ItemCard extends Component {
+  RENDER_HEIGHT = 56;
 
-  const item: Item = props.item;
-  const index: number = props.index;
-  const totalRef: React.RefObject<any> = props.totalRef;
-  const renderScaleY = new Animated.Value<number>(1);
-  const offsetY = new Animated.Value<number>(RENDER_HEIGHT);
-  const swipeableRef = React.createRef();
+  item: any;
+  index: any;
+  totalRef: any;
+  renderScaleY: Animated.Value<number>;
+  offsetY: Animated.Value<number>;
+  swipeableRef: React.RefObject<unknown>;
 
-  const shrinkAnim = Animated.timing(renderScaleY, {
-    duration: AnimDefaultDuration,
-    toValue: 0,
-    easing: Easing.out(Easing.exp),
-  });
-  const shiftAnim = Animated.timing(offsetY, {
-    duration: AnimDefaultDuration,
-    toValue: 0,
-    easing: Easing.out(Easing.exp),
-  });
+  constructor(props: any) {
+    super(props);
+    this.item = props.item;
+    this.index = props.index;
+    this.totalRef = props.totalRef;
+    this.swipeableRef = React.createRef();
 
-  const closeSwipeable = () => {
-    (swipeableRef.current as CustomSwipeable).close();
-  };
+    this.state = {
+      renderScaleY: new Animated.Value<number>(1),
+      offsetY: new Animated.Value<number>(this.RENDER_HEIGHT),
+    };
+  }
 
-  const renderRightActions = () => {
+  closeAnim() {
+    Animated.timing((this.state as any).renderScaleY, {
+      duration: AnimDefaultDuration,
+      toValue: 0,
+      easing: Easing.out(Easing.exp),
+    }).start();
+    Animated.timing((this.state as any).offsetY, {
+      duration: AnimDefaultDuration,
+      toValue: 0,
+      easing: Easing.out(Easing.exp),
+    }).start();
+  }
+
+  closeSwipeable() {
+    (this.swipeableRef.current as CustomSwipeable).close();
+  }
+
+  renderRightActions() {
     return (
       <DangerSwipe style={Styles.itemCard} renderLabel="Slide to delete" />
     );
-  };
+  }
 
-  return (
-    <Animated.View
-      style={{
-        height: offsetY,
-        scaleY: renderScaleY,
-      }}>
-      <CustomSwipeable
-        childrenContainerStyle={{height: RENDER_HEIGHT}}
-        ref={swipeableRef as React.RefObject<any>}
-        renderRightActions={renderRightActions}
-        onSwipeableRightWillOpen={() => {
-          LocalData.items[index] = null;
-          totalRef.current.forceUpdate();
-          shrinkAnim.start();
-          shiftAnim.start();
-        }}
-        onSwipeableRightOpen={() => {
-          closeSwipeable();
-          if (LocalData.items.filter(item => item != null).length == 0) {
-            LocalData.items = [];
-            LocalData.container.forceUpdate();
-          }
+  render() {
+    return (
+      <Animated.View
+        style={{
+          height: (this.state as any).offsetY,
+          scaleY: (this.state as any).renderScaleY,
         }}>
-        <ThemedCard
-          style={Styles.itemCard}
-          onPress={() =>
-            navigate(Screen.NewItem, {
-              item: item,
-              vrIndex: index,
-            })
-          }>
-          <Layout style={Styles.header}>
-            <Layout style={Styles.topLeft}>
-              <Text numberOfLines={1}>{item.itemName}</Text>
+        <CustomSwipeable
+          childrenContainerStyle={{height: this.RENDER_HEIGHT}}
+          ref={this.swipeableRef as React.RefObject<any>}
+          renderRightActions={this.renderRightActions}
+          onSwipeableRightWillOpen={() => {
+            LocalData.items[this.index] = null;
+            this.totalRef.current.forceUpdate();
+            this.closeAnim();
+          }}
+          onSwipeableRightOpen={() => {
+            this.closeSwipeable();
+            if (LocalData.items.filter(item => item != null).length == 0) {
+              LocalData.items = [];
+              LocalData.container.forceUpdate();
+            }
+          }}>
+          <ThemedCard
+            style={Styles.itemCard}
+            onPress={() =>
+              navigate(Screen.NewItem, {
+                item: this.item,
+                vrIndex: this.index,
+              })
+            }>
+            <Layout style={Styles.header}>
+              <Layout style={Styles.topLeft}>
+                <Text numberOfLines={1}>{this.item.itemName}</Text>
+              </Layout>
+              <Layout style={Styles.topRight}>
+                <Text numberOfLines={1}>
+                  ${getMoneyFormatString(this.item.itemCost)}
+                </Text>
+              </Layout>
             </Layout>
-            <Layout style={Styles.topRight}>
-              <Text numberOfLines={1}>
-                ${getMoneyFormatString(item.itemCost)}
-              </Text>
-            </Layout>
-          </Layout>
-        </ThemedCard>
-      </CustomSwipeable>
-    </Animated.View>
-  );
-};
+          </ThemedCard>
+        </CustomSwipeable>
+      </Animated.View>
+    );
+  }
+}
 
 const PurchaseSplit = (props: any) => {
   return (
@@ -166,6 +184,7 @@ const Styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginVertical: 4,
     borderRadius: 8,
+    justifyContent: 'center',
     flex: 1,
   },
   header: {
