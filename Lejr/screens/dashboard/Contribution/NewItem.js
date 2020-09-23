@@ -28,14 +28,7 @@ import {
   isPossibleObjectEmpty,
   LocalData,
 } from '../../../util/LocalData';
-import Animated, {Easing} from 'react-native-reanimated';
-import {
-  AnimDefaultDuration,
-  AnimKeyboardDuration,
-} from '../../../util/Constants';
-
-const SLIDER_SHOW = Dimensions.get('screen').height - 450;
-const SLIDER_HIDE = Math.round(SLIDER_SHOW * 0.4);
+import {AnimDefaultDuration} from '../../../util/Constants';
 
 export default class NewItem extends Component {
   constructor(props) {
@@ -50,9 +43,7 @@ export default class NewItem extends Component {
       itemName: this.passedItem.itemName,
       itemNameError: '',
       isSubmitting: false,
-      renderHeight: new Animated.Value(SLIDER_SHOW),
     };
-    this.scrollExpanded = true;
     this.itemNameRef = React.createRef();
     this.itemCostRef = React.createRef();
     this.validationSchema = yup.object().shape({
@@ -76,37 +67,6 @@ export default class NewItem extends Component {
 
   componentDidMount() {
     console.log('Arrived at NewItem!');
-    this.keyboardDidShowSub = Keyboard.addListener(
-      'keyboardDidShow',
-      this.keyboardDidShow,
-    );
-    this.keyboardDidHideSub = Keyboard.addListener(
-      'keyboardDidHide',
-      this.keyboardDidHide,
-    );
-  }
-
-  async componentWillUnmount() {
-    this.keyboardDidShowSub.remove();
-    this.keyboardDidHideSub.remove();
-  }
-
-  keyboardDidShow = () => {
-    this.toggleAnim();
-  };
-
-  keyboardDidHide = () => {
-    this.toggleAnim();
-  };
-
-  toggleAnim() {
-    const {renderHeight} = this.state;
-    Animated.timing(renderHeight, {
-      duration: AnimKeyboardDuration,
-      toValue: this.scrollExpanded ? SLIDER_HIDE : SLIDER_SHOW,
-      easing: Easing.inOut(Easing.linear),
-    }).start();
-    this.scrollExpanded = !this.scrollExpanded;
   }
 
   render() {
@@ -174,15 +134,9 @@ export default class NewItem extends Component {
                 value={this.state.itemCost}
               />
             </Layout>
-            <Animated.View
-              style={[
-                Styles.scrollContainer,
-                {height: this.state.renderHeight},
-              ]}>
-              <ScrollView style={Styles.scrollView}>
-                {this.splitSliders}
-              </ScrollView>
-            </Animated.View>
+            <ScrollView style={Styles.scrollView}>
+              {this.splitSliders}
+            </ScrollView>
             <Layout style={FormStyles.buttonStyle}>
               <Button
                 style={FormStyles.button}
@@ -289,8 +243,6 @@ const Styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     paddingTop: 10,
-  },
-  scrollContainer: {
     width: Dimensions.get('window').width,
     marginTop: 20,
   },

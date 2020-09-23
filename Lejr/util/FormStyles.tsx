@@ -7,16 +7,15 @@ const FormStyles = StyleSheet.create({
     flexDirection: 'column-reverse',
   },
   fieldStyle: {
-    flex: 2,
-    alignItems: 'center',
-    flexDirection: 'column-reverse',
-  },
-  buttonStyle: {
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+  },
+  buttonStyle: {
+    alignItems: 'center',
     flexDirection: 'row',
-    marginTop: 15,
-    marginBottom: 40,
+    marginBottom: 50,
   },
   button: {
     margin: 10,
