@@ -21,6 +21,7 @@
 		965F54319B00AC91E9E50D63 /* libPods-Lejr-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A3AC7813D7324FD753C5AE0D /* libPods-Lejr-tvOSTests.a */; };
 		9BD4FD6DEAE042E9DDE9985B /* libPods-Lejr-LejrTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD2349F15F2E196008B46BE8 /* libPods-Lejr-LejrTests.a */; };
 		BE34EDD024D0AA0600AEC46F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BE34EDCF24D0AA0600AEC46F /* GoogleService-Info.plist */; };
+		BE4CD757251B282B00EB350C /* libswiftWebKit.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BE4CD756251B282B00EB350C /* libswiftWebKit.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +65,7 @@
 		A3AC7813D7324FD753C5AE0D /* libPods-Lejr-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Lejr-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B421A59399ABA813D7094558 /* Pods-Lejr.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Lejr.debug.xcconfig"; path = "Target Support Files/Pods-Lejr/Pods-Lejr.debug.xcconfig"; sourceTree = "<group>"; };
 		BE34EDCF24D0AA0600AEC46F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Lejr/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		BE4CD756251B282B00EB350C /* libswiftWebKit.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libswiftWebKit.tbd; path = usr/lib/swift/libswiftWebKit.tbd; sourceTree = SDKROOT; };
 		CD2349F15F2E196008B46BE8 /* libPods-Lejr-LejrTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Lejr-LejrTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDEC0BCD8C93B62939336FC5 /* libPods-Lejr-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Lejr-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4A2C1AF8D5DD0CE77A9183D /* Pods-Lejr.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Lejr.release.xcconfig"; path = "Target Support Files/Pods-Lejr/Pods-Lejr.release.xcconfig"; sourceTree = "<group>"; };
@@ -84,6 +86,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE4CD757251B282B00EB350C /* libswiftWebKit.tbd in Frameworks */,
 				7DB0B31AC0C2A7AE6C15D43E /* libPods-Lejr.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -142,6 +145,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BE4CD756251B282B00EB350C /* libswiftWebKit.tbd */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
 				9C97DA6DE011FBB3A0F0EA94 /* libPods-Lejr.a */,
@@ -298,7 +302,7 @@
 					};
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = P427BYLXAV;
-						LastSwiftMigration = 1120;
+						LastSwiftMigration = 1200;
 					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -718,6 +722,10 @@
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Lejr/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/usr/lib/swift",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -742,6 +750,10 @@
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Lejr/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/usr/lib/swift",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
