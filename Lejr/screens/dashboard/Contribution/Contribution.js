@@ -39,19 +39,6 @@ export default class Contribution extends Component {
       LocalData.items = [];
       StoreData(getKeyForCurrentGroupItems(), LocalData.items);
     }
-    this.itemCards = LocalData.items.map((item, index) => {
-      if (item != null) {
-        return (
-          <Fragment key={index}>
-            {new ItemCard({
-              item: item,
-              index: index,
-              totalRef: this.totalRef,
-            }).render()}
-          </Fragment>
-        );
-      }
-    });
     return (
       <ThemedLayout style={Styles.container}>
         <SafeAreaView style={Styles.container}>
@@ -67,7 +54,20 @@ export default class Contribution extends Component {
               <ThemedScroll
                 style={Styles.list}
                 contentContainerStyle={Styles.contentContainer}>
-                {this.itemCards}
+                {LocalData.items.map((item, index) => {
+                  if (item != null) {
+                    return (
+                      <Fragment key={index}>
+                        {new ItemCard({
+                          item: item,
+                          index: index,
+                          totalRef: this.totalRef,
+                          nav: this.props.navigation,
+                        }).render()}
+                      </Fragment>
+                    );
+                  }
+                })}
               </ThemedScroll>
             )}
           </ThemedLayout>

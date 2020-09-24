@@ -1,9 +1,8 @@
 import React, {Component} from 'react';
 import {StyleSheet} from 'react-native';
-import {Avatar, Icon, Layout, Text} from '@ui-kitten/components';
+import {Icon, Layout, Text} from '@ui-kitten/components';
 import {VirtualReceipt, Item} from './DataObjects';
 import {DangerSwipe, ThemedCard, CustomSwipeable} from './ComponentUtil';
-import {navigate} from '../RootNav';
 import {AnimDefaultDuration, AnimKeyboardDuration, Screen} from './Constants';
 import Animated, {Easing} from 'react-native-reanimated';
 import {LocalData} from './LocalData';
@@ -15,6 +14,7 @@ const MailIcon = (props: any) => <Icon name="email-outline" {...props} />;
 
 const ContributionCard = (props: any) => {
   const vr: VirtualReceipt = props.vr;
+  const nav: any = props.nav;
 
   return (
     <ThemedCard
@@ -25,7 +25,10 @@ const ContributionCard = (props: any) => {
         if (LocalData.container != null) {
           LocalData.container.forceUpdate();
         }
-        setTimeout(() => navigate(Screen.Contribution), AnimKeyboardDuration);
+        setTimeout(
+          () => nav.navigate(Screen.Contribution),
+          AnimKeyboardDuration,
+        );
       }}>
       <Layout style={Styles.header}>
         <Layout style={Styles.topLeft}>
@@ -59,8 +62,7 @@ class ItemCard extends Component {
   item: Item;
   index: number;
   totalRef: React.RefObject<Component>;
-  renderScaleY: Animated.Value<number>;
-  offsetY: Animated.Value<number>;
+  nav: any;
   swipeableRef: React.RefObject<CustomSwipeable>;
 
   constructor(props: any) {
@@ -68,6 +70,7 @@ class ItemCard extends Component {
     this.item = props.item;
     this.index = props.index;
     this.totalRef = props.totalRef;
+    this.nav = props.nav;
     this.swipeableRef = React.createRef();
 
     this.state = {
@@ -125,7 +128,7 @@ class ItemCard extends Component {
           <ThemedCard
             style={[Styles.itemCard, {justifyContent: 'center'}]}
             onPress={() =>
-              navigate(Screen.NewItem, {
+              this.nav.navigate(Screen.NewItem, {
                 item: this.item,
                 vrIndex: this.index,
               })

@@ -39,7 +39,6 @@ class LocalData {
   static userCopy: User = null;
   static virtualReceipts: VirtualReceipt[] = null;
   static currentVR: VirtualReceipt = null;
-  static home: Home = null;
 }
 
 function deleteAllItems(forceUpdate: boolean = true) {

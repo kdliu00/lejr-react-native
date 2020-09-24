@@ -13,7 +13,6 @@ import firebase from '@react-native-firebase/app';
 import * as eva from '@eva-design/eva';
 import {ApplicationProvider, IconRegistry} from '@ui-kitten/components';
 import {EvaIconsPack} from '@ui-kitten/eva-icons';
-import {navigationRef} from './RootNav';
 
 import Loading from './screens/Loading';
 import Login from './screens/Login';
@@ -84,7 +83,7 @@ export default function App() {
       <StatusBar barStyle="default" />
       <IconRegistry icons={EvaIconsPack} />
       <ApplicationProvider {...eva} theme={{...eva.light, ...theme}}>
-        <NavigationContainer ref={navigationRef}>
+        <NavigationContainer>
           <RootStack.Navigator
             mode="modal"
             screenOptions={{headerShown: false, gestureEnabled: false}}>
