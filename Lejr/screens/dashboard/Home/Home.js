@@ -142,7 +142,7 @@ export default class Home extends Component {
 
 function onGroupPress(groupId, component) {
   if (LocalData.currentGroup.groupId === groupId) {
-    console.warn('Already loaded this group, invalid action');
+    console.warn('Already loaded this group, invalid action!');
     return;
   }
   deleteAllItems(false);

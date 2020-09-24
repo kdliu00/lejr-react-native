@@ -11,7 +11,7 @@ import firestore from '@react-native-firebase/firestore';
 import {Collection, ErrorCode, Key} from './Constants';
 import {Alert} from 'react-native';
 import Contribution from '../screens/dashboard/Contribution/Contribution';
-import {StoreData} from './UtilityMethods';
+import {removeNullsFromList, StoreData} from './UtilityMethods';
 import Home from '../screens/dashboard/Home/Home';
 
 export {

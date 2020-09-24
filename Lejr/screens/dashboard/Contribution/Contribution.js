@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import {StyleSheet, SafeAreaView, Dimensions, Alert} from 'react-native';
 import {Layout, Text, Button, Icon} from '@ui-kitten/components';
 import {ThemedLayout, ThemedScroll} from '../../../util/ComponentUtil';
@@ -39,6 +39,19 @@ export default class Contribution extends Component {
       LocalData.items = [];
       StoreData(getKeyForCurrentGroupItems(), LocalData.items);
     }
+    this.itemCards = LocalData.items.map((item, index) => {
+      if (item != null) {
+        return (
+          <Fragment key={index}>
+            {new ItemCard({
+              item: item,
+              index: index,
+              totalRef: this.totalRef,
+            }).render()}
+          </Fragment>
+        );
+      }
+    });
     return (
       <ThemedLayout style={Styles.container}>
         <SafeAreaView style={Styles.container}>
@@ -54,18 +67,7 @@ export default class Contribution extends Component {
               <ThemedScroll
                 style={Styles.list}
                 contentContainerStyle={Styles.contentContainer}>
-                {LocalData.items.map((item, index) => {
-                  if (item != null) {
-                    return (
-                      <ItemCard
-                        key={index}
-                        item={item}
-                        index={index}
-                        totalRef={this.totalRef}
-                      />
-                    );
-                  }
-                })}
+                {this.itemCards}
               </ThemedScroll>
             )}
           </ThemedLayout>

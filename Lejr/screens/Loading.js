@@ -114,6 +114,7 @@ export default class Loading extends Component {
 }
 
 function handleScreen(navigation) {
+  LocalData.container = null;
   if (isPossibleObjectEmpty(LocalData.user.groups)) {
     navigation.navigate(Screen.CreateGroup, {welcome: true});
   } else if (!LocalData.currentGroup) {

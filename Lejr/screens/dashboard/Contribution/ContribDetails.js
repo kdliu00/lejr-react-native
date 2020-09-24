@@ -17,6 +17,7 @@ import {
   getTotal,
   MergeState,
   nearestHundredth,
+  removeNullsFromList,
 } from '../../../util/UtilityMethods';
 import FormStyles from '../../../util/FormStyles';
 import * as yup from 'yup';
@@ -49,33 +50,36 @@ export default class ContribDetails extends Component {
     });
 
     this.totalSplit = {};
+    this.totalSplitAmount = {};
+    LocalData.items = removeNullsFromList(LocalData.items);
     this.currentTotal = getTotal(filterItemCosts());
-    this.purchaseSplit = Object.keys(LocalData.currentGroup.memberNames).map(
-      userId => {
-        const userName = LocalData.currentGroup.memberNames[userId];
-        const perItemPay = LocalData.items.map(item => {
-          const itemPercent = item.itemSplit[userId] / 100;
-          return item.itemCost * itemPercent;
-        });
-        const userTotal = nearestHundredth(getTotal(perItemPay));
-        const userTotalPercent = nearestHundredth(
-          (100 * userTotal) / this.currentTotal,
-        );
-        this.totalSplit[userId] = userTotalPercent;
-        return (
-          <PurchaseSplit
-            key={userId}
-            userName={userName}
-            userTotal={userTotal}
-            userTotalPercent={Math.round(userTotalPercent)}
-          />
-        );
-      },
-    );
+    this.purchaseSplit = this.getTotalPurchaseSplit();
   }
 
   componentDidMount() {
     console.log('Arrived at ContribDetails!');
+  }
+
+  getTotalPurchaseSplit() {
+    return Object.keys(LocalData.currentGroup.memberNames).map(userId => {
+      var userTotal = 0;
+      const userName = LocalData.currentGroup.memberNames[userId];
+      LocalData.items.map(item => {
+        userTotal += item.itemCost * (item.itemSplit[userId] / 100);
+      });
+      const userTotalPercent = nearestHundredth(
+        (100 * userTotal) / this.currentTotal,
+      );
+      this.totalSplit[userId] = userTotalPercent;
+      return (
+        <PurchaseSplit
+          key={userId}
+          userName={userName}
+          userTotal={nearestHundredth(userTotal)}
+          userTotalPercent={Math.round(userTotalPercent)}
+        />
+      );
+    });
   }
 
   render() {

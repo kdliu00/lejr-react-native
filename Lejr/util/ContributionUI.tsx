@@ -4,10 +4,10 @@ import {Avatar, Icon, Layout, Text} from '@ui-kitten/components';
 import {VirtualReceipt, Item} from './DataObjects';
 import {DangerSwipe, ThemedCard, CustomSwipeable} from './ComponentUtil';
 import {navigate} from '../RootNav';
-import {AnimDefaultDuration, Screen} from './Constants';
+import {AnimDefaultDuration, AnimKeyboardDuration, Screen} from './Constants';
 import Animated, {Easing} from 'react-native-reanimated';
 import {LocalData} from './LocalData';
-import {getMoneyFormatString, MergeState} from './UtilityMethods';
+import {getMoneyFormatString, removeNullsFromList} from './UtilityMethods';
 
 export {ContributionCard, ItemCard, PurchaseSplit, MailIcon};
 
@@ -25,7 +25,7 @@ const ContributionCard = (props: any) => {
         if (LocalData.container != null) {
           LocalData.container.forceUpdate();
         }
-        setTimeout(() => navigate(Screen.Contribution), 150);
+        setTimeout(() => navigate(Screen.Contribution), AnimKeyboardDuration);
       }}>
       <Layout style={Styles.header}>
         <Layout style={Styles.topLeft}>
@@ -117,13 +117,13 @@ class ItemCard extends Component {
           }}
           onSwipeableRightOpen={() => {
             this.closeSwipeable();
-            if (LocalData.items.filter(item => item != null).length == 0) {
+            if (removeNullsFromList(LocalData.items).length == 0) {
               LocalData.items = [];
               LocalData.container.forceUpdate();
             }
           }}>
           <ThemedCard
-            style={Styles.itemCard}
+            style={[Styles.itemCard, {justifyContent: 'center'}]}
             onPress={() =>
               navigate(Screen.NewItem, {
                 item: this.item,
@@ -183,7 +183,6 @@ const Styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginVertical: 4,
     borderRadius: 8,
-    justifyContent: 'center',
     flex: 1,
   },
   header: {
