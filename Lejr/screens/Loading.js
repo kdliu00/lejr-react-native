@@ -20,7 +20,7 @@ import {
   Key,
 } from '../util/Constants';
 import {Component} from 'react';
-import {RetrieveData, StoreData} from '../util/UtilityMethods';
+import {JSONCopy, RetrieveData, StoreData} from '../util/UtilityMethods';
 
 export default class Loading extends Component {
   constructor() {
@@ -40,7 +40,7 @@ export default class Loading extends Component {
           if (doc.exists) {
             console.log('User document found');
             LocalData.user = User.firestoreConverter.fromFirestore(doc);
-            LocalData.userCopy = JSON.parse(JSON.stringify(LocalData.user));
+            LocalData.userCopy = JSONCopy(LocalData.user);
             handleScreen(this.props.navigation);
           } else {
             console.log('No document for user, creating new one');

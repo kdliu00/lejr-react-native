@@ -6,7 +6,11 @@ import {DangerSwipe, ThemedCard, CustomSwipeable} from './ComponentUtil';
 import {AnimDefaultDuration, AnimKeyboardDuration, Screen} from './Constants';
 import Animated, {Easing} from 'react-native-reanimated';
 import {LocalData} from './LocalData';
-import {getMoneyFormatString, removeNullsFromList} from './UtilityMethods';
+import {
+  getMoneyFormatString,
+  removeNullsFromList,
+  JSONCopy,
+} from './UtilityMethods';
 
 export {ContributionCard, ItemCard, PurchaseSplit, MailIcon};
 
@@ -20,8 +24,8 @@ const ContributionCard = (props: any) => {
     <ThemedCard
       style={Styles.contribCard}
       onPress={() => {
-        LocalData.currentVR = vr;
-        LocalData.items = vr.items;
+        LocalData.currentVR = JSONCopy(vr);
+        LocalData.items = JSONCopy(vr.items);
         if (LocalData.container != null) {
           LocalData.container.forceUpdate();
         }
@@ -110,6 +114,7 @@ class ItemCard extends Component {
           scaleY: (this.state as any).renderScaleY,
         }}>
         <CustomSwipeable
+          containerStyle={{height: this.RENDER_HEIGHT}}
           childrenContainerStyle={{height: this.RENDER_HEIGHT}}
           ref={this.swipeableRef}
           renderRightActions={this.renderRightActions}

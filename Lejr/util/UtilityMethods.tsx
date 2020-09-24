@@ -10,6 +10,7 @@ export {
   getTotal,
   getMoneyFormatString,
   removeNullsFromList,
+  JSONCopy,
 };
 
 /**
@@ -96,4 +97,12 @@ function getMoneyFormatString(amount: number) {
  */
 function removeNullsFromList(list: any[]) {
   return list.filter(item => item != null);
+}
+
+/**
+ * Copies an object using JSON
+ * @param obj object to copy
+ */
+function JSONCopy(obj: any) {
+  return JSON.parse(JSON.stringify(obj));
 }
