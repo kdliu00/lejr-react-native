@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Platform,
   AppState,
+  StatusBar,
 } from 'react-native';
 import 'react-native-gesture-handler';
 import {NavigationContainer} from '@react-navigation/native';
@@ -47,8 +48,8 @@ firebase.apps.forEach(app => {
 const Stack = createStackNavigator();
 const RootStack = createStackNavigator();
 
-AppState.addEventListener('blur', () => {
-  console.log('App blurred, saving data');
+AppState.addEventListener('change', () => {
+  console.log('App state is "change", saving data');
   StoreData(getKeyForCurrentGroupItems(), LocalData.items);
   pushUserData();
 });
@@ -80,6 +81,7 @@ export default function App() {
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={Styles.container}>
+      <StatusBar barStyle="default" />
       <IconRegistry icons={EvaIconsPack} />
       <ApplicationProvider {...eva} theme={{...eva.light, ...theme}}>
         <NavigationContainer ref={navigationRef}>

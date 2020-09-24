@@ -8,7 +8,7 @@ import {
   getKeyForCurrentGroupItems,
   LocalData,
 } from '../../../util/LocalData';
-import {Item, VirtualReceipt} from '../../../util/DataObjects';
+import {Item} from '../../../util/DataObjects';
 import {BannerHeight, Screen} from '../../../util/Constants';
 import {ItemCard} from '../../../util/ContributionUI';
 import {

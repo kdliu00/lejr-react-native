@@ -43,10 +43,11 @@ class LocalData {
 }
 
 function deleteAllItems(forceUpdate: boolean = true) {
+  console.log('Deleting all items');
   LocalData.currentVR = null;
   LocalData.items = [];
   StoreData(getKeyForCurrentGroupItems(), LocalData.items);
-  if (forceUpdate) {
+  if (forceUpdate && LocalData.container != null) {
     LocalData.container.forceUpdate();
   }
 }

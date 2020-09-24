@@ -85,21 +85,21 @@ const ThemedCard = withStyles(CardWrapper, theme => ({
 
 const SliderWrapper = (props: any) => {
   const {eva, style, ...restProps} = props;
-  const themeColor = eva.style.container.backgroundColor;
 
   return (
     <Slider
       {...restProps}
-      minimumTrackTintColor={themeColor}
-      thumbTintColor={themeColor}
-      maximumTrackTintColor="#000000"
+      minimumTrackTintColor={eva.style.container.trackTint}
+      thumbTintColor={eva.style.container.knobColor}
+      maximumTrackTintColor="gray"
       style={style}
     />
   );
 };
 const ThemedSlider = withStyles(SliderWrapper, theme => ({
   container: {
-    backgroundColor: theme['color-primary-500'],
+    trackTint: theme['color-primary-500'],
+    knobColor: theme['color-primary-500'],
   },
 }));
 

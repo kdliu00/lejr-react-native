@@ -7,7 +7,7 @@ import {navigate} from '../RootNav';
 import {AnimDefaultDuration, Screen} from './Constants';
 import Animated, {Easing} from 'react-native-reanimated';
 import {LocalData} from './LocalData';
-import {getMoneyFormatString} from './UtilityMethods';
+import {getMoneyFormatString, MergeState} from './UtilityMethods';
 
 export {ContributionCard, ItemCard, PurchaseSplit, MailIcon};
 
@@ -56,12 +56,12 @@ const ContributionCard = (props: any) => {
 class ItemCard extends Component {
   RENDER_HEIGHT = 56;
 
-  item: any;
-  index: any;
-  totalRef: any;
+  item: Item;
+  index: number;
+  totalRef: React.RefObject<Component>;
   renderScaleY: Animated.Value<number>;
   offsetY: Animated.Value<number>;
-  swipeableRef: React.RefObject<unknown>;
+  swipeableRef: React.RefObject<CustomSwipeable>;
 
   constructor(props: any) {
     super(props);
@@ -108,7 +108,7 @@ class ItemCard extends Component {
         }}>
         <CustomSwipeable
           childrenContainerStyle={{height: this.RENDER_HEIGHT}}
-          ref={this.swipeableRef as React.RefObject<any>}
+          ref={this.swipeableRef}
           renderRightActions={this.renderRightActions}
           onSwipeableRightWillOpen={() => {
             LocalData.items[this.index] = null;
@@ -176,7 +176,6 @@ const Styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginVertical: 6,
     borderRadius: 8,
-    borderWidth: 1,
     flex: 1,
   },
   itemCard: {
