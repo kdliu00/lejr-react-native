@@ -102,14 +102,14 @@ class ItemCard extends Component {
 
   renderRightActions = () => {
     return (
-      <Animated.View
-        style={{
-          flex: 1,
+      <DangerSwipe
+        animStyle={{
           height: (this.state as any).offsetY,
           scaleY: (this.state as any).renderScaleY,
-        }}>
-        <DangerSwipe style={Styles.itemCard} renderLabel="Slide to delete" />
-      </Animated.View>
+        }}
+        style={Styles.itemCard}
+        renderLabel="Slide to delete"
+      />
     );
   };
 

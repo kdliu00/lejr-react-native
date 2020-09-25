@@ -98,30 +98,26 @@ class InvitationCard extends ItemCard {
 
   renderRightActions = () => {
     return (
-      <Animated.View
-        style={[
-          Styles.justFlex,
-          {
-            height: this.state.offsetY,
-            scaleY: this.state.renderScaleY,
-          },
-        ]}>
-        <DangerSwipe style={Styles.card} renderLabel="Slide to delete" />
-      </Animated.View>
+      <DangerSwipe
+        animStyle={{
+          height: this.state.offsetY,
+          scaleY: this.state.renderScaleY,
+        }}
+        style={Styles.card}
+        renderLabel="Slide to delete"
+      />
     );
   };
   renderLeftActions = () => {
     return (
-      <Animated.View
-        style={[
-          Styles.justFlex,
-          {
-            height: this.state.offsetY,
-            scaleY: this.state.renderScaleY,
-          },
-        ]}>
-        <SuccessSwipe style={Styles.card} renderLabel="Slide to accept" />
-      </Animated.View>
+      <SuccessSwipe
+        animStyle={{
+          height: this.state.offsetY,
+          scaleY: this.state.renderScaleY,
+        }}
+        style={Styles.card}
+        renderLabel="Slide to accept"
+      />
     );
   };
 

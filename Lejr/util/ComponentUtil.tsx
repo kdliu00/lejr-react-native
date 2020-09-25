@@ -6,6 +6,7 @@ import NewItem from '../screens/dashboard/Contribution/NewItem';
 import {LocalData} from './LocalData';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import {MergeState} from './UtilityMethods';
+import Animated from 'react-native-reanimated';
 
 export {
   ThemedLayout,
@@ -19,12 +20,14 @@ export {
 };
 
 const RectButtonWrapper = (props: any) => {
-  const {eva, style, ...restProps} = props;
+  const {eva, style, animStyle, ...restProps} = props;
 
   return (
-    <RectButton {...restProps} style={[eva.style.container, style]}>
-      <Text style={eva.style.text}>{restProps.renderLabel}</Text>
-    </RectButton>
+    <Animated.View style={[{flex: 1}, animStyle]}>
+      <RectButton {...restProps} style={[eva.style.container, style]}>
+        <Text style={eva.style.text}>{restProps.renderLabel}</Text>
+      </RectButton>
+    </Animated.View>
   );
 };
 const DangerSwipe = withStyles(RectButtonWrapper, theme => ({
