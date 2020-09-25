@@ -49,7 +49,7 @@ export default class Invitations extends Component {
               </Layout>
             ) : (
               <ThemedScroll
-                style={Styles.list}
+                style={Styles.justFlex}
                 contentContainerStyle={Styles.contentContainer}>
                 {LocalData.user.invites.map((item, index) => {
                   if (item != null) {
@@ -97,10 +97,32 @@ class InvitationCard extends ItemCard {
   }
 
   renderRightActions = () => {
-    return <DangerSwipe style={Styles.card} renderLabel="Slide to delete" />;
+    return (
+      <Animated.View
+        style={[
+          Styles.justFlex,
+          {
+            height: this.state.offsetY,
+            scaleY: this.state.renderScaleY,
+          },
+        ]}>
+        <DangerSwipe style={Styles.card} renderLabel="Slide to delete" />
+      </Animated.View>
+    );
   };
   renderLeftActions = () => {
-    return <SuccessSwipe style={Styles.card} renderLabel="Slide to accept" />;
+    return (
+      <Animated.View
+        style={[
+          Styles.justFlex,
+          {
+            height: this.state.offsetY,
+            scaleY: this.state.renderScaleY,
+          },
+        ]}>
+        <SuccessSwipe style={Styles.card} renderLabel="Slide to accept" />
+      </Animated.View>
+    );
   };
 
   render() {
@@ -173,7 +195,7 @@ const Styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  list: {
+  justFlex: {
     flex: 1,
   },
   buttonContainer: {

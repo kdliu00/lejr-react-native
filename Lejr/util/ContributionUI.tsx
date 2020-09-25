@@ -100,11 +100,18 @@ class ItemCard extends Component {
     (this.swipeableRef.current as CustomSwipeable).close();
   }
 
-  renderRightActions() {
+  renderRightActions = () => {
     return (
-      <DangerSwipe style={Styles.itemCard} renderLabel="Slide to delete" />
+      <Animated.View
+        style={{
+          flex: 1,
+          height: (this.state as any).offsetY,
+          scaleY: (this.state as any).renderScaleY,
+        }}>
+        <DangerSwipe style={Styles.itemCard} renderLabel="Slide to delete" />
+      </Animated.View>
     );
-  }
+  };
 
   render() {
     return (
