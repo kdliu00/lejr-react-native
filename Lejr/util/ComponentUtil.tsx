@@ -23,7 +23,7 @@ const RectButtonWrapper = (props: any) => {
   const {eva, style, animStyle, ...restProps} = props;
 
   return (
-    <Animated.View style={[{flex: 1}, animStyle]}>
+    <Animated.View {...restProps} style={[{flex: 1}, animStyle]}>
       <RectButton {...restProps} style={[eva.style.container, style]}>
         <Text style={eva.style.text}>{restProps.renderLabel}</Text>
       </RectButton>

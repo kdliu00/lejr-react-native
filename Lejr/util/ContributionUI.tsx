@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {Icon, Layout, Text} from '@ui-kitten/components';
 import {VirtualReceipt, Item} from './DataObjects';
 import {DangerSwipe, ThemedCard, CustomSwipeable} from './ComponentUtil';

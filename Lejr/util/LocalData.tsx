@@ -36,6 +36,7 @@ class LocalData {
   static currentGroup: Group = null;
   static items: Item[] = null;
   static container: Contribution = null;
+  static home: Home = null;
   static userCopy: User = null;
   static virtualReceipts: VirtualReceipt[] = null;
   static currentVR: VirtualReceipt = null;

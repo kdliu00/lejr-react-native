@@ -55,6 +55,7 @@ export default class Home extends Component {
 
   componentDidMount() {
     console.log('Arrived at Home');
+    LocalData.home = this;
     this.props.navigation.addListener('blur', () => {
       if (this.groupSelectExpanded) {
         this.toggleGroupSelect();

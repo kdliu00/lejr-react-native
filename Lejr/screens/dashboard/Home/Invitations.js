@@ -39,6 +39,9 @@ export default class Invitations extends Component {
             <Text style={Styles.titleText} category="h4">
               Invitations
             </Text>
+            <Text style={Styles.text} appearance="hint">
+              Slide right to accept, left to delete
+            </Text>
           </Layout>
           <Layout style={Styles.listContainer}>
             {isPossibleObjectEmpty(LocalData.user.invites) ? (
@@ -181,6 +184,7 @@ const Styles = StyleSheet.create({
   titleText: {
     textAlign: 'center',
     fontWeight: 'bold',
+    marginBottom: 10,
   },
   listContainer: {
     flex: 5,
@@ -219,7 +223,6 @@ const Styles = StyleSheet.create({
     margin: 10,
   },
   text: {
-    flex: 1,
     textAlign: 'center',
     marginHorizontal: 5,
   },
