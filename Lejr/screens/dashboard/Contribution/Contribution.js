@@ -45,6 +45,9 @@ export default class Contribution extends Component {
           <ThemedLayout style={Styles.banner}>
             <TotalText ref={this.totalRef} />
           </ThemedLayout>
+          <Text appearance="hint" style={Styles.placeholderText}>
+            Slide left to delete
+          </Text>
           <ThemedLayout style={Styles.itemList}>
             {LocalData.items.length === 0 ? (
               <Text appearance="hint" style={Styles.placeholderText}>
@@ -180,5 +183,6 @@ const Styles = StyleSheet.create({
   list: {
     width: Dimensions.get('window').width,
     flex: 1,
+    marginTop: 10,
   },
 });
