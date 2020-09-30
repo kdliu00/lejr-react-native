@@ -19,6 +19,7 @@ import {Item} from '../../../util/DataObjects';
 import * as yup from 'yup';
 import {
   MergeState,
+  nearestHundredth,
   removeNullsFromList,
   StoreData,
 } from '../../../util/UtilityMethods';
@@ -185,7 +186,7 @@ export default class NewItem extends Component {
                           } else {
                             const UpdatedItem = new Item(
                               this.state.itemName,
-                              Number(this.state.itemCost),
+                              nearestHundredth(Number(this.state.itemCost)),
                               this.itemSplitPercent,
                             );
                             if (this.vrIndex != null) {

@@ -47,7 +47,7 @@ export default class Invitations extends Component {
             {isPossibleObjectEmpty(LocalData.user.invites) ? (
               <Layout style={Styles.container}>
                 <Text style={Styles.text} appearance="hint">
-                  No invitations
+                  No invitations yet
                 </Text>
               </Layout>
             ) : (

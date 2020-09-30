@@ -132,7 +132,8 @@ export default class InviteToGroup extends Component {
                 autoFocus
               />
               <Text style={Styles.text}>
-                You can invite others to {this.groupName} using their email
+                You can invite others to {this.groupName} using the email
+                associated with their account
               </Text>
             </Layout>
           </SafeAreaView>

@@ -51,7 +51,8 @@ export default class Contribution extends Component {
           <ThemedLayout style={Styles.itemList}>
             {LocalData.items.length === 0 ? (
               <Text appearance="hint" style={Styles.placeholderText}>
-                Click on the plus button below to add an item
+                This purchase is currently empty. Click on the plus button below
+                to add an item
               </Text>
             ) : (
               <ThemedScroll
@@ -82,7 +83,7 @@ export default class Contribution extends Component {
               onPress={() =>
                 Alert.alert(
                   'Delete All Items',
-                  'Are you sure you want to delete all items and reset the current purchase? This action is local and cannot be undone.',
+                  'Are you sure you want to delete all items? This will create a new purchase and will not update the current purchase.',
                   [
                     {
                       text: 'Yes',

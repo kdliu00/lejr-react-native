@@ -56,8 +56,9 @@ export default class CreateGroup extends Component {
                     It looks like you're not in a group yet!
                   </Text>
                   <Text style={Styles.text}>
-                    You can create one here or accept an invitation to another
-                    group.
+                    You can create a group here by entering a group name and
+                    pressing Create. You can also accept an invitation to an
+                    existing group.
                   </Text>
                 </Layout>
                 <Layout style={Styles.iconContainer}>
@@ -67,14 +68,20 @@ export default class CreateGroup extends Component {
                     onPress={() =>
                       this.props.navigation.navigate(Screen.Invitations)
                     }>
-                    See invitations
+                    See invitations {'(' + LocalData.user.invites.length + ')'}
                   </Button>
                 </Layout>
               </Layout>
             ) : (
-              <Text style={Styles.text} category="h6">
-                Create a group
-              </Text>
+              <Layout style={Styles.textSubContainer}>
+                <Text style={Styles.text} category="h6">
+                  Create a group
+                </Text>
+                <Text style={Styles.text}>
+                  You can create a group here by entering a group name and
+                  pressing Create.
+                </Text>
+              </Layout>
             )}
           </Layout>
           <Layout style={Styles.buttonContainer}>
@@ -148,6 +155,8 @@ export default class CreateGroup extends Component {
                                 MergeState(this, {isCreating: false});
                               },
                             );
+                          } else {
+                            MergeState(this, {isCreating: false});
                           }
                         });
                     }}>
