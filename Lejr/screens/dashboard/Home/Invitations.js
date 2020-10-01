@@ -39,9 +39,11 @@ export default class Invitations extends Component {
             <Text style={Styles.titleText} category="h4">
               Invitations
             </Text>
-            <Text style={Styles.text} appearance="hint">
-              Slide right to accept, left to delete
-            </Text>
+            {LocalData.user.invites.length !== 0 && (
+              <Text style={Styles.text} appearance="hint">
+                Slide right to accept, left to delete
+              </Text>
+            )}
           </Layout>
           <Layout style={Styles.listContainer}>
             {isPossibleObjectEmpty(LocalData.user.invites) ? (

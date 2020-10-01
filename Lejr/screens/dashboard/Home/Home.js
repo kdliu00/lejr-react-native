@@ -4,7 +4,6 @@ import {Layout, Text, Button, Icon} from '@ui-kitten/components';
 import {ContributionCard, MailIcon} from '../../../util/ContributionUI';
 import {
   LocalData,
-  loadGroupAsMain,
   safeGetListData,
   isPossibleObjectEmpty,
   getKeyForCurrentGroupItems,
@@ -147,8 +146,11 @@ function onGroupPress(groupId, component) {
     return;
   }
   deleteAllItems(false);
-  StoreData(Key.CurrentGroup, groupId);
-  loadGroupAsMain(groupId, () => component.props.navigation.popToTop());
+  LocalData.currentGroup = null;
+  LocalData.virtualReceipts = null;
+  StoreData(Key.CurrentGroup, groupId).then(() =>
+    component.props.navigation.popToTop(),
+  );
 }
 
 const CustomMenuItem = ({groupId, groupName, component}) => {

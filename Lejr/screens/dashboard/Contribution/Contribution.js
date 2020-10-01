@@ -45,9 +45,11 @@ export default class Contribution extends Component {
           <ThemedLayout style={Styles.banner}>
             <TotalText ref={this.totalRef} />
           </ThemedLayout>
-          <Text appearance="hint" style={Styles.placeholderText}>
-            Slide left to delete
-          </Text>
+          {LocalData.items.length !== 0 && (
+            <Text appearance="hint" style={Styles.placeholderText}>
+              Slide left to delete
+            </Text>
+          )}
           <ThemedLayout style={Styles.itemList}>
             {LocalData.items.length === 0 ? (
               <Text appearance="hint" style={Styles.placeholderText}>
