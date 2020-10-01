@@ -148,9 +148,7 @@ function onGroupPress(groupId, component) {
   }
   deleteAllItems(false);
   StoreData(Key.CurrentGroup, groupId);
-  loadGroupAsMain(groupId)
-    .catch(error => console.warn(error.message))
-    .finally(() => component.props.navigation.popToTop());
+  loadGroupAsMain(groupId, () => component.props.navigation.popToTop());
 }
 
 const CustomMenuItem = ({groupId, groupName, component}) => {

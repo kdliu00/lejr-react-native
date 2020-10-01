@@ -182,17 +182,16 @@ export default class ContribDetails extends Component {
                               LocalData.currentVR = null;
                               getVirtualReceiptsForGroup(
                                 LocalData.currentGroup.groupId,
-                              ).then(() => {
-                                LocalData.home.forceUpdate();
-                                setTimeout(
-                                  () =>
-                                    this.props.navigation.navigate(
-                                      Screen.DashboardMain,
-                                      {screen: Screen.Home},
-                                    ),
-                                  AnimKeyboardDuration,
-                                );
-                              });
+                                () =>
+                                  setTimeout(
+                                    () =>
+                                      this.props.navigation.navigate(
+                                        Screen.DashboardMain,
+                                        {screen: Screen.Home},
+                                      ),
+                                    AnimKeyboardDuration,
+                                  ),
+                              );
                             },
                             error => {
                               console.warn('Received error: ' + error);

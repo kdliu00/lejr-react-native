@@ -39,7 +39,7 @@ const ContributionCard = (props: any) => {
           <Text numberOfLines={1}>{vr.memo}</Text>
         </Layout>
         <Layout style={Styles.topRight}>
-          <Text numberOfLines={1}>${vr.total}</Text>
+          <Text numberOfLines={1}>${getMoneyFormatString(vr.total)}</Text>
         </Layout>
       </Layout>
       <Layout style={Styles.footer}>

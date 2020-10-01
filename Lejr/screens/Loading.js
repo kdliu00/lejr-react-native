@@ -121,7 +121,8 @@ function handleScreen(navigation) {
     RetrieveData(Key.CurrentGroup).then(value => {
       loadGroupAsMain(
         value == null ? LocalData.user.groups[0].groupId : value,
-      ).then(() => navigation.navigate(Screen.Dashboard));
+        () => navigation.navigate(Screen.Dashboard),
+      );
     });
   } else {
     navigation.navigate(Screen.Dashboard);

@@ -40,6 +40,8 @@ class LocalData {
   static userCopy: User = null;
   static virtualReceipts: VirtualReceipt[] = null;
   static currentVR: VirtualReceipt = null;
+  static groupListener = null;
+  static vrListener = null;
 }
 
 function deleteAllItems(forceUpdate: boolean = true) {
@@ -102,41 +104,61 @@ async function uploadVirtualReceipt(vr: VirtualReceipt) {
     );
 }
 
-async function loadGroupAsMain(groupId: string) {
-  return Promise.all([
-    firestore()
-      .collection(Collection.Groups)
-      .doc(groupId)
-      .get()
-      .then(doc => {
+function loadGroupAsMain(groupId: string, callback: () => void) {
+  console.log('Loading group: ' + groupId);
+  if (LocalData.groupListener != null) {
+    LocalData.groupListener();
+  }
+  LocalData.groupListener = firestore()
+    .collection(Collection.Groups)
+    .doc(groupId)
+    .onSnapshot(
+      doc => {
         if (doc.exists) {
-          console.log('Group document found');
+          console.log('Group document updated');
           LocalData.currentGroup = Group.firestoreConverter.fromFirestore(doc);
+          getVirtualReceiptsForGroup(groupId, callback);
         } else {
           throw new Error(ErrorCode.InvalidId);
         }
-      }),
-    getVirtualReceiptsForGroup(groupId),
-  ]);
+      },
+      error => {
+        console.error(error);
+        throw new Error(ErrorCode.DatabaseError);
+      },
+    );
 }
 
-async function getVirtualReceiptsForGroup(groupId: string) {
+function getVirtualReceiptsForGroup(groupId: string, callback: () => void) {
   console.log('Retrieving virtual receipts for group: ' + groupId);
-  return firestore()
+  if (LocalData.vrListener != null) {
+    LocalData.vrListener();
+  }
+  LocalData.vrListener = firestore()
     .collection(Collection.Groups)
     .doc(groupId)
     .collection(Key.VirtualReceipts)
     .orderBy(Key.Timestamp, 'desc')
     .limit(20)
-    .get()
-    .then(querySnapshot => {
-      LocalData.virtualReceipts = [];
-      querySnapshot.forEach(doc => {
-        LocalData.virtualReceipts.push(
-          VirtualReceipt.firestoreConverter.fromFirestore(doc),
-        );
-      });
-    });
+    .onSnapshot(
+      querySnapshot => {
+        LocalData.virtualReceipts = [];
+        querySnapshot.forEach(doc => {
+          LocalData.virtualReceipts.push(
+            VirtualReceipt.firestoreConverter.fromFirestore(doc),
+          );
+        });
+        console.log('Virtual receipts updated');
+        if (LocalData.home != null) {
+          LocalData.home.forceUpdate();
+        }
+        callback();
+      },
+      error => {
+        console.error(error);
+        throw new Error(ErrorCode.DatabaseError);
+      },
+    );
 }
 
 /**
