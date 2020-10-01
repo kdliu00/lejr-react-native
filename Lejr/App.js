@@ -26,6 +26,7 @@ import {default as theme} from './eva-theme.json';
 import {Screen} from './util/Constants';
 import {
   getKeyForCurrentGroupItems,
+  loadGroupAsMain,
   LocalData,
   pushUserData,
 } from './util/LocalData';
@@ -47,10 +48,35 @@ firebase.apps.forEach(app => {
 const Stack = createStackNavigator();
 const RootStack = createStackNavigator();
 
-AppState.addEventListener('change', () => {
-  console.log('App state is "change", saving data');
-  StoreData(getKeyForCurrentGroupItems(), LocalData.items);
-  pushUserData();
+AppState.addEventListener('change', state => {
+  console.log('App state has changed');
+  switch (state) {
+    case 'active':
+      console.log('Attaching firestore listeners');
+      if (LocalData.user != null && LocalData.currentGroup != null) {
+        loadGroupAsMain(LocalData.currentGroup.groupId, () =>
+          console.log('Finished attaching firestore listeners'),
+        );
+      }
+      break;
+
+    case 'background':
+      console.log('Detaching firestore listeners');
+      if (LocalData.groupListener != null) {
+        LocalData.groupListener();
+      }
+      if (LocalData.vrListener != null) {
+        LocalData.vrListener();
+      }
+      console.log('Saving data, updating firestore');
+      StoreData(getKeyForCurrentGroupItems(), LocalData.items);
+      pushUserData();
+      break;
+
+    default:
+      console.warn('App state unrecognized: ' + state);
+      break;
+  }
 });
 
 BackHandler.addEventListener('hardwareBackPress', () => {

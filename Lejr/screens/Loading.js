@@ -122,6 +122,7 @@ function handleScreen(navigation) {
       loadGroupAsMain(
         value == null ? LocalData.user.groups[0].groupId : value,
         () => navigation.navigate(Screen.Dashboard),
+        false,
       );
     });
   } else {

@@ -104,7 +104,11 @@ async function uploadVirtualReceipt(vr: VirtualReceipt) {
     );
 }
 
-function loadGroupAsMain(groupId: string, callback: () => void) {
+function loadGroupAsMain(
+  groupId: string,
+  callback: () => void,
+  forceUpdate: boolean = true,
+) {
   console.log('Loading group: ' + groupId);
   if (LocalData.groupListener != null) {
     LocalData.groupListener();
@@ -117,7 +121,7 @@ function loadGroupAsMain(groupId: string, callback: () => void) {
         if (doc.exists) {
           console.log('Group document updated');
           LocalData.currentGroup = Group.firestoreConverter.fromFirestore(doc);
-          getVirtualReceiptsForGroup(groupId, callback);
+          getVirtualReceiptsForGroup(groupId, callback, forceUpdate);
         } else {
           throw new Error(ErrorCode.InvalidId);
         }
@@ -129,7 +133,11 @@ function loadGroupAsMain(groupId: string, callback: () => void) {
     );
 }
 
-function getVirtualReceiptsForGroup(groupId: string, callback: () => void) {
+function getVirtualReceiptsForGroup(
+  groupId: string,
+  callback: () => void,
+  forceUpdate: boolean = true,
+) {
   console.log('Retrieving virtual receipts for group: ' + groupId);
   if (LocalData.vrListener != null) {
     LocalData.vrListener();
@@ -149,7 +157,7 @@ function getVirtualReceiptsForGroup(groupId: string, callback: () => void) {
           );
         });
         console.log('Virtual receipts updated');
-        if (LocalData.home != null) {
+        if (LocalData.home != null && forceUpdate) {
           LocalData.home.forceUpdate();
         }
         callback();
