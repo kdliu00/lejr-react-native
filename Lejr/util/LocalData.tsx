@@ -42,6 +42,7 @@ class LocalData {
   static currentVR: VirtualReceipt = null;
   static groupListener = null;
   static vrListener = null;
+  static isCamera: boolean = false;
 }
 
 function deleteAllItems(forceUpdate: boolean = true) {

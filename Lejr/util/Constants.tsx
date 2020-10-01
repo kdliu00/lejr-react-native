@@ -62,4 +62,5 @@ enum ErrorCode {
   InvalidId = 'InvalidId',
   DoesNotExist = 'DoesNotExist',
   DatabaseError = 'DatabaseError',
+  ImagePickerError = 'ImagePickerError',
 }

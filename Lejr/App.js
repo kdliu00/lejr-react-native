@@ -53,7 +53,11 @@ AppState.addEventListener('change', state => {
   switch (state) {
     case 'active':
       console.log('Attaching firestore listeners');
-      if (LocalData.user != null && LocalData.currentGroup != null) {
+      if (
+        LocalData.user != null &&
+        LocalData.currentGroup != null &&
+        !LocalData.isCamera
+      ) {
         loadGroupAsMain(LocalData.currentGroup.groupId, () =>
           console.log('Finished attaching firestore listeners'),
         );
@@ -61,12 +65,14 @@ AppState.addEventListener('change', state => {
       break;
 
     case 'background':
-      console.log('Detaching firestore listeners');
-      if (LocalData.groupListener != null) {
-        LocalData.groupListener();
-      }
-      if (LocalData.vrListener != null) {
-        LocalData.vrListener();
+      if (!LocalData.isCamera) {
+        console.log('Detaching firestore listeners');
+        if (LocalData.groupListener != null) {
+          LocalData.groupListener();
+        }
+        if (LocalData.vrListener != null) {
+          LocalData.vrListener();
+        }
       }
       console.log('Saving data, updating firestore');
       StoreData(getKeyForCurrentGroupItems(), LocalData.items);
