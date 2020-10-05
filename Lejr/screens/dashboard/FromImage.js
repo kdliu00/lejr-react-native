@@ -25,12 +25,64 @@ export default class FromImage extends Component {
     vision()
       .textRecognizerProcessImage(image.path)
       .then(result => {
-        console.log('Found text in document: ', result.text);
+        //get text lines from blocks
+        const blocks = result.blocks;
+        const lines = [];
+        for (let i = 0; i < blocks.length; i++) {
+          const curBlock = blocks[i];
+          const curLines = curBlock.lines;
+          for (let j = 0; j < curLines.length; j++) {
+            lines.push(curLines[j]);
+          }
+        }
 
-        console.log(
-          'Found blocks in document: ',
-          result.blocks.map(block => block.text),
-        );
+        //sort the lines based on top left y coordinate
+        const sortedLines = lines.sort((a, b) => {
+          return a.cornerPoints[0][1] - b.cornerPoints[0][1];
+        });
+
+        //group lines together, text only
+        const groupedLines = [];
+        var k = 0;
+        while (k < sortedLines.length) {
+          const refLine = sortedLines[k];
+          const refCoordTL = refLine.cornerPoints[0]; //top left
+          const x1 = refCoordTL[0];
+          const y1 = refCoordTL[1];
+          const refCoordTR = refLine.cornerPoints[1]; //top right
+          const x2 = refCoordTR[0];
+          const y2 = refCoordTR[1];
+          const refCoordBL = refLine.cornerPoints[3]; //bottom left
+          const x3 = refCoordBL[0];
+          const y3 = refCoordBL[1];
+
+          const threshold =
+            0.9 * Math.sqrt(Math.pow(x3 - x1, 2) + Math.pow(y3 - y1, 2));
+
+          var lineGroup = '';
+          lineGroup += refLine.text;
+
+          k += 1;
+          for (let l = k; l < sortedLines.length; l++) {
+            k = l;
+            const candLine = sortedLines[l];
+            const candCoord = candLine.cornerPoints[0]; //top left
+            const x0 = candCoord[0];
+            const y0 = candCoord[1];
+            const lineDist =
+              Math.abs((y2 - y1) * x0 - (x2 - x1) * y0 + x2 * y1 - y2 * x1) /
+              Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
+
+            if (lineDist <= threshold) {
+              lineGroup += ' ' + candLine.text;
+            } else {
+              groupedLines.push(lineGroup);
+              break;
+            }
+          }
+        }
+
+        console.log('Line-by-line reconstruction:\n' + groupedLines.join('\n'));
 
         MergeState(this, {isProcessing: false});
       });
