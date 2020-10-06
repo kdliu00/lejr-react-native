@@ -37,7 +37,7 @@ export default class NewItem extends Component {
     this.passedItem = props.route.params.item;
     this.vrIndex = props.route.params.vrIndex;
     this.state = {
-      itemCost: this.passedItem.itemCost
+      itemCost: !isNaN(parseFloat(this.passedItem.itemCost))
         ? this.passedItem.itemCost.toString()
         : '',
       itemCostError: '',

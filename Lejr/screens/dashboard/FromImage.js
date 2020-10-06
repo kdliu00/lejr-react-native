@@ -4,9 +4,11 @@ import {Button, Layout, Spinner, Text} from '@ui-kitten/components';
 import ImagePicker from 'react-native-image-crop-picker';
 import {Component} from 'react';
 import FormStyles from '../../util/FormStyles';
-import {ErrorCode} from '../../util/Constants';
+import {ErrorCode, Screen} from '../../util/Constants';
 import vision from '@react-native-firebase/ml-vision';
-import {MergeState} from '../../util/UtilityMethods';
+import {JSONCopy, MergeState} from '../../util/UtilityMethods';
+import {Item} from '../../util/DataObjects';
+import {LocalData} from '../../util/LocalData';
 
 export default class FromImage extends Component {
   constructor() {
@@ -57,7 +59,7 @@ export default class FromImage extends Component {
           const y3 = refCoordBL[1];
 
           const threshold =
-            0.5 * Math.sqrt(Math.pow(x3 - x1, 2) + Math.pow(y3 - y1, 2));
+            0.7 * Math.sqrt(Math.pow(x3 - x1, 2) + Math.pow(y3 - y1, 2));
 
           var lineGroup = '';
           lineGroup += refLine.text;
@@ -91,7 +93,47 @@ export default class FromImage extends Component {
 
         console.log('Line-by-line reconstruction:\n' + groupedLines.join('\n'));
 
+        //filter for items
+        var itemList = [];
+        const defaultSplit = {};
+        const userIds = Object.keys(LocalData.currentGroup.memberNames);
+        userIds.forEach(userId => {
+          defaultSplit[userId] = Math.round(10000 / userIds.length) / 100;
+        });
+        for (let m = 0; m < groupedLines.length; m++) {
+          const line = groupedLines[m];
+          if (line.includes('/')) {
+            continue;
+          }
+          if (
+            line.toLowerCase().includes('total') ||
+            line.toLowerCase().includes('balance')
+          ) {
+            break;
+          }
+          const words = line.split(' ');
+          for (let n = 0; n < words.length; n++) {
+            const word = words[n].replace('$', '');
+            if (!isNaN(parseFloat(word)) && word.includes('.')) {
+              const itemCost = parseFloat(
+                words.splice(n, 1)[0].replace('$', ''),
+              );
+              const itemName = words.join(' ').replace(/[0-9]/g, '');
+              if (itemName.length > 5) {
+                itemList.push(new Item(itemName, itemCost, defaultSplit));
+              }
+              break;
+            }
+          }
+        }
+
+        LocalData.items = itemList;
+        if (LocalData.container != null) {
+          LocalData.container.forceUpdate();
+        }
+
         MergeState(this, {isProcessing: false});
+        this.props.navigation.navigate(Screen.Contribution);
       });
   }
 
