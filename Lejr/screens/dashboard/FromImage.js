@@ -57,7 +57,7 @@ export default class FromImage extends Component {
           const y3 = refCoordBL[1];
 
           const threshold =
-            0.9 * Math.sqrt(Math.pow(x3 - x1, 2) + Math.pow(y3 - y1, 2));
+            0.5 * Math.sqrt(Math.pow(x3 - x1, 2) + Math.pow(y3 - y1, 2));
 
           var lineGroup = '';
           lineGroup += refLine.text;
@@ -66,14 +66,21 @@ export default class FromImage extends Component {
           for (let l = k; l < sortedLines.length; l++) {
             k = l;
             const candLine = sortedLines[l];
-            const candCoord = candLine.cornerPoints[0]; //top left
-            const x0 = candCoord[0];
-            const y0 = candCoord[1];
-            const lineDist =
-              Math.abs((y2 - y1) * x0 - (x2 - x1) * y0 + x2 * y1 - y2 * x1) /
+            const candCoordTL = candLine.cornerPoints[0]; //top left
+            const x00 = candCoordTL[0];
+            const y00 = candCoordTL[1];
+            const candCoordTR = candLine.cornerPoints[1]; //top right
+            const x01 = candCoordTR[0];
+            const y01 = candCoordTR[1];
+
+            const lineDist0 =
+              Math.abs((y2 - y1) * x00 - (x2 - x1) * y00 + x2 * y1 - y2 * x1) /
+              Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
+            const lineDist1 =
+              Math.abs((y2 - y1) * x01 - (x2 - x1) * y01 + x2 * y1 - y2 * x1) /
               Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
 
-            if (lineDist <= threshold) {
+            if (lineDist0 <= threshold || lineDist1 <= threshold) {
               lineGroup += ' ' + candLine.text;
             } else {
               groupedLines.push(lineGroup);
@@ -99,7 +106,8 @@ export default class FromImage extends Component {
             <Text appearance="hint" style={Styles.placeholderText}>
               Use your Camera to take a receipt photo or select one from your
               Gallery. Make sure to allow camera permissions for Lejr in your
-              device settings
+              device settings. {'\n\n'} For best results, keep the receipt flat
+              and only include purchase items and total in the photo.
             </Text>
             <Layout style={[FormStyles.buttonStyle]}>
               <Button
