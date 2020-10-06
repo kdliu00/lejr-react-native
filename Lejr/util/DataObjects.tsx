@@ -6,7 +6,6 @@ class User {
   profilePic: string;
   name: string;
   groups: GroupInfo[];
-  invites: InviteInfo[];
 
   constructor(
     userId: string,
@@ -14,14 +13,12 @@ class User {
     profilePic: string,
     name: string,
     groups: GroupInfo[],
-    invites: InviteInfo[],
   ) {
     this.userId = userId;
     this.email = email;
     this.profilePic = profilePic;
     this.name = name;
     this.groups = groups;
-    this.invites = invites;
   }
 
   static firestoreConverter = {
@@ -32,7 +29,6 @@ class User {
         profilePic: user.profilePic,
         name: user.name,
         groups: user.groups,
-        invites: user.invites,
       };
     },
     fromFirestore: function(snapshot: {data: () => any}) {
@@ -43,7 +39,6 @@ class User {
         data.profilePic,
         data.name,
         data.groups,
-        data.invites,
       );
     },
   };

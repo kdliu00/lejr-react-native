@@ -68,7 +68,7 @@ export default class CreateGroup extends Component {
                     onPress={() =>
                       this.props.navigation.navigate(Screen.Invitations)
                     }>
-                    See invitations {'(' + LocalData.user.invites.length + ')'}
+                    See invitations {'(' + LocalData.invitations.length + ')'}
                   </Button>
                 </Layout>
               </Layout>

@@ -143,8 +143,7 @@ class TotalText extends Component {
   render() {
     return (
       <Text style={Styles.titleText} category="h4">
-        Total: $
-        {getMoneyFormatString(nearestHundredth(getTotal(filterItemCosts())))}
+        Total: ${getMoneyFormatString(getTotal(filterItemCosts()))}
       </Text>
     );
   }

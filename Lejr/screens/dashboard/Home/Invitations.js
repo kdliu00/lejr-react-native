@@ -1,10 +1,9 @@
 import React from 'react';
 import {StyleSheet, SafeAreaView, Alert} from 'react-native';
 import {Text, Layout, Button, Icon} from '@ui-kitten/components';
-import {ErrorCode} from '../../../util/Constants';
+import {Collection, ErrorCode, Key} from '../../../util/Constants';
 import {
   LocalData,
-  pushUserData,
   joinGroup,
   isPossibleObjectEmpty,
 } from '../../../util/LocalData';
@@ -18,6 +17,7 @@ import {
 import {Component} from 'react';
 import Animated from 'react-native-reanimated';
 import {ItemCard} from '../../../util/ContributionUI';
+import firestore from '@react-native-firebase/firestore';
 
 const AcceptIcon = props => <Icon name="checkmark-outline" {...props} />;
 const DenyIcon = props => <Icon name="close-outline" {...props} />;
@@ -39,14 +39,14 @@ export default class Invitations extends Component {
             <Text style={Styles.titleText} category="h4">
               Invitations
             </Text>
-            {LocalData.user.invites.length !== 0 && (
+            {LocalData.invitations.length !== 0 && (
               <Text style={Styles.text} appearance="hint">
                 Slide right to accept, left to delete
               </Text>
             )}
           </Layout>
           <Layout style={Styles.listContainer}>
-            {isPossibleObjectEmpty(LocalData.user.invites) ? (
+            {isPossibleObjectEmpty(LocalData.invitations) ? (
               <Layout style={Styles.container}>
                 <Text style={Styles.text} appearance="hint">
                   No invitations yet
@@ -56,7 +56,7 @@ export default class Invitations extends Component {
               <ThemedScroll
                 style={Styles.justFlex}
                 contentContainerStyle={Styles.contentContainer}>
-                {LocalData.user.invites.map((item, index) => {
+                {LocalData.invitations.map((item, index) => {
                   if (item != null) {
                     return (
                       <InvitationCard key={index} item={item} index={index} />
@@ -79,11 +79,17 @@ export default class Invitations extends Component {
   }
 }
 
-function removeInvitation(index, component) {
-  LocalData.user.invites.splice(index, 1);
-  pushUserData();
-  component.forceUpdate();
-  console.log('Removed invitation ' + index);
+function removeInvitation(component) {
+  firestore()
+    .collection(Collection.Users)
+    .doc(LocalData.user.userId)
+    .collection(Key.Invitations)
+    .doc(component.item.groupId)
+    .delete()
+    .then(() => {
+      component.forceUpdate();
+      console.log('Removed invitation ' + component.item.groupId);
+    });
 }
 
 class InvitationCard extends ItemCard {
@@ -143,13 +149,13 @@ class InvitationCard extends ItemCard {
           }}
           onSwipeableRightOpen={() => {
             this.closeSwipeable();
-            removeInvitation(this.index, this);
+            removeInvitation(this);
           }}
           onSwipeableLeftOpen={() => {
             this.closeSwipeable();
             joinGroup(this.item.groupId).then(
               () => {
-                removeInvitation(this.index, this);
+                removeInvitation(this);
                 this.props.navigation.popToTop();
               },
               error => {

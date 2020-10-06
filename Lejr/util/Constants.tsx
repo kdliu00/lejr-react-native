@@ -28,6 +28,7 @@ enum Key {
   Items = 'items_key_',
   CurrentGroup = 'current_group_id',
   VirtualReceipts = 'virtualReceipts',
+  Invitations = 'invitations',
   Timestamp = 'timestamp',
 }
 

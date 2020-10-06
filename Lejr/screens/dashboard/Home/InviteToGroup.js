@@ -72,34 +72,34 @@ export default class InviteToGroup extends Component {
                           if (valid) {
                             MergeState(this, {isInviting: true});
                             var newState = {};
-                            pushInvite(LocalData.user.name, this.state.email)
-                              .then(
-                                () => {
-                                  newState.textStatus = 'success';
-                                  newState.message = 'Invite sent!';
-                                  this.emailRef.current.clear();
-                                },
-                                error => {
-                                  console.warn(error.message);
-                                  switch (error.message) {
-                                    case ErrorCode.UserDuplicate:
-                                      newState.textStatus = 'warning';
-                                      newState.message =
-                                        'User already in group!';
-                                      break;
+                            pushInvite(
+                              LocalData.user.name,
+                              this.state.email,
+                              () => {
+                                newState.textStatus = 'success';
+                                newState.message = 'Invite sent!';
+                                this.emailRef.current.clear();
+                              },
+                            )
+                              .catch(error => {
+                                console.warn(error.message);
+                                switch (error.message) {
+                                  case ErrorCode.UserDuplicate:
+                                    newState.textStatus = 'warning';
+                                    newState.message = 'User already in group!';
+                                    break;
 
-                                    case ErrorCode.UserNotFound:
-                                      newState.textStatus = 'warning';
-                                      newState.message = 'User not found!';
-                                      break;
+                                  case ErrorCode.UserNotFound:
+                                    newState.textStatus = 'warning';
+                                    newState.message = 'User not found!';
+                                    break;
 
-                                    default:
-                                      newState.textStatus = 'danger';
-                                      newState.message = 'Invite failed!';
-                                      break;
-                                  }
-                                },
-                              )
+                                  default:
+                                    newState.textStatus = 'danger';
+                                    newState.message = 'Invite failed!';
+                                    break;
+                                }
+                              })
                               .finally(() => {
                                 newState.isInviting = false;
                                 MergeState(this, newState);

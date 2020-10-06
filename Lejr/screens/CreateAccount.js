@@ -73,7 +73,6 @@ export default class CreateAccount extends Component {
                           ' ' +
                           this.state.lastName.trim(),
                         [],
-                        [],
                       );
                       this.props.navigation.navigate(Screen.EmailLogin, {
                         showConfirm: true,

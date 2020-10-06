@@ -81,8 +81,8 @@ function nearestHundredth(num: number) {
  * @param amount money amount
  */
 function getMoneyFormatString(amount: number) {
-  var returnString = amount.toString();
-  const h = amount * 100;
+  var returnString = nearestHundredth(amount).toString();
+  const h = Math.round(amount * 100);
   if (h % 100 != 0) {
     if (h % 10 == 0) {
       returnString += '0';

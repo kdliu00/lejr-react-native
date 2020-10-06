@@ -6,7 +6,7 @@ import {Component} from 'react';
 import FormStyles from '../../util/FormStyles';
 import {ErrorCode, Screen} from '../../util/Constants';
 import vision from '@react-native-firebase/ml-vision';
-import {JSONCopy, MergeState} from '../../util/UtilityMethods';
+import {MergeState} from '../../util/UtilityMethods';
 import {Item} from '../../util/DataObjects';
 import {LocalData} from '../../util/LocalData';
 

@@ -10,9 +10,10 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import {Collection, ErrorCode, Key} from './Constants';
 import {Alert} from 'react-native';
-import Contribution from '../screens/dashboard/Contribution/Contribution';
-import {removeNullsFromList, StoreData} from './UtilityMethods';
+import {StoreData} from './UtilityMethods';
 import Home from '../screens/dashboard/Home/Home';
+import Contribution from '../screens/dashboard/Contribution/Contribution';
+import Invitations from '../screens/dashboard/Home/Invitations';
 
 export {
   LocalData,
@@ -24,6 +25,7 @@ export {
   pushGroupData,
   safeGetListData,
   isPossibleObjectEmpty,
+  getUserInvitations,
   uploadVirtualReceipt,
   loadGroupAsMain,
   getVirtualReceiptsForGroup,
@@ -32,16 +34,27 @@ export {
 };
 
 class LocalData {
+  //user data
   static user: User = null;
+  static userCopy: User = null;
+  static invitations: InviteInfo[] = null;
+
+  //group and purchase data
   static currentGroup: Group = null;
   static items: Item[] = null;
-  static container: Contribution = null;
-  static home: Home = null;
-  static userCopy: User = null;
   static virtualReceipts: VirtualReceipt[] = null;
   static currentVR: VirtualReceipt = null;
+
+  //screen references
+  static container: Contribution = null;
+  static home: Home = null;
+
+  //firestore listeners
   static groupListener = null;
   static vrListener = null;
+  static invListener = null;
+
+  //camera stuff
   static isCamera: boolean = false;
 }
 
@@ -75,6 +88,37 @@ function signOut() {
       LocalData.user = null;
       LocalData.currentGroup = null;
     });
+}
+
+function getUserInvitations(
+  userId: string,
+  callback: () => void,
+  forceUpdate: boolean = true,
+) {
+  console.log('Retrieving invitations for user: ' + userId);
+  if (LocalData.invListener != null) {
+    LocalData.invListener();
+  }
+  LocalData.invListener = firestore()
+    .collection(Collection.Users)
+    .doc(userId)
+    .collection(Key.Invitations)
+    .onSnapshot(
+      querySnapshot => {
+        LocalData.invitations = [];
+        querySnapshot.forEach(doc => {
+          LocalData.invitations.push(
+            InviteInfo.firestoreConverter.fromFirestore(doc),
+          );
+        });
+        console.log('User invitations updated');
+        callback();
+      },
+      error => {
+        console.error(error);
+        throw new Error(ErrorCode.DatabaseError);
+      },
+    );
 }
 
 async function uploadVirtualReceipt(vr: VirtualReceipt) {
@@ -186,7 +230,12 @@ function isPossibleObjectEmpty(data: any) {
   return Object.keys(data).length === 0;
 }
 
-async function pushInvite(fromName: string, email: string) {
+async function pushInvite(
+  fromName: string,
+  email: string,
+  callback: () => void,
+) {
+  console.log('Sending invite for user email: ' + email);
   var newInviteInfo = new InviteInfo(
     fromName,
     LocalData.currentGroup.groupId,
@@ -199,36 +248,37 @@ async function pushInvite(fromName: string, email: string) {
     .then(query => {
       if (query.size == 1) {
         //Retrieve user object
-        var userObject: User = User.firestoreConverter.fromFirestore(
-          query.docs[0],
-        );
+        var userDoc = query.docs[0];
 
         //Check if user is already in group
-        safeGetListData(userObject.groups).forEach(groupInfo => {
+        safeGetListData(
+          User.firestoreConverter.fromFirestore(userDoc).groups,
+        ).forEach(groupInfo => {
           if (groupInfo.groupId === newInviteInfo.groupId) {
             throw new Error(ErrorCode.UserDuplicate);
           }
         });
 
         //Add invite
-        var recipientInvites = userObject.invites;
-        if (Object.keys(recipientInvites).length === 0) {
-          recipientInvites = [newInviteInfo];
-        } else {
-          recipientInvites.push(newInviteInfo);
-        }
         firestore()
-          .collection(Collection.Users)
-          .doc(userObject.userId)
-          .update({invites: recipientInvites});
+          .doc(userDoc.id)
+          .collection(Key.Invitations)
+          .doc(newInviteInfo.groupId)
+          .set(InviteInfo.firestoreConverter.toFirestore(newInviteInfo))
+          .then(
+            () => callback(),
+            error => {
+              console.error(error);
+              throw new Error(ErrorCode.DatabaseError);
+            },
+          );
       } else if (query.size == 0) {
-        console.warn('Could not find user with email: ' + email);
         throw new Error(ErrorCode.UserNotFound);
       } else {
         console.error(
           'There should not be multiple users with the same email!',
         );
-        throw new Error(ErrorCode.UserDuplicate);
+        throw new Error(ErrorCode.DatabaseError);
       }
     });
 }

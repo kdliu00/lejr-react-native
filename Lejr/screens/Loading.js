@@ -10,6 +10,7 @@ import {
   loadGroupAsMain,
   getKeyForCurrentGroupItems,
   deleteAllItems,
+  getUserInvitations,
 } from '../util/LocalData';
 import {User} from '../util/DataObjects';
 import {
@@ -18,6 +19,7 @@ import {
   Screen,
   AnimDefaultDuration,
   Key,
+  ErrorCode,
 } from '../util/Constants';
 import {Component} from 'react';
 import {JSONCopy, RetrieveData, StoreData} from '../util/UtilityMethods';
@@ -25,6 +27,25 @@ import {JSONCopy, RetrieveData, StoreData} from '../util/UtilityMethods';
 export default class Loading extends Component {
   constructor() {
     super();
+  }
+
+  handleScreen() {
+    getUserInvitations(LocalData.user.userId, () => {
+      LocalData.container = null;
+      if (isPossibleObjectEmpty(LocalData.user.groups)) {
+        this.props.navigation.navigate(Screen.CreateGroup, {welcome: true});
+      } else if (!LocalData.currentGroup) {
+        RetrieveData(Key.CurrentGroup).then(value => {
+          loadGroupAsMain(
+            value == null ? LocalData.user.groups[0].groupId : value,
+            () => this.props.navigation.navigate(Screen.Dashboard),
+            false,
+          );
+        });
+      } else {
+        this.props.navigation.navigate(Screen.Dashboard);
+      }
+    });
   }
 
   handleUserState(user) {
@@ -36,50 +57,49 @@ export default class Loading extends Component {
         .collection(Collection.Users)
         .doc(user.uid)
         .get()
-        .then(doc => {
-          if (doc.exists) {
-            console.log('User document found');
-            LocalData.user = User.firestoreConverter.fromFirestore(doc);
-            LocalData.userCopy = JSONCopy(LocalData.user);
-            handleScreen(this.props.navigation);
-          } else {
-            console.log('No document for user, creating new one');
-            if (LocalData.user == null) {
-              console.log('Creating new user object from auth');
-              LocalData.user = new User(
-                user.uid,
-                user.email,
-                user.photoURL,
-                user.displayName,
-                [],
-                [],
-              );
+        .then(
+          doc => {
+            if (doc.exists) {
+              console.log('User document found');
+              LocalData.user = User.firestoreConverter.fromFirestore(doc);
+              LocalData.userCopy = JSONCopy(LocalData.user);
+              this.handleScreen();
+            } else {
+              console.log('No document for user, creating new one');
+              if (LocalData.user == null) {
+                console.log('Creating new user object from auth');
+                LocalData.user = new User(
+                  user.uid,
+                  user.email,
+                  user.photoURL,
+                  user.displayName,
+                  [],
+                );
+              }
+              LocalData.user.userId = user.uid;
+              if (!user.photoURL) {
+                LocalData.user.profilePic = defaultProfilePic;
+              }
+              firestore()
+                .collection(Collection.Users)
+                .doc(user.uid)
+                .set(User.firestoreConverter.toFirestore(LocalData.user))
+                .then(
+                  () => {
+                    console.log('Successfully created new user document');
+                    this.handleScreen();
+                  },
+                  error => console.warn(error.message),
+                );
             }
-            LocalData.user.userId = user.uid;
-            if (!user.photoURL) {
-              LocalData.user.profilePic = defaultProfilePic;
-            }
-            firestore()
-              .collection(Collection.Users)
-              .doc(user.uid)
-              .set(User.firestoreConverter.toFirestore(LocalData.user))
-              .then(
-                () => {
-                  console.log('Successfully created new user document');
-                  handleScreen(this.props.navigation);
-                },
-                error => console.warn(error.message),
-              );
-          }
-        })
-        .catch(error => {
-          console.warn(error.message);
-        });
+          },
+          error => {
+            console.error(error);
+            throw new Error(ErrorCode.DatabaseError);
+          },
+        );
     } else if (user && LocalData.user) {
-      setTimeout(
-        () => handleScreen(this.props.navigation),
-        AnimDefaultDuration,
-      );
+      setTimeout(() => this.handleScreen(), AnimDefaultDuration);
     } else {
       StoreData(getKeyForCurrentGroupItems(), null);
       StoreData(Key.CurrentGroup, null);
@@ -110,23 +130,6 @@ export default class Loading extends Component {
         <Spinner size="large" />
       </Layout>
     );
-  }
-}
-
-function handleScreen(navigation) {
-  LocalData.container = null;
-  if (isPossibleObjectEmpty(LocalData.user.groups)) {
-    navigation.navigate(Screen.CreateGroup, {welcome: true});
-  } else if (!LocalData.currentGroup) {
-    RetrieveData(Key.CurrentGroup).then(value => {
-      loadGroupAsMain(
-        value == null ? LocalData.user.groups[0].groupId : value,
-        () => navigation.navigate(Screen.Dashboard),
-        false,
-      );
-    });
-  } else {
-    navigation.navigate(Screen.Dashboard);
   }
 }
 
