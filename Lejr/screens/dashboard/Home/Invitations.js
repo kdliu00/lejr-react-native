@@ -29,6 +29,7 @@ export default class Invitations extends Component {
 
   componentDidMount() {
     console.log('Arrived at Invitations!');
+    LocalData.invScreen = this;
   }
 
   render() {

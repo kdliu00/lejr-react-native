@@ -48,6 +48,7 @@ class LocalData {
   //screen references
   static container: Contribution = null;
   static home: Home = null;
+  static invScreen: Invitations = null;
 
   //firestore listeners
   static groupListener = null;
@@ -112,6 +113,9 @@ function getUserInvitations(
           );
         });
         console.log('User invitations updated');
+        if (LocalData.invScreen != null && forceUpdate) {
+          LocalData.invScreen.forceUpdate();
+        }
         callback();
       },
       error => {

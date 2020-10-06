@@ -30,22 +30,23 @@ export default class Loading extends Component {
   }
 
   handleScreen() {
-    getUserInvitations(LocalData.user.userId, () => {
-      LocalData.container = null;
-      if (isPossibleObjectEmpty(LocalData.user.groups)) {
-        this.props.navigation.navigate(Screen.CreateGroup, {welcome: true});
-      } else if (!LocalData.currentGroup) {
-        RetrieveData(Key.CurrentGroup).then(value => {
-          loadGroupAsMain(
-            value == null ? LocalData.user.groups[0].groupId : value,
-            () => this.props.navigation.navigate(Screen.Dashboard),
-            false,
-          );
-        });
-      } else {
-        this.props.navigation.navigate(Screen.Dashboard);
-      }
-    });
+    getUserInvitations(LocalData.user.userId, () =>
+      console.log('Attached invitation listener'),
+    );
+    LocalData.container = null;
+    if (isPossibleObjectEmpty(LocalData.user.groups)) {
+      this.props.navigation.navigate(Screen.CreateGroup, {welcome: true});
+    } else if (!LocalData.currentGroup) {
+      RetrieveData(Key.CurrentGroup).then(value => {
+        loadGroupAsMain(
+          value == null ? LocalData.user.groups[0].groupId : value,
+          () => this.props.navigation.navigate(Screen.Dashboard),
+          false,
+        );
+      });
+    } else {
+      this.props.navigation.navigate(Screen.Dashboard);
+    }
   }
 
   handleUserState(user) {
