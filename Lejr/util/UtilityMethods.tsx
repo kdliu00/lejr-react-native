@@ -11,6 +11,8 @@ export {
   getMoneyFormatString,
   removeNullsFromList,
   JSONCopy,
+  pointToLineDistance,
+  pointDistance,
 };
 
 /**
@@ -105,4 +107,38 @@ function removeNullsFromList(list: any[]) {
  */
 function JSONCopy(obj: any) {
   return JSON.parse(JSON.stringify(obj));
+}
+
+/**
+ * Computes distance between point (x0,y0) to line defined by (x1,y1) and (x2,y2)
+ * @param x0
+ * @param y0
+ * @param x1
+ * @param y1
+ * @param x2
+ * @param y2
+ */
+function pointToLineDistance(
+  x0: number,
+  y0: number,
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+) {
+  return (
+    Math.abs((y2 - y1) * x0 - (x2 - x1) * y0 + x2 * y1 - y2 * x1) /
+    Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2))
+  );
+}
+
+/**
+ * Computes distance between points (x0,y0) and (x1,y1)
+ * @param x0
+ * @param y0
+ * @param x1
+ * @param y1
+ */
+function pointDistance(x0: number, y0: number, x1: number, y1: number) {
+  return Math.sqrt(Math.pow(x0 - x1, 2) + Math.pow(y0 - y1, 2));
 }

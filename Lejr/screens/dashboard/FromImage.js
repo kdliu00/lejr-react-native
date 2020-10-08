@@ -6,7 +6,11 @@ import {Component} from 'react';
 import FormStyles from '../../util/FormStyles';
 import {ErrorCode, Screen} from '../../util/Constants';
 import vision from '@react-native-firebase/ml-vision';
-import {MergeState} from '../../util/UtilityMethods';
+import {
+  MergeState,
+  pointDistance,
+  pointToLineDistance,
+} from '../../util/UtilityMethods';
 import {Item} from '../../util/DataObjects';
 import {LocalData} from '../../util/LocalData';
 
@@ -28,62 +32,57 @@ export default class FromImage extends Component {
       .textRecognizerProcessImage(image.path)
       .then(result => {
         //get text lines from blocks
-        const blocks = result.blocks;
-        const lines = [];
+        let blocks = result.blocks;
+        let lines = [];
         for (let i = 0; i < blocks.length; i++) {
-          const curBlock = blocks[i];
-          const curLines = curBlock.lines;
+          let curBlock = blocks[i];
+          let curLines = curBlock.lines;
           for (let j = 0; j < curLines.length; j++) {
             lines.push(curLines[j]);
           }
         }
 
         //sort the lines based on top left y coordinate
-        const sortedLines = lines.sort((a, b) => {
+        let sortedLines = lines.sort((a, b) => {
           return a.cornerPoints[0][1] - b.cornerPoints[0][1];
         });
 
-        //group lines together, text only
-        const groupedLines = [];
-        var k = 0;
+        //group lines together
+        var groupedLines = [];
+        let k = 0;
         while (k < sortedLines.length) {
-          const refLine = sortedLines[k];
-          const refCoordTL = refLine.cornerPoints[0]; //top left
-          const x1 = refCoordTL[0];
-          const y1 = refCoordTL[1];
-          const refCoordTR = refLine.cornerPoints[1]; //top right
-          const x2 = refCoordTR[0];
-          const y2 = refCoordTR[1];
-          const refCoordBL = refLine.cornerPoints[3]; //bottom left
-          const x3 = refCoordBL[0];
-          const y3 = refCoordBL[1];
+          let refLine = sortedLines[k];
+          let refCoordTL = refLine.cornerPoints[0]; //top left
+          let x1 = refCoordTL[0];
+          let y1 = refCoordTL[1];
+          let refCoordTR = refLine.cornerPoints[1]; //top right
+          let x2 = refCoordTR[0];
+          let y2 = refCoordTR[1];
+          let refCoordBL = refLine.cornerPoints[3]; //bottom left
+          let x3 = refCoordBL[0];
+          let y3 = refCoordBL[1];
 
-          const threshold =
-            0.7 * Math.sqrt(Math.pow(x3 - x1, 2) + Math.pow(y3 - y1, 2));
+          let threshold = 0.5 * pointDistance(x1, y1, x3, y3);
 
-          var lineGroup = '';
-          lineGroup += refLine.text;
+          let lineGroup = [];
+          lineGroup.push(refLine);
 
           k += 1;
           for (let l = k; l < sortedLines.length; l++) {
             k = l;
-            const candLine = sortedLines[l];
-            const candCoordTL = candLine.cornerPoints[0]; //top left
-            const x00 = candCoordTL[0];
-            const y00 = candCoordTL[1];
-            const candCoordTR = candLine.cornerPoints[1]; //top right
-            const x01 = candCoordTR[0];
-            const y01 = candCoordTR[1];
+            let candLine = sortedLines[l];
+            let candCoordTL = candLine.cornerPoints[0]; //top left
+            let x00 = candCoordTL[0];
+            let y00 = candCoordTL[1];
+            let candCoordTR = candLine.cornerPoints[1]; //top right
+            let x01 = candCoordTR[0];
+            let y01 = candCoordTR[1];
 
-            const lineDist0 =
-              Math.abs((y2 - y1) * x00 - (x2 - x1) * y00 + x2 * y1 - y2 * x1) /
-              Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
-            const lineDist1 =
-              Math.abs((y2 - y1) * x01 - (x2 - x1) * y01 + x2 * y1 - y2 * x1) /
-              Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
+            let lineDist0 = pointToLineDistance(x00, y00, x1, y1, x2, y2);
+            let lineDist1 = pointToLineDistance(x01, y01, x1, y1, x2, y2);
 
             if (lineDist0 <= threshold || lineDist1 <= threshold) {
-              lineGroup += ' ' + candLine.text;
+              lineGroup.push(candLine);
             } else {
               groupedLines.push(lineGroup);
               break;
@@ -91,35 +90,88 @@ export default class FromImage extends Component {
           }
         }
 
-        console.log('Line-by-line reconstruction:\n' + groupedLines.join('\n'));
+        //sort text within lines horizontally
+        var logText = [];
+        for (let p = 0; p < groupedLines.length; p++) {
+          groupedLines[p] = groupedLines[p].sort(
+            (a, b) => a.cornerPoints[0][0] - b.cornerPoints[0][0],
+          );
+          var text = '';
+          groupedLines[p].forEach(
+            textObject => (text += ' ' + textObject.text),
+          );
+          logText.push(text);
+        }
 
-        //filter for items
+        console.log('Line-by-line reconstruction:\n' + logText.join('\n'));
+
+        //calculate default split
         var itemList = [];
-        const defaultSplit = {};
-        const userIds = Object.keys(LocalData.currentGroup.memberNames);
+        let defaultSplit = {};
+        let userIds = Object.keys(LocalData.currentGroup.memberNames);
         userIds.forEach(userId => {
           defaultSplit[userId] = Math.round(10000 / userIds.length) / 100;
         });
+
+        //filter for items
+        var x1 = null;
+        var y1 = null;
+        var x2 = null;
+        var y2 = null;
+        var threshold = null;
         for (let m = 0; m < groupedLines.length; m++) {
-          const line = groupedLines[m];
-          if (line.includes('/')) {
-            continue;
-          }
+          let line = groupedLines[m];
+          let lineText = line.map(chunk => chunk.text).join(' ');
+
           if (
-            line.toLowerCase().includes('total') ||
-            line.toLowerCase().includes('balance')
+            lineText.toLowerCase().includes('total') &&
+            !lineText.toLowerCase().includes('subtotal')
           ) {
             break;
           }
-          const words = line.split(' ');
-          for (let n = 0; n < words.length; n++) {
-            const word = words[n].replace('$', '');
+          if (
+            lineText.toLowerCase().includes('total') ||
+            lineText.toLowerCase().includes('balance')
+          ) {
+            continue;
+          }
+
+          //scan line
+          for (let n = 0; n < line.length; n++) {
+            let index = line.length - n - 1;
+            let word = line[index].text.replace(/[^0-9.]/g, '');
+            let x0 = line[index].cornerPoints[0][0];
+            let y0 = line[index].cornerPoints[0][1];
+
             if (!isNaN(parseFloat(word)) && word.includes('.')) {
-              const itemCost = parseFloat(
-                words.splice(n, 1)[0].replace('$', ''),
-              );
-              const itemName = words.join(' ').replace(/[0-9]/g, '');
-              if (itemName.length > 5) {
+              if (x1 == null) {
+                x1 = x0;
+                y1 = y0;
+                x2 = line[index].cornerPoints[3][0];
+                y2 = line[index].cornerPoints[3][1];
+                threshold = pointDistance(
+                  x0,
+                  y0,
+                  line[index].cornerPoints[1][0],
+                  line[index].cornerPoints[1][1],
+                );
+              } else if (
+                pointToLineDistance(x0, y0, x1, y1, x2, y2) < threshold
+              ) {
+                x2 = x0;
+                y2 = y0;
+              } else {
+                break;
+              }
+
+              line.splice(index, 1);
+
+              let itemCost = parseFloat(word);
+              let itemName = '';
+              line.forEach(chunk => (itemName += ' ' + chunk.text));
+              itemName = itemName.replace(/[0-9]/g, '');
+
+              if (itemName.length > 3) {
                 itemList.push(new Item(itemName, itemCost, defaultSplit));
               }
               break;
@@ -159,12 +211,15 @@ export default class FromImage extends Component {
                   MergeState(this, {isProcessing: true});
                   ImagePicker.openPicker({
                     mediaType: 'photo',
+                    cropping: true,
                   }).then(
                     image => this.processImage(image),
                     error => {
                       console.warn(error.message);
                       if (!error.message.includes('cancelled')) {
                         throw new Error(ErrorCode.ImagePickerError);
+                      } else {
+                        MergeState(this, {isProcessing: false});
                       }
                     },
                   );
@@ -178,12 +233,15 @@ export default class FromImage extends Component {
                   MergeState(this, {isProcessing: true});
                   ImagePicker.openCamera({
                     mediaType: 'photo',
+                    cropping: true,
                   }).then(
                     image => this.processImage(image),
                     error => {
                       console.warn(error.message);
                       if (!error.message.includes('cancelled')) {
                         throw new Error(ErrorCode.ImagePickerError);
+                      } else {
+                        MergeState(this, {isProcessing: false});
                       }
                     },
                   );

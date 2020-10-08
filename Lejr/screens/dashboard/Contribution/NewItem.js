@@ -133,6 +133,7 @@ export default class NewItem extends Component {
                   Keyboard.dismiss();
                 }}
                 value={this.state.itemCost}
+                keyboardType="numeric"
               />
             </Layout>
             <ScrollView style={Styles.scrollView}>
@@ -246,6 +247,7 @@ const Styles = StyleSheet.create({
     paddingTop: 10,
     width: Dimensions.get('window').width,
     marginTop: 20,
+    marginBottom: 10,
   },
   titleText: {
     marginTop: 30,
