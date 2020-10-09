@@ -108,7 +108,7 @@ class ItemCard extends Component {
           scaleY: (this.state as any).renderScaleY,
         }}
         style={Styles.itemCard}
-        renderLabel="Slide to delete"
+        renderLabel="Delete"
       />
     );
   };
@@ -195,7 +195,7 @@ const Styles = StyleSheet.create({
   },
   itemCard: {
     paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     marginVertical: 4,
     borderRadius: 8,
     flex: 1,

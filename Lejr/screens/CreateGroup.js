@@ -68,7 +68,12 @@ export default class CreateGroup extends Component {
                     onPress={() =>
                       this.props.navigation.navigate(Screen.Invitations)
                     }>
-                    See invitations {'(' + LocalData.invitations.length + ')'}
+                    See invitations{' '}
+                    {'(' +
+                      (isPossibleObjectEmpty(LocalData.invitations)
+                        ? 0
+                        : LocalData.invitations.length) +
+                      ')'}
                   </Button>
                 </Layout>
               </Layout>

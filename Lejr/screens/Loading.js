@@ -11,6 +11,7 @@ import {
   getKeyForCurrentGroupItems,
   deleteAllItems,
   getUserInvitations,
+  detachListeners,
 } from '../util/LocalData';
 import {User} from '../util/DataObjects';
 import {
@@ -30,9 +31,7 @@ export default class Loading extends Component {
   }
 
   handleScreen() {
-    getUserInvitations(LocalData.user.userId, () =>
-      console.log('Attached invitation listener'),
-    );
+    getUserInvitations(LocalData.user.userId);
     LocalData.container = null;
     if (isPossibleObjectEmpty(LocalData.user.groups)) {
       this.props.navigation.navigate(Screen.CreateGroup, {welcome: true});
@@ -102,9 +101,15 @@ export default class Loading extends Component {
     } else if (user && LocalData.user) {
       setTimeout(() => this.handleScreen(), AnimDefaultDuration);
     } else {
+      detachListeners();
       StoreData(getKeyForCurrentGroupItems(), null);
       StoreData(Key.CurrentGroup, null);
       deleteAllItems(false);
+
+      LocalData.invitations = [];
+      LocalData.isCamera = false;
+      LocalData.invShouldUpdate = true;
+
       this.props.navigation.navigate(Screen.Login);
     }
   }

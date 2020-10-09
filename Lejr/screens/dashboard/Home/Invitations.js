@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import {StyleSheet, SafeAreaView, Alert} from 'react-native';
 import {Text, Layout, Button, Icon} from '@ui-kitten/components';
 import {Collection, ErrorCode, Key} from '../../../util/Constants';
@@ -40,32 +40,30 @@ export default class Invitations extends Component {
             <Text style={Styles.titleText} category="h4">
               Invitations
             </Text>
-            {LocalData.invitations.length !== 0 && (
+            {isPossibleObjectEmpty(LocalData.invitations) ? (
+              <Text style={Styles.text} appearance="hint">
+                No invitations yet
+              </Text>
+            ) : (
               <Text style={Styles.text} appearance="hint">
                 Slide right to accept, left to delete
               </Text>
             )}
           </Layout>
           <Layout style={Styles.listContainer}>
-            {isPossibleObjectEmpty(LocalData.invitations) ? (
-              <Layout style={Styles.container}>
-                <Text style={Styles.text} appearance="hint">
-                  No invitations yet
-                </Text>
-              </Layout>
-            ) : (
-              <ThemedScroll
-                style={Styles.justFlex}
-                contentContainerStyle={Styles.contentContainer}>
-                {LocalData.invitations.map((item, index) => {
-                  if (item != null) {
-                    return (
-                      <InvitationCard key={index} item={item} index={index} />
-                    );
-                  }
-                })}
-              </ThemedScroll>
-            )}
+            <ThemedScroll
+              style={Styles.justFlex}
+              contentContainerStyle={Styles.contentContainer}>
+              {LocalData.invitations.map((item, index) => {
+                if (item != null) {
+                  return (
+                    <Fragment key={index}>
+                      {new InvitationCard({item: item, index: index}).render()}
+                    </Fragment>
+                  );
+                }
+              })}
+            </ThemedScroll>
           </Layout>
           <Layout style={Styles.buttonContainer}>
             <Button
@@ -81,6 +79,7 @@ export default class Invitations extends Component {
 }
 
 function removeInvitation(component) {
+  LocalData.invShouldUpdate = false;
   firestore()
     .collection(Collection.Users)
     .doc(LocalData.user.userId)
@@ -88,7 +87,6 @@ function removeInvitation(component) {
     .doc(component.item.groupId)
     .delete()
     .then(() => {
-      component.forceUpdate();
       console.log('Removed invitation ' + component.item.groupId);
     });
 }
@@ -116,7 +114,7 @@ class InvitationCard extends ItemCard {
           scaleY: this.state.renderScaleY,
         }}
         style={Styles.card}
-        renderLabel="Slide to delete"
+        renderLabel="Delete"
       />
     );
   };
@@ -128,7 +126,7 @@ class InvitationCard extends ItemCard {
           scaleY: this.state.renderScaleY,
         }}
         style={Styles.card}
-        renderLabel="Slide to accept"
+        renderLabel="Accept"
       />
     );
   };
@@ -218,7 +216,7 @@ const Styles = StyleSheet.create({
     paddingVertical: 4,
   },
   card: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 16,
     marginVertical: 4,
     borderRadius: 8,
     flex: 1,
@@ -233,6 +231,6 @@ const Styles = StyleSheet.create({
   },
   text: {
     textAlign: 'center',
-    marginHorizontal: 5,
+    marginHorizontal: 4,
   },
 });

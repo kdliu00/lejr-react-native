@@ -14,13 +14,12 @@ import {ItemCard} from '../../../util/ContributionUI';
 import {
   getMoneyFormatString,
   getTotal,
-  nearestHundredth,
   removeNullsFromList,
   StoreData,
 } from '../../../util/UtilityMethods';
 
 const AddIcon = props => <Icon name="plus-outline" {...props} />;
-const TrashIcon = props => <Icon name="trash-2-outline" {...props} />;
+const RestartIcon = props => <Icon name="refresh-outline" {...props} />;
 const SaveIcon = props => <Icon name="cloud-upload-outline" {...props} />;
 
 export default class Contribution extends Component {
@@ -81,11 +80,11 @@ export default class Contribution extends Component {
             <Button
               style={Styles.button}
               appearance="ghost"
-              accessoryLeft={TrashIcon}
+              accessoryLeft={RestartIcon}
               onPress={() =>
                 Alert.alert(
-                  'Delete All Items',
-                  'Are you sure you want to delete all items? This will create a new purchase and will not update the current purchase.',
+                  'Create New Purchase',
+                  'Are you sure you want to create a new purchase? This will delete all current items and changes will not be saved.',
                   [
                     {
                       text: 'Yes',

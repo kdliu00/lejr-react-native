@@ -25,6 +25,7 @@ import Invitations from './screens/dashboard/Home/Invitations';
 import {default as theme} from './eva-theme.json';
 import {Screen} from './util/Constants';
 import {
+  detachListeners,
   getKeyForCurrentGroupItems,
   getUserInvitations,
   loadGroupAsMain,
@@ -62,24 +63,13 @@ AppState.addEventListener('change', state => {
         loadGroupAsMain(LocalData.currentGroup.groupId, () =>
           console.log('Attached group listener'),
         );
-        getUserInvitations(LocalData.user.userId, () =>
-          console.log('Attached invitation listener'),
-        );
+        getUserInvitations(LocalData.user.userId);
       }
       break;
 
     case 'background':
       if (!LocalData.isCamera) {
-        console.log('Detaching firestore listeners');
-        if (LocalData.groupListener != null) {
-          LocalData.groupListener();
-        }
-        if (LocalData.vrListener != null) {
-          LocalData.vrListener();
-        }
-        if (LocalData.invListener != null) {
-          LocalData.invListener();
-        }
+        detachListeners();
       }
       console.log('Saving data, updating firestore');
       StoreData(getKeyForCurrentGroupItems(), LocalData.items);

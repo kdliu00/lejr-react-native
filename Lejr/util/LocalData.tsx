@@ -31,6 +31,7 @@ export {
   getVirtualReceiptsForGroup,
   pushInvite,
   joinGroup,
+  detachListeners,
 };
 
 class LocalData {
@@ -49,6 +50,7 @@ class LocalData {
   static container: Contribution = null;
   static home: Home = null;
   static invScreen: Invitations = null;
+  static invShouldUpdate: boolean = true;
 
   //firestore listeners
   static groupListener = null;
@@ -91,11 +93,7 @@ function signOut() {
     });
 }
 
-function getUserInvitations(
-  userId: string,
-  callback: () => void,
-  forceUpdate: boolean = true,
-) {
+function getUserInvitations(userId: string, forceUpdate: boolean = true) {
   console.log('Retrieving invitations for user: ' + userId);
   if (LocalData.invListener != null) {
     LocalData.invListener();
@@ -113,10 +111,15 @@ function getUserInvitations(
           );
         });
         console.log('User invitations updated');
-        if (LocalData.invScreen != null && forceUpdate) {
+        if (
+          LocalData.invScreen != null &&
+          forceUpdate &&
+          LocalData.invShouldUpdate
+        ) {
           LocalData.invScreen.forceUpdate();
+        } else {
+          LocalData.invShouldUpdate = true;
         }
-        callback();
       },
       error => {
         console.error(error);
@@ -216,6 +219,19 @@ function getVirtualReceiptsForGroup(
         throw new Error(ErrorCode.DatabaseError);
       },
     );
+}
+
+function detachListeners() {
+  console.log('Detaching firestore listeners');
+  if (LocalData.groupListener != null) {
+    LocalData.groupListener();
+  }
+  if (LocalData.vrListener != null) {
+    LocalData.vrListener();
+  }
+  if (LocalData.invListener != null) {
+    LocalData.invListener();
+  }
 }
 
 /**
