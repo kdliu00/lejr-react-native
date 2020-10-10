@@ -79,31 +79,30 @@ export default class InviteToGroup extends Component {
                                 newState.textStatus = 'success';
                                 newState.message = 'Invite sent!';
                                 this.emailRef.current.clear();
-                              },
-                            )
-                              .catch(error => {
-                                console.warn(error.message);
-                                switch (error.message) {
-                                  case ErrorCode.UserDuplicate:
-                                    newState.textStatus = 'warning';
-                                    newState.message = 'User already in group!';
-                                    break;
-
-                                  case ErrorCode.UserNotFound:
-                                    newState.textStatus = 'warning';
-                                    newState.message = 'User not found!';
-                                    break;
-
-                                  default:
-                                    newState.textStatus = 'danger';
-                                    newState.message = 'Invite failed!';
-                                    break;
-                                }
-                              })
-                              .finally(() => {
                                 newState.isInviting = false;
                                 MergeState(this, newState);
-                              });
+                              },
+                            ).catch(error => {
+                              console.warn(error.message);
+                              switch (error.message) {
+                                case ErrorCode.UserDuplicate:
+                                  newState.textStatus = 'warning';
+                                  newState.message = 'User already in group!';
+                                  break;
+
+                                case ErrorCode.UserNotFound:
+                                  newState.textStatus = 'warning';
+                                  newState.message = 'User not found!';
+                                  break;
+
+                                default:
+                                  newState.textStatus = 'danger';
+                                  newState.message = 'Invite failed!';
+                                  break;
+                              }
+                              newState.isInviting = false;
+                              MergeState(this, newState);
+                            });
                           }
                         });
                     }}>
@@ -150,7 +149,7 @@ const Styles = StyleSheet.create({
   },
   text: {
     textAlign: 'center',
-    marginTop: 5,
+    marginTop: 10,
     marginLeft: 20,
     marginRight: 20,
   },

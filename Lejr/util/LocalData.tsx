@@ -268,12 +268,10 @@ async function pushInvite(
     .then(query => {
       if (query.size == 1) {
         //Retrieve user object
-        var userDoc = query.docs[0];
+        var userObj = User.firestoreConverter.fromFirestore(query.docs[0]);
 
         //Check if user is already in group
-        safeGetListData(
-          User.firestoreConverter.fromFirestore(userDoc).groups,
-        ).forEach(groupInfo => {
+        safeGetListData(userObj.groups).forEach(groupInfo => {
           if (groupInfo.groupId === newInviteInfo.groupId) {
             throw new Error(ErrorCode.UserDuplicate);
           }
@@ -281,7 +279,8 @@ async function pushInvite(
 
         //Add invite
         firestore()
-          .doc(userDoc.id)
+          .collection(Collection.Users)
+          .doc(userObj.userId)
           .collection(Key.Invitations)
           .doc(newInviteInfo.groupId)
           .set(InviteInfo.firestoreConverter.toFirestore(newInviteInfo))
