@@ -135,7 +135,7 @@ class SplitSlider extends Component {
       <ThemedLayout style={this.passProps.sliderContainer}>
         <ThemedLayout style={this.passProps.sliderLabel}>
           <Text>
-            {LocalData.currentGroup.memberNames[this.userId] +
+            {LocalData.currentGroup.members[this.userId].name +
               ' pays ' +
               Math.round((this.state as any).displayPercent) +
               '%'}

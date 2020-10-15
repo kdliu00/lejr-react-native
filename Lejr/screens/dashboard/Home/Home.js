@@ -20,7 +20,11 @@ import {
   ThemedCard,
   ThemedScroll,
 } from '../../../util/ComponentUtil';
-import {RetrieveData, StoreData} from '../../../util/UtilityMethods';
+import {
+  getMoneyFormatString,
+  RetrieveData,
+  StoreData,
+} from '../../../util/UtilityMethods';
 import Animated, {Easing} from 'react-native-reanimated';
 
 const InviteIcon = props => <Icon name="person-add-outline" {...props} />;
@@ -36,7 +40,6 @@ export default class Home extends Component {
       renderHeight: new Animated.Value(0),
     };
     this.groupSelectExpanded = false;
-    this.virtualReceiptData = safeGetListData(LocalData.virtualReceipts);
     this.selectedGroup = LocalData.currentGroup.groupName;
     this.GroupElements = LocalData.user.groups
       .filter(groupInfo => groupInfo.groupId !== LocalData.currentGroup.groupId)
@@ -50,16 +53,22 @@ export default class Home extends Component {
           />
         );
       });
+    this.balanceRef = React.createRef();
   }
 
   componentDidMount() {
     console.log('Arrived at Home');
     LocalData.home = this;
+    this._mounted = true;
     this.props.navigation.addListener('blur', () => {
       if (this.groupSelectExpanded) {
         this.toggleGroupSelect();
       }
     });
+  }
+
+  componentWillUnmount() {
+    this._mounted = false;
   }
 
   toggleGroupSelect() {
@@ -76,7 +85,10 @@ export default class Home extends Component {
     return (
       <ThemedLayout style={Styles.container}>
         <SafeAreaView style={Styles.container}>
-          {isPossibleObjectEmpty(this.virtualReceiptData) ? (
+          <ThemedLayout style={Styles.banner}>
+            <BalanceText ref={this.balanceRef} />
+          </ThemedLayout>
+          {isPossibleObjectEmpty(safeGetListData(LocalData.virtualReceipts)) ? (
             <ThemedLayout style={Styles.center}>
               <Text appearance="hint">No group purchases yet</Text>
             </ThemedLayout>
@@ -138,6 +150,24 @@ export default class Home extends Component {
       </ThemedLayout>
     );
   }
+}
+
+class BalanceText extends Component {
+  render() {
+    return (
+      <Text style={Styles.titleText} category="h4">
+        {getBalanceString()}
+      </Text>
+    );
+  }
+}
+
+function getBalanceString() {
+  let balanceString = 'Balance: ';
+  let balance = LocalData.currentGroup.members[LocalData.user.userId].balance;
+  return balance < 0
+    ? balanceString + '-$' + getMoneyFormatString(Math.abs(balance))
+    : balanceString + '$' + getMoneyFormatString(Math.abs(balance));
 }
 
 function onGroupPress(groupId, component) {
@@ -205,5 +235,16 @@ const Styles = StyleSheet.create({
     paddingTop: 6,
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
+  },
+  banner: {
+    height: BannerHeight,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    flexDirection: 'row',
+  },
+  titleText: {
+    marginTop: 10,
+    textAlign: 'center',
+    fontWeight: 'bold',
   },
 });

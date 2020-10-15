@@ -108,7 +108,7 @@ export default class FromImage extends Component {
         //calculate default split
         var itemList = [];
         let defaultSplit = {};
-        let userIds = Object.keys(LocalData.currentGroup.memberNames);
+        let userIds = Object.keys(LocalData.currentGroup.members);
         userIds.forEach(userId => {
           defaultSplit[userId] = Math.round(10000 / userIds.length) / 100;
         });

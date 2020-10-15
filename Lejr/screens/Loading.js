@@ -40,7 +40,6 @@ export default class Loading extends Component {
         loadGroupAsMain(
           value == null ? LocalData.user.groups[0].groupId : value,
           () => this.props.navigation.navigate(Screen.Dashboard),
-          false,
         );
       });
     } else {

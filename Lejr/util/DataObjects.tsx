@@ -1,4 +1,4 @@
-export {User, GroupInfo, InviteInfo, Group, VirtualReceipt, Item};
+export {User, GroupInfo, InviteInfo, Group, MemberInfo, VirtualReceipt, Item};
 
 class User {
   userId: string;
@@ -96,21 +96,18 @@ class GroupInfo {
 class Group {
   groupId: string;
   groupName: string;
-  members: Map<string, number>;
-  memberNames: Map<string, string>;
+  members: Map<string, MemberInfo>;
   archives: string[];
 
   constructor(
     groupId: string,
     groupName: string,
-    members: Map<string, number>,
-    memberNames: Map<string, string>,
+    members: Map<string, MemberInfo>,
     archives: string[],
   ) {
     this.groupId = groupId;
     this.groupName = groupName;
     this.members = members;
-    this.memberNames = memberNames;
     this.archives = archives;
   }
 
@@ -120,7 +117,6 @@ class Group {
         groupId: group.groupId,
         groupName: group.groupName,
         members: group.members,
-        memberNames: group.memberNames,
         archives: group.archives,
       };
     },
@@ -130,9 +126,31 @@ class Group {
         data.groupId,
         data.groupName,
         data.members,
-        data.memberNames,
         data.archives,
       );
+    },
+  };
+}
+
+class MemberInfo {
+  balance: number;
+  name: string;
+
+  constructor(balance: number, name: string) {
+    this.balance = balance;
+    this.name = name;
+  }
+
+  static firestoreConverter = {
+    toFirestore: function(memberInfo: MemberInfo) {
+      return {
+        balance: memberInfo.balance,
+        name: memberInfo.name,
+      };
+    },
+    fromFirestore: function(snapshot: {data: () => any}) {
+      const data = snapshot.data();
+      return new MemberInfo(data.balance, data.name);
     },
   };
 }

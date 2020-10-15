@@ -25,6 +25,7 @@ const ContributionCard = (props: any) => {
       style={Styles.contribCard}
       onPress={() => {
         LocalData.currentVR = JSONCopy(vr);
+        LocalData.currentVRCopy = JSONCopy(vr);
         LocalData.items = JSONCopy(vr.items);
         if (LocalData.container != null) {
           LocalData.container.forceUpdate();
@@ -45,7 +46,7 @@ const ContributionCard = (props: any) => {
       <Layout style={Styles.footer}>
         {Object.keys(vr.totalSplit).map(userId => {
           var initials =
-            LocalData.currentGroup.memberNames[userId].match(/\b\w/g) || [];
+            LocalData.currentGroup.members[userId].name.match(/\b\w/g) || [];
           initials = (
             (initials.shift() || '') + (initials.pop() || '')
           ).toUpperCase();

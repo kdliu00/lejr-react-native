@@ -5,12 +5,13 @@ import {
   GroupInfo,
   Item,
   VirtualReceipt,
+  MemberInfo,
 } from './DataObjects';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import {Collection, ErrorCode, Key} from './Constants';
 import {Alert} from 'react-native';
-import {StoreData} from './UtilityMethods';
+import {nearestHundredth, StoreData} from './UtilityMethods';
 import Home from '../screens/dashboard/Home/Home';
 import Contribution from '../screens/dashboard/Contribution/Contribution';
 import Invitations from '../screens/dashboard/Home/Invitations';
@@ -45,6 +46,7 @@ class LocalData {
   static items: Item[] = null;
   static virtualReceipts: VirtualReceipt[] = null;
   static currentVR: VirtualReceipt = null;
+  static currentVRCopy: VirtualReceipt = null;
 
   //screen references
   static container: Contribution = null;
@@ -93,7 +95,7 @@ function signOut() {
     });
 }
 
-function getUserInvitations(userId: string, forceUpdate: boolean = true) {
+function getUserInvitations(userId: string) {
   console.log('Retrieving invitations for user: ' + userId);
   if (LocalData.invListener != null) {
     LocalData.invListener();
@@ -113,7 +115,7 @@ function getUserInvitations(userId: string, forceUpdate: boolean = true) {
         console.log('User invitations updated');
         if (
           LocalData.invScreen != null &&
-          forceUpdate &&
+          LocalData.invScreen._mounted &&
           LocalData.invShouldUpdate
         ) {
           LocalData.invScreen.forceUpdate();
@@ -128,8 +130,15 @@ function getUserInvitations(userId: string, forceUpdate: boolean = true) {
     );
 }
 
-async function uploadVirtualReceipt(vr: VirtualReceipt) {
-  var docId = vr.virtualReceiptId
+function uploadVirtualReceipt(
+  vr: VirtualReceipt,
+  callback: () => void,
+  errorCallback: (error: any) => void,
+) {
+  console.log('Uploading virtual receipt');
+
+  let isOld = Boolean(vr.virtualReceiptId);
+  let docId = isOld
     ? vr.virtualReceiptId
     : firestore()
         .collection(Collection.Groups)
@@ -137,30 +146,81 @@ async function uploadVirtualReceipt(vr: VirtualReceipt) {
 
   vr.virtualReceiptId = docId;
 
-  return firestore()
+  let groupRef = firestore()
     .collection(Collection.Groups)
-    .doc(LocalData.currentGroup.groupId)
+    .doc(LocalData.currentGroup.groupId);
+
+  groupRef
     .collection(Key.VirtualReceipts)
     .doc(docId)
     .set(VirtualReceipt.firestoreConverter.toFirestore(vr))
     .then(
-      () => console.log('Successfully uploaded virtual receipt'),
+      async () => {
+        console.log('Updating group balances');
+        await firestore()
+          .runTransaction(async transaction => {
+            const groupDoc = await transaction.get(groupRef);
+            if (!groupDoc.exists) {
+              throw new Error(ErrorCode.DoesNotExist);
+            }
+
+            //get group data
+            let groupData = Group.firestoreConverter.fromFirestore(groupDoc);
+            Object.keys(groupData.members).forEach(userId => {
+              //calculate split value from percent and total
+              let dBalance = -getSplitValue(userId, vr);
+
+              //determine the change in balance
+              if (vr.buyerId == userId) {
+                dBalance += nearestHundredth(vr.total);
+                if (isOld) {
+                  dBalance -=
+                    -getSplitValue(userId, LocalData.currentVRCopy) +
+                    nearestHundredth(LocalData.currentVRCopy.total);
+                }
+              } else if (isOld) {
+                dBalance -= -getSplitValue(userId, LocalData.currentVRCopy);
+              }
+
+              groupData.members[userId].balance += dBalance;
+            });
+            transaction.update(
+              groupRef,
+              Group.firestoreConverter.toFirestore(groupData),
+            );
+            console.log('Transaction end');
+          })
+          .then(
+            () => {
+              console.log('Update group balances complete');
+              callback();
+            },
+            error => {
+              console.error('Update group balances failed: ' + error.message);
+              Alert.alert(
+                'Database Error',
+                'We were not able to update your group balances. Please reload the app and try again.',
+              );
+              errorCallback(error);
+            },
+          );
+      },
       error => {
         console.error('Virtual receipt upload failed: ' + error.message);
         Alert.alert(
           'Database Error',
           'We were not able to upload your purchase. Please reload the app and try again.',
         );
-        throw new Error(ErrorCode.DatabaseError);
+        errorCallback(error);
       },
     );
 }
 
-function loadGroupAsMain(
-  groupId: string,
-  callback: () => void,
-  forceUpdate: boolean = true,
-) {
+function getSplitValue(userId: string, vr: VirtualReceipt) {
+  return nearestHundredth((vr.total * vr.totalSplit[userId]) / 100);
+}
+
+function loadGroupAsMain(groupId: string, callback: () => void) {
   console.log('Loading group: ' + groupId);
   if (LocalData.groupListener != null) {
     LocalData.groupListener();
@@ -173,7 +233,7 @@ function loadGroupAsMain(
         if (doc.exists) {
           console.log('Group document updated');
           LocalData.currentGroup = Group.firestoreConverter.fromFirestore(doc);
-          getVirtualReceiptsForGroup(groupId, callback, forceUpdate);
+          getVirtualReceiptsForGroup(groupId, callback);
         } else {
           throw new Error(ErrorCode.InvalidId);
         }
@@ -185,11 +245,7 @@ function loadGroupAsMain(
     );
 }
 
-function getVirtualReceiptsForGroup(
-  groupId: string,
-  callback: () => void,
-  forceUpdate: boolean = true,
-) {
+function getVirtualReceiptsForGroup(groupId: string, callback: () => void) {
   console.log('Retrieving virtual receipts for group: ' + groupId);
   if (LocalData.vrListener != null) {
     LocalData.vrListener();
@@ -209,8 +265,12 @@ function getVirtualReceiptsForGroup(
           );
         });
         console.log('Virtual receipts updated');
-        if (LocalData.home != null && forceUpdate) {
-          LocalData.home.forceUpdate();
+        if (LocalData.home != null) {
+          console.log('Updating home screen');
+          if (LocalData.home != null && LocalData.home._mounted) {
+            LocalData.home.forceUpdate();
+            LocalData.home.balanceRef.current.forceUpdate();
+          }
         }
         callback();
       },
@@ -329,14 +389,15 @@ async function joinGroup(groupId: string) {
         }
 
         //Create new mapping in group members
-        groupToJoin.members[LocalData.user.userId] = 0.0;
-        groupToJoin.memberNames[LocalData.user.userId] = LocalData.user.name;
+        groupToJoin.members[LocalData.user.userId] = new MemberInfo(
+          0,
+          LocalData.user.name,
+        );
         firestore()
           .collection(Collection.Groups)
           .doc(groupId)
           .update({
             members: groupToJoin.members,
-            memberNames: groupToJoin.memberNames,
           })
           .then(
             () => console.log('Successfully updated group'),

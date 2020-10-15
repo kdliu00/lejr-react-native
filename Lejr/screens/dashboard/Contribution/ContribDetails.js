@@ -61,9 +61,9 @@ export default class ContribDetails extends Component {
   }
 
   getTotalPurchaseSplit() {
-    return Object.keys(LocalData.currentGroup.memberNames).map(userId => {
+    return Object.keys(LocalData.currentGroup.members).map(userId => {
       var userTotal = 0;
-      const userName = LocalData.currentGroup.memberNames[userId];
+      const userName = LocalData.currentGroup.members[userId].name;
       LocalData.items.map(item => {
         userTotal += item.itemCost * (item.itemSplit[userId] / 100);
       });
@@ -121,10 +121,9 @@ export default class ContribDetails extends Component {
               <Text style={Styles.centerText}>
                 Purchased by{' '}
                 {LocalData.currentVR
-                  ? LocalData.currentGroup.memberNames[
-                      LocalData.currentVR.buyerId
-                    ]
-                  : LocalData.currentGroup.memberNames[LocalData.user.userId]}
+                  ? LocalData.currentGroup.members[LocalData.currentVR.buyerId]
+                      .name
+                  : LocalData.currentGroup.members[LocalData.user.userId].name}
               </Text>
             </Layout>
             <ScrollView style={Styles.scrollView}>
@@ -132,6 +131,7 @@ export default class ContribDetails extends Component {
             </ScrollView>
             <Layout style={FormStyles.buttonStyle}>
               <Button
+                disabled={this.state.isSubmitting}
                 style={FormStyles.button}
                 onPress={() => this.props.navigation.goBack()}
                 appearance="outline">
@@ -176,25 +176,21 @@ export default class ContribDetails extends Component {
                               this.totalSplit,
                               '',
                             ),
-                          ).then(
                             () => {
                               deleteAllItems();
                               LocalData.currentVR = null;
-                              getVirtualReceiptsForGroup(
-                                LocalData.currentGroup.groupId,
+                              LocalData.currentVRCopy = null;
+                              setTimeout(
                                 () =>
-                                  setTimeout(
-                                    () =>
-                                      this.props.navigation.navigate(
-                                        Screen.DashboardMain,
-                                        {screen: Screen.Home},
-                                      ),
-                                    AnimKeyboardDuration,
+                                  this.props.navigation.navigate(
+                                    Screen.DashboardMain,
+                                    {screen: Screen.Home},
                                   ),
+                                AnimKeyboardDuration,
                               );
                             },
                             error => {
-                              console.warn('Received error: ' + error);
+                              console.error('Received error: ' + error);
                               MergeState(this, {isSubmitting: false});
                             },
                           );

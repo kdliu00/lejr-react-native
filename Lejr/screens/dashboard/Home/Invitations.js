@@ -30,6 +30,11 @@ export default class Invitations extends Component {
   componentDidMount() {
     console.log('Arrived at Invitations!');
     LocalData.invScreen = this;
+    this._mounted = true;
+  }
+
+  componentWillUnmount() {
+    this._mounted = false;
   }
 
   render() {
@@ -79,7 +84,7 @@ export default class Invitations extends Component {
 }
 
 function removeInvitation(component) {
-  LocalData.invShouldUpdate = false;
+  LocalData.invShouldUpdate = LocalData.invitations.length <= 1 ? true : false;
   firestore()
     .collection(Collection.Users)
     .doc(LocalData.user.userId)

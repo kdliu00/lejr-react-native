@@ -53,7 +53,7 @@ export default class Contribution extends Component {
             {LocalData.items.length === 0 ? (
               <Text appearance="hint" style={Styles.placeholderText}>
                 This purchase is currently empty. Click on the plus button below
-                to add an item
+                to add an item manually or use the camera tab to scan a receipt.
               </Text>
             ) : (
               <ThemedScroll

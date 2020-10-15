@@ -10,7 +10,7 @@ import {
   isPossibleObjectEmpty,
 } from '../util/LocalData';
 import {AnimKeyboardDuration, Collection, Screen} from '../util/Constants';
-import {GroupInfo, Group} from '../util/DataObjects';
+import {GroupInfo, Group, MemberInfo} from '../util/DataObjects';
 import * as yup from 'yup';
 import {
   ButtonSpinner,
@@ -61,21 +61,20 @@ export default class CreateGroup extends Component {
                     existing group.
                   </Text>
                 </Layout>
-                <Layout style={Styles.iconContainer}>
-                  <Button
-                    appearance="ghost"
-                    size="large"
-                    onPress={() =>
-                      this.props.navigation.navigate(Screen.Invitations)
-                    }>
-                    See invitations{' '}
-                    {'(' +
-                      (isPossibleObjectEmpty(LocalData.invitations)
-                        ? 0
-                        : LocalData.invitations.length) +
-                      ')'}
-                  </Button>
-                </Layout>
+                <Text
+                  style={[Styles.text, Styles.boldText]}
+                  category="h6"
+                  status="primary"
+                  onPress={() =>
+                    this.props.navigation.navigate(Screen.Invitations)
+                  }>
+                  See invitations{' '}
+                  {'(' +
+                    (isPossibleObjectEmpty(LocalData.invitations)
+                      ? 0
+                      : LocalData.invitations.length) +
+                    ')'}
+                </Text>
               </Layout>
             ) : (
               <Layout style={Styles.textSubContainer}>
@@ -183,7 +182,10 @@ async function CreateNewGroup(newGroupName) {
     .doc().id;
 
   var newGroupObject = new Group(newGroupId, newGroupName, {}, {}, []);
-  newGroupObject.members[LocalData.user.userId] = 0.0;
+  newGroupObject.members[LocalData.user.userId] = new MemberInfo(
+    0,
+    LocalData.user.name,
+  );
 
   LocalData.currentGroup = newGroupObject;
 
@@ -219,9 +221,9 @@ const Styles = StyleSheet.create({
   },
   text: {
     textAlign: 'center',
-    marginTop: 5,
-  },
-  iconContainer: {
     marginTop: 15,
+  },
+  boldText: {
+    fontWeight: 'bold',
   },
 });
