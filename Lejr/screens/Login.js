@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {StyleSheet, Platform} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-community/google-signin';
-import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import {Alert} from 'react-native';
 import {Layout, Button, Spinner, Icon} from '@ui-kitten/components';
 import {iOSWebClientId, androidWebClientId, Screen} from '../util/Constants';
@@ -12,7 +11,6 @@ GoogleSignin.configure({
   webClientId: Platform.OS === 'ios' ? iOSWebClientId : androidWebClientId,
 });
 
-const FacebookIcon = props => <Icon name="facebook" {...props} />;
 const GoogleIcon = props => <Icon name="google" {...props} />;
 const EmailIcon = props => <Icon name="email" {...props} />;
 
@@ -56,24 +54,6 @@ export default class Login extends Component {
               Sign in with Apple
             </Button>
           )}
-          <Button
-            style={Styles.button}
-            accessoryLeft={FacebookIcon}
-            onPress={() => {
-              console.log('Going to Facebook login');
-              MergeState(this, {isLoggingIn: true});
-              onFacebookButtonPress()
-                .then(
-                  () => console.log('Signed in with Facebook'),
-                  error => {
-                    onLoginError(error);
-                  },
-                )
-                .finally(() => MergeState(this, {isLoggingIn: false}));
-            }}
-            disabled={this.state.isLoggingIn}>
-            Sign in with Facebook
-          </Button>
           <Button
             style={Styles.button}
             accessoryLeft={GoogleIcon}
@@ -150,40 +130,6 @@ async function onGoogleButtonPress() {
 
   // Sign-in the user with the credential
   return auth().signInWithCredential(googleCredential);
-}
-
-async function onFacebookButtonPress() {
-  // Attempt login with permissions
-  const result = await LoginManager.logInWithPermissions([
-    'public_profile',
-    'email',
-  ]);
-
-  if (result.isCancelled) {
-    throw {
-      userInfo: {message: 'The user canceled signing in with Facebook.'},
-    };
-  }
-
-  // Once signed in, get the users AccesToken
-  const data = await AccessToken.getCurrentAccessToken();
-
-  if (!data) {
-    throw {
-      userInfo: {
-        message:
-          'Could not obtain access token while signing in with Facebook.',
-      },
-    };
-  }
-
-  // Create a Firebase credential with the AccessToken
-  const facebookCredential = auth.FacebookAuthProvider.credential(
-    data.accessToken,
-  );
-
-  // Sign-in the user with the credential
-  return auth().signInWithCredential(facebookCredential);
 }
 
 const Styles = StyleSheet.create({

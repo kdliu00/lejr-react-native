@@ -217,6 +217,9 @@ function uploadVirtualReceipt(
 }
 
 function getSplitValue(userId: string, vr: VirtualReceipt) {
+  if (vr.totalSplit[userId] == null) {
+    return 0;
+  }
   return nearestHundredth((vr.total * vr.totalSplit[userId]) / 100);
 }
 

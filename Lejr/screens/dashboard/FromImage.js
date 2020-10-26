@@ -7,6 +7,7 @@ import FormStyles from '../../util/FormStyles';
 import {ErrorCode, Screen} from '../../util/Constants';
 import vision from '@react-native-firebase/ml-vision';
 import {
+  JSONCopy,
   MergeState,
   pointDistance,
   pointToLineDistance,
@@ -172,7 +173,9 @@ export default class FromImage extends Component {
               itemName = itemName.replace(/[0-9]/g, '');
 
               if (itemName.length > 3) {
-                itemList.push(new Item(itemName, itemCost, defaultSplit));
+                itemList.push(
+                  new Item(itemName, itemCost, JSONCopy(defaultSplit)),
+                );
               }
               break;
             }

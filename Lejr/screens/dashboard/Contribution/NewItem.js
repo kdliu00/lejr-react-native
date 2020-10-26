@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import {
   StyleSheet,
   Keyboard,
@@ -18,6 +18,7 @@ import FormStyles from '../../../util/FormStyles';
 import {Item} from '../../../util/DataObjects';
 import * as yup from 'yup';
 import {
+  JSONCopy,
   MergeState,
   nearestHundredth,
   removeNullsFromList,
@@ -62,7 +63,7 @@ export default class NewItem extends Component {
     });
 
     this.itemSplitPercent =
-      this.passedItem == null ? {} : this.passedItem.itemSplit;
+      this.passedItem == null ? {} : JSONCopy(this.passedItem.itemSplit);
     this.groupMemberIds = Object.keys(LocalData.currentGroup.members);
   }
 
@@ -71,26 +72,6 @@ export default class NewItem extends Component {
   }
 
   render() {
-    this.splitSliders = this.groupMemberIds.map(userId => {
-      return (
-        <SplitSlider
-          key={userId}
-          sliderLabel={Styles.sliderLabel}
-          sliderStyle={Styles.slider}
-          sliderContainer={Styles.sliderContainer}
-          minimumValue={0}
-          maximumValue={100}
-          value={
-            isPossibleObjectEmpty(this.itemSplitPercent)
-              ? Math.round(10000 / this.groupMemberIds.length) / 100
-              : this.itemSplitPercent[userId]
-          }
-          step={1}
-          userId={userId}
-          objectInstance={this}
-        />
-      );
-    });
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <Layout style={Styles.container}>
@@ -137,7 +118,27 @@ export default class NewItem extends Component {
               />
             </Layout>
             <ScrollView style={Styles.scrollView}>
-              {this.splitSliders}
+              {this.groupMemberIds.map(userId => {
+                return (
+                  <Fragment key={userId}>
+                    <SplitSlider
+                      sliderLabel={Styles.sliderLabel}
+                      sliderStyle={Styles.slider}
+                      sliderContainer={Styles.sliderContainer}
+                      minimumValue={0}
+                      maximumValue={100}
+                      value={
+                        isPossibleObjectEmpty(this.itemSplitPercent)
+                          ? Math.round(10000 / this.groupMemberIds.length) / 100
+                          : this.itemSplitPercent[userId]
+                      }
+                      step={1}
+                      userId={userId}
+                      objectInstance={this}
+                    />
+                  </Fragment>
+                );
+              })}
             </ScrollView>
             <Layout style={FormStyles.buttonStyle}>
               <Button
