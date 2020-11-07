@@ -196,9 +196,9 @@ export default class NewItem extends Component {
                             } else {
                               LocalData.items.push(UpdatedItem);
                             }
-                            LocalData.items = removeNullsFromList(
-                              LocalData.items,
-                            );
+                            // LocalData.items = removeNullsFromList(
+                            //   LocalData.items,
+                            // );
                             StoreData(
                               getKeyForCurrentGroupItems(),
                               LocalData.items,

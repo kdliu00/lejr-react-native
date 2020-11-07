@@ -13,6 +13,7 @@ export {
   JSONCopy,
   pointToLineDistance,
   pointDistance,
+  midpoint,
 };
 
 /**
@@ -110,35 +111,36 @@ function JSONCopy(obj: any) {
 }
 
 /**
- * Computes distance between point (x0,y0) to line defined by (x1,y1) and (x2,y2)
- * @param x0
- * @param y0
- * @param x1
- * @param y1
- * @param x2
- * @param y2
+ * Computes distance between point p0 to line defined by p1 and p2
+ * @param p0
+ * @param p1
+ * @param p2
  */
-function pointToLineDistance(
-  x0: number,
-  y0: number,
-  x1: number,
-  y1: number,
-  x2: number,
-  y2: number,
-) {
+function pointToLineDistance(p0: number[], p1: number[], p2: number[]) {
   return (
-    Math.abs((y2 - y1) * x0 - (x2 - x1) * y0 + x2 * y1 - y2 * x1) /
-    Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2))
+    Math.abs(
+      (p2[1] - p1[1]) * p0[0] -
+        (p2[0] - p1[0]) * p0[1] +
+        p2[0] * p1[1] -
+        p2[1] * p1[0],
+    ) / Math.sqrt(Math.pow(p2[1] - p1[1], 2) + Math.pow(p2[0] - p1[0], 2))
   );
 }
 
 /**
- * Computes distance between points (x0,y0) and (x1,y1)
- * @param x0
- * @param y0
- * @param x1
- * @param y1
+ * Computes distance between points p0 and p1
+ * @param p0
+ * @param p1
  */
-function pointDistance(x0: number, y0: number, x1: number, y1: number) {
-  return Math.sqrt(Math.pow(x0 - x1, 2) + Math.pow(y0 - y1, 2));
+function pointDistance(p0: number[], p1: number[]) {
+  return Math.sqrt(Math.pow(p0[0] - p1[0], 2) + Math.pow(p0[1] - p1[1], 2));
+}
+
+/**
+ * Computes the midpoint of two points
+ * @param p0
+ * @param p1
+ */
+function midpoint(p0: number[], p1: number[]) {
+  return [(p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2];
 }

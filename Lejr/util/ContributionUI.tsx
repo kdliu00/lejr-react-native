@@ -127,7 +127,9 @@ class ItemCard extends Component {
           ref={this.swipeableRef}
           renderRightActions={this.renderRightActions}
           onSwipeableRightWillOpen={() => {
-            LocalData.items[this.index] = null;
+            // LocalData.items[this.index] = null;
+            // LocalData.items = removeNullsFromList(LocalData.items);
+            LocalData.items.splice(this.index, 1);
             this.totalRef.current.forceUpdate();
             this.closeAnim();
           }}
@@ -135,8 +137,8 @@ class ItemCard extends Component {
             this.closeSwipeable();
             if (removeNullsFromList(LocalData.items).length == 0) {
               LocalData.items = [];
-              LocalData.container.forceUpdate();
             }
+            LocalData.container.forceUpdate();
           }}>
           <ThemedCard
             style={[Styles.itemCard, {justifyContent: 'center'}]}

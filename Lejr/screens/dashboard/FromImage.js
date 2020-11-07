@@ -9,6 +9,7 @@ import vision from '@react-native-firebase/ml-vision';
 import {
   JSONCopy,
   MergeState,
+  midpoint,
   pointDistance,
   pointToLineDistance,
 } from '../../util/UtilityMethods';
@@ -53,17 +54,18 @@ export default class FromImage extends Component {
         let k = 0;
         while (k < sortedLines.length) {
           let refLine = sortedLines[k];
-          let refCoordTL = refLine.cornerPoints[0]; //top left
-          let x1 = refCoordTL[0];
-          let y1 = refCoordTL[1];
-          let refCoordTR = refLine.cornerPoints[1]; //top right
-          let x2 = refCoordTR[0];
-          let y2 = refCoordTR[1];
-          let refCoordBL = refLine.cornerPoints[3]; //bottom left
-          let x3 = refCoordBL[0];
-          let y3 = refCoordBL[1];
 
-          let threshold = 0.5 * pointDistance(x1, y1, x3, y3);
+          let refCoordML = midpoint(
+            refLine.cornerPoints[0],
+            refLine.cornerPoints[3],
+          ); //top left, bottom left
+
+          let refCoordMR = midpoint(
+            refLine.cornerPoints[1],
+            refLine.cornerPoints[2],
+          ); //top right, bottom right
+
+          let threshold = pointDistance(refLine.cornerPoints[0], refCoordML); //top left, bottom left
 
           let lineGroup = [];
           lineGroup.push(refLine);
@@ -72,15 +74,27 @@ export default class FromImage extends Component {
           for (let l = k; l < sortedLines.length; l++) {
             k = l;
             let candLine = sortedLines[l];
-            let candCoordTL = candLine.cornerPoints[0]; //top left
-            let x00 = candCoordTL[0];
-            let y00 = candCoordTL[1];
-            let candCoordTR = candLine.cornerPoints[1]; //top right
-            let x01 = candCoordTR[0];
-            let y01 = candCoordTR[1];
 
-            let lineDist0 = pointToLineDistance(x00, y00, x1, y1, x2, y2);
-            let lineDist1 = pointToLineDistance(x01, y01, x1, y1, x2, y2);
+            let candCoordML = midpoint(
+              candLine.cornerPoints[0],
+              candLine.cornerPoints[3],
+            ); //top left, bottom left
+
+            let candCoordMR = midpoint(
+              candLine.cornerPoints[1],
+              candLine.cornerPoints[2],
+            ); //top right, bottom right
+
+            let lineDist0 = pointToLineDistance(
+              candCoordML,
+              refCoordML,
+              refCoordMR,
+            );
+            let lineDist1 = pointToLineDistance(
+              candCoordMR,
+              refCoordML,
+              refCoordMR,
+            );
 
             if (lineDist0 <= threshold || lineDist1 <= threshold) {
               lineGroup.push(candLine);
@@ -115,10 +129,8 @@ export default class FromImage extends Component {
         });
 
         //filter for items
-        var x1 = null;
-        var y1 = null;
-        var x2 = null;
-        var y2 = null;
+        var p1 = [null, null];
+        var p2 = [null, null];
         var threshold = null;
         for (let m = 0; m < groupedLines.length; m++) {
           let line = groupedLines[m];
@@ -141,26 +153,21 @@ export default class FromImage extends Component {
           for (let n = 0; n < line.length; n++) {
             let index = line.length - n - 1;
             let word = line[index].text.replace(/[^0-9.]/g, '');
-            let x0 = line[index].cornerPoints[0][0];
-            let y0 = line[index].cornerPoints[0][1];
+            let p0 = midpoint(
+              line[index].cornerPoints[0],
+              line[index].cornerPoints[1],
+            ); //top left, top right
 
             if (!isNaN(parseFloat(word)) && word.includes('.')) {
-              if (x1 == null) {
-                x1 = x0;
-                y1 = y0;
-                x2 = line[index].cornerPoints[3][0];
-                y2 = line[index].cornerPoints[3][1];
-                threshold = pointDistance(
-                  x0,
-                  y0,
-                  line[index].cornerPoints[1][0],
-                  line[index].cornerPoints[1][1],
-                );
-              } else if (
-                pointToLineDistance(x0, y0, x1, y1, x2, y2) < threshold
-              ) {
-                x2 = x0;
-                y2 = y0;
+              if (p1[0] == null) {
+                p1 = JSONCopy(p0);
+                p2 = midpoint(
+                  line[index].cornerPoints[3],
+                  line[index].cornerPoints[2],
+                ); //bottom left, bottom right
+                threshold = pointDistance(p0, line[index].cornerPoints[1]);
+              } else if (pointToLineDistance(p0, p1, p2) < threshold) {
+                p2 = p0;
               } else {
                 break;
               }
@@ -182,7 +189,12 @@ export default class FromImage extends Component {
           }
         }
 
-        LocalData.items = itemList;
+        if (LocalData.items == null || LocalData.items.length === 0) {
+          LocalData.items = itemList;
+        } else {
+          LocalData.items.push(...itemList);
+        }
+
         if (LocalData.container != null) {
           LocalData.container.forceUpdate();
         }
