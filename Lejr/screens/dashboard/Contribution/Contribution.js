@@ -10,7 +10,7 @@ import {
 } from '../../../util/LocalData';
 import {Item} from '../../../util/DataObjects';
 import {BannerHeight, Screen} from '../../../util/Constants';
-import {ItemCard} from '../../../util/ContributionUI';
+import {BlankCard, ItemCard} from '../../../util/ContributionUI';
 import {
   getMoneyFormatString,
   getTotal,
@@ -73,6 +73,7 @@ export default class Contribution extends Component {
                     );
                   }
                 })}
+                <BlankCard />
               </ThemedScroll>
             )}
           </ThemedLayout>

@@ -12,7 +12,7 @@ import {
   JSONCopy,
 } from './UtilityMethods';
 
-export {ContributionCard, ItemCard, PurchaseSplit, MailIcon};
+export {ContributionCard, ItemCard, PurchaseSplit, MailIcon, BlankCard};
 
 const MailIcon = (props: any) => <Icon name="email-outline" {...props} />;
 
@@ -184,6 +184,16 @@ const PurchaseSplit = (props: any) => {
         </Text>
       </Layout>
     </Layout>
+  );
+};
+
+const BlankCard = () => {
+  return (
+    <ThemedCard
+      style={[Styles.itemCard, {justifyContent: 'center', height: 32}]}
+      customBackground="background-basic-color-1"
+      enabled={false}
+    />
   );
 };
 

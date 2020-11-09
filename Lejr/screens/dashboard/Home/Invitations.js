@@ -16,7 +16,7 @@ import {
 } from '../../../util/ComponentUtil';
 import {Component} from 'react';
 import Animated from 'react-native-reanimated';
-import {ItemCard} from '../../../util/ContributionUI';
+import {BlankCard, ItemCard} from '../../../util/ContributionUI';
 import firestore from '@react-native-firebase/firestore';
 
 const AcceptIcon = props => <Icon name="checkmark-outline" {...props} />;
@@ -68,6 +68,7 @@ export default class Invitations extends Component {
                   );
                 }
               })}
+              <BlankCard />
             </ThemedScroll>
           </Layout>
           <Layout style={Styles.buttonContainer}>
