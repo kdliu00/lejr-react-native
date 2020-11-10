@@ -30,6 +30,7 @@ enum Key {
   VirtualReceipts = 'virtualReceipts',
   Invitations = 'invitations',
   Timestamp = 'timestamp',
+  Theme = 'theme',
 }
 
 enum Collection {

@@ -36,7 +36,7 @@ async function StoreData(key: string, value: any) {
     console.log('Storage key was null, value not saved: ' + value);
     return;
   }
-  console.log('Storing data for key ' + key);
+  console.log('Storing data for key: ' + key);
   try {
     if (value == null) {
       await AsyncStorage.removeItem(key);
@@ -54,7 +54,7 @@ async function StoreData(key: string, value: any) {
  * @param key storage key
  */
 async function RetrieveData(key: string) {
-  console.log('Retrieving data for key ' + key);
+  console.log('Retrieving data for key: ' + key);
   try {
     const jsonValue = await AsyncStorage.getItem(key);
     return jsonValue == null ? null : JSON.parse(jsonValue);

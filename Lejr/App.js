@@ -23,7 +23,7 @@ import CreateGroup from './screens/CreateGroup';
 import Invitations from './screens/dashboard/Home/Invitations';
 
 import {default as theme} from './eva-theme.json';
-import {Screen} from './util/Constants';
+import {Key, Screen} from './util/Constants';
 import {
   detachListeners,
   getKeyForCurrentGroupItems,
@@ -34,7 +34,7 @@ import {
 } from './util/LocalData';
 import {BackHandler} from 'react-native';
 import {Alert} from 'react-native';
-import {StoreData} from './util/UtilityMethods';
+import {RetrieveData, StoreData} from './util/UtilityMethods';
 import {LogBox} from 'react-native';
 
 LogBox.ignoreAllLogs();
@@ -105,13 +105,36 @@ BackHandler.addEventListener('hardwareBackPress', () => {
 export default function App() {
   console.log('Arrived at App');
 
+  let evaTheme = null;
+  let barStyle = null;
+  let appTheme = null;
+
+  RetrieveData(Key.Theme).then(
+    value => (appTheme = value),
+    error => console.warn(error),
+  );
+
+  if (appTheme === 'dark') {
+    evaTheme = eva.dark;
+    barStyle = 'light-content';
+  } else {
+    evaTheme = eva.light;
+    barStyle = 'dark-content';
+    appTheme = 'light';
+  }
+
+  console.log('Loaded app theme: ' + appTheme);
+  StoreData(Key.Theme, appTheme);
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={Styles.container}>
-      <StatusBar barStyle="default" />
+      <StatusBar
+        barStyle={Platform.OS === 'ios' ? barStyle : 'light-content'}
+      />
       <IconRegistry icons={EvaIconsPack} />
-      <ApplicationProvider {...eva} theme={{...eva.light, ...theme}}>
+      <ApplicationProvider {...eva} theme={{...evaTheme, ...theme}}>
         <NavigationContainer>
           <RootStack.Navigator
             mode="modal"
