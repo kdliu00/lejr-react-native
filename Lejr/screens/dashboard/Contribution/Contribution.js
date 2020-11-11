@@ -111,7 +111,7 @@ export default class Contribution extends Component {
               accessoryLeft={AddIcon}
               onPress={() =>
                 this.props.navigation.navigate(Screen.NewItem, {
-                  item: new Item('', null, {}),
+                  item: new Item('', null, {}, '', {}),
                 })
               }
               size="large"

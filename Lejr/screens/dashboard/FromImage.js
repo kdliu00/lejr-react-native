@@ -123,9 +123,11 @@ export default class FromImage extends Component {
         //calculate default split
         var itemList = [];
         let defaultSplit = {};
+        let sliderDefault = {};
         let userIds = Object.keys(LocalData.currentGroup.members);
         userIds.forEach(userId => {
           defaultSplit[userId] = Math.round(10000 / userIds.length) / 100;
+          sliderDefault[userId] = true;
         });
 
         //filter for items
@@ -181,7 +183,13 @@ export default class FromImage extends Component {
 
               if (itemName.length > 3) {
                 itemList.push(
-                  new Item(itemName, itemCost, JSONCopy(defaultSplit)),
+                  new Item(
+                    itemName,
+                    itemCost,
+                    JSONCopy(defaultSplit),
+                    lineText,
+                    sliderDefault,
+                  ),
                 );
               }
               break;
@@ -216,7 +224,8 @@ export default class FromImage extends Component {
               Use your Camera to take a receipt photo or select one from your
               Gallery. Make sure to allow camera permissions for Lejr in your
               device settings. {'\n\n'} For best results, keep the receipt flat
-              and only include purchase items and total in the photo.
+              and crop out the background. You can also use multiple photos to
+              scan the receipt in segments.
             </Text>
             <Layout style={[FormStyles.buttonStyle]}>
               <Button

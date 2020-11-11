@@ -107,6 +107,9 @@ function removeNullsFromList(list: any[]) {
  * @param obj object to copy
  */
 function JSONCopy(obj: any) {
+  if (obj == null) {
+    return {};
+  }
   return JSON.parse(JSON.stringify(obj));
 }
 

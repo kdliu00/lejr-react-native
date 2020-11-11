@@ -64,11 +64,48 @@ export default class NewItem extends Component {
 
     this.itemSplitPercent =
       this.passedItem == null ? {} : JSONCopy(this.passedItem.itemSplit);
+    this.sliderDefault =
+      this.passedItem == null ? {} : JSONCopy(this.passedItem.sliderDefault);
+    this.sliderObjects = [];
+
     this.groupMemberIds = Object.keys(LocalData.currentGroup.members);
   }
 
   componentDidMount() {
     console.log('Arrived at NewItem!');
+
+    this.groupMemberIds.forEach(userId => {
+      this.itemSplitPercent[userId] = isPossibleObjectEmpty(
+        this.passedItem.itemSplit,
+      )
+        ? Math.round(10000 / this.groupMemberIds.length) / 100
+        : this.passedItem.itemSplit[userId] == null
+        ? 0
+        : this.passedItem.itemSplit[userId];
+    });
+  }
+
+  sliderCallback() {
+    let customSum = 0;
+    let defaultUserIds = [];
+    Object.keys(this.itemSplitPercent).forEach(userId => {
+      if (!this.sliderDefault[userId]) {
+        customSum += this.itemSplitPercent[userId];
+      } else {
+        defaultUserIds.push(userId);
+      }
+    });
+    let defaultSum = 100 - customSum;
+    if (defaultUserIds.length > 0) {
+      let defaultValue = defaultSum / defaultUserIds.length;
+      if (defaultValue < 0) {
+        defaultValue = 0;
+      }
+      defaultUserIds.forEach(
+        userId => (this.itemSplitPercent[userId] = defaultValue),
+      );
+    }
+    this.sliderObjects.forEach(splitSlider => splitSlider.forceUpdate());
   }
 
   render() {
@@ -125,16 +162,9 @@ export default class NewItem extends Component {
                       sliderLabel={Styles.sliderLabel}
                       sliderStyle={Styles.slider}
                       sliderContainer={Styles.sliderContainer}
-                      minimumValue={0}
-                      maximumValue={100}
-                      value={
-                        isPossibleObjectEmpty(this.itemSplitPercent)
-                          ? Math.round(10000 / this.groupMemberIds.length) / 100
-                          : this.itemSplitPercent[userId]
-                      }
-                      step={1}
                       userId={userId}
                       objectInstance={this}
+                      sliderCallback={this.sliderCallback}
                     />
                   </Fragment>
                 );
@@ -190,6 +220,8 @@ export default class NewItem extends Component {
                               this.state.itemName,
                               nearestHundredth(Number(this.state.itemCost)),
                               this.itemSplitPercent,
+                              this.passedItem ? this.passedItem.rawText : null,
+                              this.sliderDefault,
                             );
                             if (this.vrIndex != null) {
                               LocalData.items[this.vrIndex] = UpdatedItem;
@@ -237,7 +269,7 @@ const Styles = StyleSheet.create({
   },
   slider: {
     justifyContent: 'center',
-    width: Dimensions.get('window').width * 0.6,
+    width: Dimensions.get('window').width * 0.8,
     height: 50,
   },
   sliderContainer: {

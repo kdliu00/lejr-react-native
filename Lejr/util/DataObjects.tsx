@@ -1,3 +1,5 @@
+import {raw} from 'core-js/fn/string';
+
 export {User, GroupInfo, InviteInfo, Group, MemberInfo, VirtualReceipt, Item};
 
 class User {
@@ -218,14 +220,20 @@ class Item {
   itemName: string;
   itemCost: number;
   itemSplit: Map<string, number>;
+  rawText: string;
+  sliderDefault: Map<string, boolean>;
 
   constructor(
     itemName: string,
     itemCost: number,
     itemSplit: Map<string, number>,
+    rawText: string,
+    sliderDefault: Map<string, boolean>,
   ) {
     this.itemName = itemName;
     this.itemCost = itemCost;
     this.itemSplit = itemSplit;
+    this.rawText = rawText;
+    this.sliderDefault = sliderDefault;
   }
 }

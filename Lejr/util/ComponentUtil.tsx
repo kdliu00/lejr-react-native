@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import {Layout, withStyles, Text} from '@ui-kitten/components';
 import {RectButton, ScrollView} from 'react-native-gesture-handler';
 import Slider from '@react-native-community/slider';
 import NewItem from '../screens/dashboard/Contribution/NewItem';
 import {LocalData} from './LocalData';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import {MergeState} from './UtilityMethods';
+import {MergeState, nearestHundredth} from './UtilityMethods';
 import Animated from 'react-native-reanimated';
 
 export {
@@ -89,6 +89,11 @@ const ThemedCard = withStyles(CardWrapper, theme => ({
 const SliderWrapper = (props: any) => {
   const {eva, style, ...restProps} = props;
 
+  if (props.customColor) {
+    eva.style.container.trackTint = eva.theme[props.customColor];
+    eva.style.container.knobColor = eva.theme[props.customColor];
+  }
+
   return (
     <Slider
       {...restProps}
@@ -111,44 +116,88 @@ class SplitSlider extends Component {
   objectInstance: NewItem;
   displayPercent: number;
   passProps: any;
+  default: boolean;
+  label: SliderLabel;
 
   constructor(props: Readonly<{}>) {
     super(props);
     this.passProps = this.props as any;
     this.userId = this.passProps.userId;
     this.objectInstance = this.passProps.objectInstance;
-    this.state = {
-      displayPercent: this.passProps.value,
-    };
   }
 
   componentDidMount() {
-    this.updatePercent((this.state as any).displayPercent);
+    if (this.objectInstance.sliderDefault[this.userId] == null) {
+      this.objectInstance.sliderDefault[this.userId] = true;
+    }
+    this.objectInstance.sliderObjects.push(this);
+    this.forceUpdate();
   }
 
   updatePercent(value: number) {
+    if (this.objectInstance.sliderDefault[this.userId]) {
+      this.objectInstance.sliderDefault[this.userId] = false;
+      this.forceUpdate();
+    }
     this.objectInstance.itemSplitPercent[this.userId] = value;
+    this.label.forceUpdate();
   }
 
   render() {
     return (
       <ThemedLayout style={this.passProps.sliderContainer}>
-        <ThemedLayout style={this.passProps.sliderLabel}>
-          <Text>
-            {LocalData.currentGroup.members[this.userId].name +
-              ' pays ' +
-              Math.round((this.state as any).displayPercent) +
-              '%'}
-          </Text>
-        </ThemedLayout>
+        <SliderLabel parent={this} />
         <ThemedSlider
           {...this.passProps}
+          minimumValue={0}
+          maximumValue={100}
+          step={1}
+          value={this.objectInstance.itemSplitPercent[this.userId]}
+          customColor={
+            this.objectInstance.sliderDefault[this.userId]
+              ? 'color-basic-500'
+              : ''
+          }
           style={this.passProps.sliderStyle}
           onValueChange={(value: number) => {
             this.updatePercent(value);
-            MergeState(this, {displayPercent: value});
           }}
+          onSlidingComplete={this.passProps.sliderCallback.bind(
+            this.objectInstance,
+          )}
         />
+      </ThemedLayout>
+    );
+  }
+}
+
+interface SliderLabelProps {
+  parent: SplitSlider;
+}
+
+class SliderLabel extends Component<SliderLabelProps> {
+  parent: SplitSlider;
+
+  constructor(props: any) {
+    super(props);
+    this.parent = this.props.parent;
+  }
+
+  componentDidMount() {
+    this.parent.label = this;
+  }
+
+  render() {
+    return (
+      <ThemedLayout style={this.parent.passProps.sliderLabel}>
+        <Text>
+          {LocalData.currentGroup.members[this.parent.userId].name +
+            ' pays ' +
+            nearestHundredth(
+              this.parent.objectInstance.itemSplitPercent[this.parent.userId],
+            ) +
+            '%'}
+        </Text>
       </ThemedLayout>
     );
   }
