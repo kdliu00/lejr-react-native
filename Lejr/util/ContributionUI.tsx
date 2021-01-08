@@ -11,10 +11,17 @@ import {
   removeNullsFromList,
   JSONCopy,
 } from './UtilityMethods';
+import {Fragment} from 'react';
 
-export {ContributionCard, ItemCard, PurchaseSplit, MailIcon, BlankCard};
-
-const MailIcon = (props: any) => <Icon name="email-outline" {...props} />;
+export {
+  ContributionCard,
+  ItemCard,
+  PurchaseSplit,
+  BlankCard,
+  Balance,
+  TwoColText,
+  getBalanceString,
+};
 
 const ContributionCard = (props: any) => {
   const vr: VirtualReceipt = props.vr;
@@ -186,6 +193,39 @@ const PurchaseSplit = (props: any) => {
     </Layout>
   );
 };
+
+const Balance = (props: any) => {
+  return (
+    <TwoColText
+      text1={props.userName as string}
+      text2={getBalanceString(props.userId)}
+    />
+  );
+};
+
+const TwoColText = (props: any) => {
+  return (
+    <Layout style={Styles.purchaseSplit}>
+      <Layout style={Styles.topLeft}>
+        <Text numberOfLines={1} category="h6">
+          {props.text1}
+        </Text>
+      </Layout>
+      <Layout style={Styles.topRight}>
+        <Text numberOfLines={1} category="h6">
+          {props.text2}
+        </Text>
+      </Layout>
+    </Layout>
+  );
+};
+
+function getBalanceString(userId: string) {
+  let balance = LocalData.currentGroup.members[userId].balance;
+  return balance < 0
+    ? '-$' + getMoneyFormatString(Math.abs(balance))
+    : '$' + getMoneyFormatString(Math.abs(balance));
+}
 
 const BlankCard = () => {
   return (

@@ -26,7 +26,6 @@ import {
   filterItemCosts,
   LocalData,
   uploadVirtualReceipt,
-  getVirtualReceiptsForGroup,
 } from '../../../util/LocalData';
 import {PurchaseSplit} from '../../../util/ContributionUI';
 import {AnimKeyboardDuration, Screen} from '../../../util/Constants';

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {StyleSheet, SafeAreaView} from 'react-native';
 import {Button, Text, Avatar, Layout} from '@ui-kitten/components';
-import {LocalData, signOut} from '../../util/LocalData';
+import {isPossibleObjectEmpty, LocalData, signOut} from '../../util/LocalData';
 import {Screen} from '../../util/Constants';
 
 export default class Settings extends Component {
@@ -26,6 +26,20 @@ export default class Settings extends Component {
           <Text category="h6">{LocalData.user.name}</Text>
           <Text>{LocalData.user.email}</Text>
           <Layout style={Styles.buttonContainer}>
+            <Text
+              style={[Styles.text, Styles.boldText]}
+              category="h6"
+              status="primary"
+              onPress={() =>
+                this.props.navigation.navigate(Screen.Invitations)
+              }>
+              See invitations{' '}
+              {'(' +
+                (isPossibleObjectEmpty(LocalData.invitations)
+                  ? 0
+                  : LocalData.invitations.length) +
+                ')'}
+            </Text>
             <Button
               style={Styles.button}
               appearance="outline"
@@ -57,11 +71,18 @@ const Styles = StyleSheet.create({
     margin: 10,
   },
   buttonContainer: {
-    marginTop: 20,
+    marginTop: 10,
   },
   avatar: {
     width: 96,
     height: 96,
     marginBottom: 20,
+  },
+  text: {
+    textAlign: 'center',
+    marginVertical: 15,
+  },
+  boldText: {
+    fontWeight: 'bold',
   },
 });

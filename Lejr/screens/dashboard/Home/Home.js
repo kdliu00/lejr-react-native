@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {StyleSheet, SafeAreaView} from 'react-native';
 import {Layout, Text, Button, Icon} from '@ui-kitten/components';
-import {ContributionCard, MailIcon} from '../../../util/ContributionUI';
+import {ContributionCard, getBalanceString} from '../../../util/ContributionUI';
 import {
   LocalData,
   safeGetListData,
@@ -20,14 +20,11 @@ import {
   ThemedCard,
   ThemedScroll,
 } from '../../../util/ComponentUtil';
-import {
-  getMoneyFormatString,
-  RetrieveData,
-  StoreData,
-} from '../../../util/UtilityMethods';
+import {RetrieveData, StoreData} from '../../../util/UtilityMethods';
 import Animated, {Easing} from 'react-native-reanimated';
 
 const InviteIcon = props => <Icon name="person-add-outline" {...props} />;
+const MenuIcon = props => <Icon name="menu-outline" {...props} />;
 const GROUP_RENDER_HEIGHT = 150;
 
 export default class Home extends Component {
@@ -122,10 +119,10 @@ export default class Home extends Component {
           </Animated.View>
           <Layout style={Styles.groupSelect}>
             <Button
-              accessoryLeft={MailIcon}
+              accessoryLeft={MenuIcon}
               appearance="ghost"
               size="large"
-              onPress={() => this.props.navigation.navigate(Screen.Invitations)}
+              onPress={() => this.props.navigation.navigate(Screen.GroupMenu)}
             />
             <ThemedCard
               style={Styles.groupLabel}
@@ -156,18 +153,10 @@ class BalanceText extends Component {
   render() {
     return (
       <Text style={Styles.titleText} category="h4">
-        {getBalanceString()}
+        Balance: {getBalanceString(LocalData.user.userId)}
       </Text>
     );
   }
-}
-
-function getBalanceString() {
-  let balanceString = 'Balance: ';
-  let balance = LocalData.currentGroup.members[LocalData.user.userId].balance;
-  return balance < 0
-    ? balanceString + '-$' + getMoneyFormatString(Math.abs(balance))
-    : balanceString + '$' + getMoneyFormatString(Math.abs(balance));
 }
 
 function onGroupPress(groupId, component) {

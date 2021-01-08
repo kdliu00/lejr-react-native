@@ -21,6 +21,7 @@ import NewItem from './dashboard/Contribution/NewItem';
 
 import {Component} from 'react';
 import ContribDetails from './dashboard/Contribution/ContribDetails';
+import GroupMenu from './dashboard/Home/GroupMenu';
 
 const MainStack = createBottomTabNavigator();
 const ModalStack = createStackNavigator();
@@ -54,6 +55,7 @@ const DashboardScreen = () => (
       options={{headerShown: false}}
     />
     <ModalStack.Screen name={Screen.InviteToGroup} component={InviteToGroup} />
+    <ModalStack.Screen name={Screen.GroupMenu} component={GroupMenu} />
     <ModalStack.Screen name={Screen.NewItem} component={NewItem} />
     <ModalStack.Screen
       name={Screen.ContribDetails}

@@ -237,6 +237,5 @@ const Styles = StyleSheet.create({
   },
   text: {
     textAlign: 'center',
-    marginHorizontal: 4,
   },
 });

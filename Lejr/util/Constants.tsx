@@ -56,6 +56,7 @@ enum Screen {
   Invitations = 'Invitations',
   NewItem = 'NewItem',
   ContribDetails = 'ContribDetails',
+  GroupMenu = 'GroupMenu',
 }
 
 enum ErrorCode {
