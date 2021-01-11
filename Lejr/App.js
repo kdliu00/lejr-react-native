@@ -26,8 +26,10 @@ import {default as theme} from './eva-theme.json';
 import {Key, Screen} from './util/Constants';
 import {
   detachListeners,
+  disengageSettleLocks,
   getKeyForCurrentGroupItems,
   getUserInvitations,
+  isPossibleObjectEmpty,
   loadGroupAsMain,
   LocalData,
   pushUserData,
@@ -72,6 +74,9 @@ AppState.addEventListener('change', state => {
         detachListeners();
       }
       console.log('Saving data, updating firestore');
+      if (!isPossibleObjectEmpty(LocalData.groupMenu)) {
+        LocalData.groupMenu.cancelSettle();
+      }
       StoreData(getKeyForCurrentGroupItems(), LocalData.items);
       pushUserData();
       break;

@@ -21,7 +21,6 @@ import {
   JSONCopy,
   MergeState,
   nearestHundredth,
-  removeNullsFromList,
   StoreData,
 } from '../../../util/UtilityMethods';
 import {SplitSlider} from '../../../util/ComponentUtil';

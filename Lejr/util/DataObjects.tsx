@@ -100,17 +100,26 @@ class Group {
   groupName: string;
   members: Map<string, MemberInfo>;
   archives: string[];
+  lastSettleDate: number;
+  settler: string;
+  settleLocks: Map<string, boolean>;
 
   constructor(
     groupId: string,
     groupName: string,
     members: Map<string, MemberInfo>,
     archives: string[],
+    lastSettleDate: number,
+    settler: string,
+    settleLocks: Map<string, boolean>,
   ) {
     this.groupId = groupId;
     this.groupName = groupName;
     this.members = members;
     this.archives = archives;
+    this.lastSettleDate = lastSettleDate;
+    this.settler = settler;
+    this.settleLocks = settleLocks;
   }
 
   static firestoreConverter = {
@@ -120,6 +129,9 @@ class Group {
         groupName: group.groupName,
         members: group.members,
         archives: group.archives,
+        lastSettleDate: group.lastSettleDate,
+        settler: group.settler,
+        settleLocks: group.settleLocks,
       };
     },
     fromFirestore: function(snapshot: {data: () => any}) {
@@ -129,6 +141,9 @@ class Group {
         data.groupName,
         data.members,
         data.archives,
+        data.lastSettleDate,
+        data.settler,
+        data.settleLocks,
       );
     },
   };

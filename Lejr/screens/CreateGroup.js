@@ -181,11 +181,21 @@ async function CreateNewGroup(newGroupName) {
     .collection(Collection.Groups)
     .doc().id;
 
-  var newGroupObject = new Group(newGroupId, newGroupName, {}, {}, []);
+  var newGroupObject = new Group(
+    newGroupId,
+    newGroupName,
+    {},
+    {},
+    [],
+    Date.now(),
+    null,
+    {},
+  );
   newGroupObject.members[LocalData.user.userId] = new MemberInfo(
     0,
     LocalData.user.name,
   );
+  newGroupObject.settleLocks[LocalData.user.userId] = false;
 
   LocalData.currentGroup = newGroupObject;
 

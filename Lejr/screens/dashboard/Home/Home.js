@@ -8,6 +8,7 @@ import {
   isPossibleObjectEmpty,
   getKeyForCurrentGroupItems,
   deleteAllItems,
+  disengageSettleLocks,
 } from '../../../util/LocalData';
 import {
   Screen,

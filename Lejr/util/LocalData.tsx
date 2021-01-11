@@ -15,6 +15,7 @@ import {nearestHundredth, StoreData} from './UtilityMethods';
 import Home from '../screens/dashboard/Home/Home';
 import Contribution from '../screens/dashboard/Contribution/Contribution';
 import Invitations from '../screens/dashboard/Home/Invitations';
+import GroupMenu from '../screens/dashboard/Home/GroupMenu';
 
 export {
   LocalData,
@@ -30,6 +31,8 @@ export {
   uploadVirtualReceipt,
   loadGroupAsMain,
   getVirtualReceiptsForGroup,
+  engageSettleLocks,
+  disengageSettleLocks,
   pushInvite,
   joinGroup,
   detachListeners,
@@ -53,6 +56,7 @@ class LocalData {
   static home: Home = null;
   static invScreen: Invitations = null;
   static invShouldUpdate: boolean = true;
+  static groupMenu: GroupMenu = null;
 
   //firestore listeners
   static groupListener = null;
@@ -236,6 +240,13 @@ function loadGroupAsMain(groupId: string, callback: () => void) {
         if (doc.exists) {
           console.log('Group document updated');
           LocalData.currentGroup = Group.firestoreConverter.fromFirestore(doc);
+          if (
+            !isPossibleObjectEmpty(LocalData.currentGroup.settleLocks) &&
+            Object.values(LocalData.currentGroup.settleLocks).every(Boolean) &&
+            LocalData.currentGroup.settler == LocalData.user.userId
+          ) {
+            LocalData.groupMenu.settle();
+          }
           getVirtualReceiptsForGroup(groupId, callback);
         } else {
           throw new Error(ErrorCode.InvalidId);
@@ -258,6 +269,7 @@ function getVirtualReceiptsForGroup(groupId: string, callback: () => void) {
     .doc(groupId)
     .collection(Key.VirtualReceipts)
     .orderBy(Key.Timestamp, 'desc')
+    .where('timestamp', '>=', LocalData.currentGroup.lastSettleDate)
     .limit(20)
     .onSnapshot(
       querySnapshot => {
@@ -295,6 +307,33 @@ function detachListeners() {
   if (LocalData.invListener != null) {
     LocalData.invListener();
   }
+}
+
+function engageSettleLocks() {
+  console.log('Engaging settle locks');
+  if (isPossibleObjectEmpty(LocalData.currentGroup.settleLocks)) {
+    LocalData.currentGroup.settleLocks = new Map();
+  }
+  if (isPossibleObjectEmpty(LocalData.currentGroup.settler)) {
+    LocalData.currentGroup.settler = LocalData.user.userId;
+  }
+  LocalData.currentGroup.settleLocks[LocalData.user.userId] = true;
+  pushGroupData();
+}
+
+function disengageSettleLocks() {
+  console.log('Disengaging settle locks');
+  if (isPossibleObjectEmpty(LocalData.currentGroup.settleLocks)) {
+    LocalData.currentGroup.settleLocks = new Map();
+  }
+  if (isPossibleObjectEmpty(LocalData.currentGroup.settler)) {
+    LocalData.currentGroup.settler = null;
+    console.warn('Settler was empty');
+  } else if (LocalData.currentGroup.settler == LocalData.user.userId) {
+    LocalData.currentGroup.settler = null;
+  }
+  LocalData.currentGroup.settleLocks[LocalData.user.userId] = false;
+  pushGroupData();
 }
 
 /**
@@ -396,6 +435,7 @@ async function joinGroup(groupId: string) {
           0,
           LocalData.user.name,
         );
+        groupToJoin.settleLocks[LocalData.user.userId] = false;
         firestore()
           .collection(Collection.Groups)
           .doc(groupId)
