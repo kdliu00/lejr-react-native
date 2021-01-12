@@ -185,7 +185,6 @@ async function CreateNewGroup(newGroupName) {
     newGroupId,
     newGroupName,
     {},
-    {},
     [],
     Date.now(),
     null,
