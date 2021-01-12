@@ -349,6 +349,9 @@ function isPossibleObjectEmpty(data: any) {
   if (data == null) {
     return true;
   }
+  if (Array.isArray(data)) {
+    return data.length === 0;
+  }
   return Object.keys(data).length === 0;
 }
 

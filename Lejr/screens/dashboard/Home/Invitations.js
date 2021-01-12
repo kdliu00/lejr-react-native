@@ -1,7 +1,7 @@
 import React, {Fragment} from 'react';
 import {StyleSheet, SafeAreaView, Alert} from 'react-native';
 import {Text, Layout, Button, Icon} from '@ui-kitten/components';
-import {Collection, ErrorCode, Key} from '../../../util/Constants';
+import {Collection, ErrorCode, Key, Screen} from '../../../util/Constants';
 import {
   LocalData,
   joinGroup,
@@ -63,7 +63,11 @@ export default class Invitations extends Component {
                 if (item != null) {
                   return (
                     <Fragment key={index}>
-                      {new InvitationCard({item: item, index: index}).render()}
+                      {new InvitationCard({
+                        item: item,
+                        index: index,
+                        navigation: this.props.navigation,
+                      }).render()}
                     </Fragment>
                   );
                 }
@@ -104,6 +108,7 @@ class InvitationCard extends ItemCard {
 
     this.item = props.item;
     this.index = props.index;
+    this.navigation = props.navigation;
     this.swipeableRef = React.createRef();
 
     this.state = {
@@ -161,7 +166,7 @@ class InvitationCard extends ItemCard {
             joinGroup(this.item.groupId).then(
               () => {
                 removeInvitation(this);
-                this.props.navigation.popToTop();
+                this.navigation.navigate(Screen.Loading);
               },
               error => {
                 console.warn(error.message);

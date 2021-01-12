@@ -195,6 +195,7 @@ async function CreateNewGroup(newGroupName) {
     0,
     LocalData.user.name,
   );
+  newGroupObject.settleLocks = new Map();
   newGroupObject.settleLocks[LocalData.user.userId] = false;
 
   LocalData.currentGroup = newGroupObject;

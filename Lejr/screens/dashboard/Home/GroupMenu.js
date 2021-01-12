@@ -26,6 +26,10 @@ export default class GroupMenu extends Component {
     LocalData.groupMenu = this;
   }
 
+  componentWillUnmount() {
+    LocalData.groupMenu = null;
+  }
+
   submitSettle() {
     Alert.alert(
       'Settle Balances',
