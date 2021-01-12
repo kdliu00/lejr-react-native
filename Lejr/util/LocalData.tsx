@@ -34,7 +34,6 @@ export {
   getVirtualReceiptsForGroup,
   engageSettleLocks,
   disengageSettleLocks,
-  updateGroupData,
   CreateNewGroup,
   swapGroup,
   pushInvite,
@@ -322,7 +321,7 @@ function engageSettleLocks() {
     LocalData.currentGroup.settler = LocalData.user.userId;
   }
   LocalData.currentGroup.settleLocks[LocalData.user.userId] = true;
-  updateGroupData();
+  pushLock();
 }
 
 function disengageSettleLocks() {
@@ -332,15 +331,33 @@ function disengageSettleLocks() {
   }
   if (isPossibleObjectEmpty(LocalData.currentGroup.settler)) {
     LocalData.currentGroup.settler = null;
-    console.warn('Settler was empty');
+    console.log('Settler was empty');
   } else if (LocalData.currentGroup.settler == LocalData.user.userId) {
     LocalData.currentGroup.settler = null;
   }
   LocalData.currentGroup.settleLocks[LocalData.user.userId] = false;
-  updateGroupData();
+  pushLock();
 }
 
-function updateGroupData() {}
+function pushLock() {
+  firestore()
+    .collection(Collection.Groups)
+    .doc(LocalData.currentGroup.groupId)
+    .update({
+      settleLocks: LocalData.currentGroup.settleLocks,
+      settler: LocalData.currentGroup.settler,
+    })
+    .then(
+      () => console.log('Successfully pushed lock'),
+      error => {
+        console.error('Push lock failed: ' + error.message);
+        Alert.alert(
+          'Database Error',
+          'We were not able to save your group data. Please reload the app and try again.',
+        );
+      },
+    );
+}
 
 async function CreateNewGroup(newGroupName: string) {
   var newGroupId = firestore()
