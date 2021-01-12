@@ -144,7 +144,7 @@ export default class CreateGroup extends Component {
                               CreateNewGroup(this.state.groupName),
                             ).then(
                               () => {
-                                console.log('Succesfully created group');
+                                console.log('Successfully created group');
                                 setTimeout(
                                   () => this.props.navigation.popToTop(),
                                   AnimKeyboardDuration,
