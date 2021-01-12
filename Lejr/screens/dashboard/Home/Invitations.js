@@ -6,6 +6,7 @@ import {
   LocalData,
   joinGroup,
   isPossibleObjectEmpty,
+  swapGroup,
 } from '../../../util/LocalData';
 import {
   CustomSwipeable,
@@ -166,7 +167,9 @@ class InvitationCard extends ItemCard {
             joinGroup(this.item.groupId).then(
               () => {
                 removeInvitation(this);
-                this.navigation.navigate(Screen.Loading);
+                swapGroup(this.item.groupId, () =>
+                  this.navigation.navigate(Screen.Loading),
+                );
               },
               error => {
                 console.warn(error.message);

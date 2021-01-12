@@ -1,16 +1,14 @@
 import React from 'react';
 import {TouchableWithoutFeedback, StyleSheet, Keyboard} from 'react-native';
 import {Layout, Text, Button} from '@ui-kitten/components';
-import firestore from '@react-native-firebase/firestore';
 import {
   LocalData,
   signOut,
-  pushUserData,
-  pushGroupData,
   isPossibleObjectEmpty,
+  CreateNewGroup,
+  swapGroup,
 } from '../util/LocalData';
-import {AnimKeyboardDuration, Collection, Screen} from '../util/Constants';
-import {GroupInfo, Group, MemberInfo} from '../util/DataObjects';
+import {AnimKeyboardDuration, Screen} from '../util/Constants';
 import * as yup from 'yup';
 import {
   ButtonSpinner,
@@ -174,40 +172,6 @@ export default class CreateGroup extends Component {
       </TouchableWithoutFeedback>
     );
   }
-}
-
-async function CreateNewGroup(newGroupName) {
-  var newGroupId = firestore()
-    .collection(Collection.Groups)
-    .doc().id;
-
-  var newGroupObject = new Group(
-    newGroupId,
-    newGroupName,
-    {},
-    [],
-    Date.now(),
-    null,
-    {},
-  );
-  newGroupObject.members[LocalData.user.userId] = new MemberInfo(
-    0,
-    LocalData.user.name,
-  );
-  newGroupObject.settleLocks = new Map();
-  newGroupObject.settleLocks[LocalData.user.userId] = false;
-
-  LocalData.currentGroup = newGroupObject;
-
-  var newGroupInfo = new GroupInfo(newGroupId, newGroupName);
-
-  if (isPossibleObjectEmpty(LocalData.user.groups)) {
-    LocalData.user.groups = [newGroupInfo];
-  } else {
-    LocalData.user.groups.push(newGroupInfo);
-  }
-
-  return [pushUserData(), pushGroupData()];
 }
 
 const Styles = StyleSheet.create({

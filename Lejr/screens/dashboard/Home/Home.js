@@ -7,12 +7,10 @@ import {
   safeGetListData,
   isPossibleObjectEmpty,
   getKeyForCurrentGroupItems,
-  deleteAllItems,
-  disengageSettleLocks,
+  swapGroup,
 } from '../../../util/LocalData';
 import {
   Screen,
-  Key,
   BannerHeight,
   AnimDefaultDuration,
 } from '../../../util/Constants';
@@ -21,7 +19,7 @@ import {
   ThemedCard,
   ThemedScroll,
 } from '../../../util/ComponentUtil';
-import {RetrieveData, StoreData} from '../../../util/UtilityMethods';
+import {RetrieveData} from '../../../util/UtilityMethods';
 import Animated, {Easing} from 'react-native-reanimated';
 
 const InviteIcon = props => <Icon name="person-add-outline" {...props} />;
@@ -165,12 +163,7 @@ function onGroupPress(groupId, component) {
     console.warn('Already loaded this group, invalid action!');
     return;
   }
-  deleteAllItems(false);
-  LocalData.currentGroup = null;
-  LocalData.virtualReceipts = null;
-  StoreData(Key.CurrentGroup, groupId).then(() =>
-    component.props.navigation.popToTop(),
-  );
+  swapGroup(groupId, component.props.navigation.popToTop);
 }
 
 const CustomMenuItem = ({groupId, groupName, component}) => {

@@ -16,6 +16,7 @@ import Home from '../screens/dashboard/Home/Home';
 import Contribution from '../screens/dashboard/Contribution/Contribution';
 import Invitations from '../screens/dashboard/Home/Invitations';
 import GroupMenu from '../screens/dashboard/Home/GroupMenu';
+import {call} from 'react-native-reanimated';
 
 export {
   LocalData,
@@ -33,6 +34,9 @@ export {
   getVirtualReceiptsForGroup,
   engageSettleLocks,
   disengageSettleLocks,
+  updateGroupData,
+  CreateNewGroup,
+  swapGroup,
   pushInvite,
   joinGroup,
   detachListeners,
@@ -318,7 +322,7 @@ function engageSettleLocks() {
     LocalData.currentGroup.settler = LocalData.user.userId;
   }
   LocalData.currentGroup.settleLocks[LocalData.user.userId] = true;
-  pushGroupData();
+  updateGroupData();
 }
 
 function disengageSettleLocks() {
@@ -333,7 +337,44 @@ function disengageSettleLocks() {
     LocalData.currentGroup.settler = null;
   }
   LocalData.currentGroup.settleLocks[LocalData.user.userId] = false;
-  pushGroupData();
+  updateGroupData();
+}
+
+function updateGroupData() {}
+
+async function CreateNewGroup(newGroupName: string) {
+  var newGroupId = firestore()
+    .collection(Collection.Groups)
+    .doc().id;
+
+  var newGroupObject = new Group(
+    newGroupId,
+    newGroupName,
+    null,
+    [],
+    Date.now(),
+    null,
+    null,
+  );
+  newGroupObject.members = new Map();
+  newGroupObject.members[LocalData.user.userId] = new MemberInfo(
+    0,
+    LocalData.user.name,
+  );
+  newGroupObject.settleLocks = new Map();
+  newGroupObject.settleLocks[LocalData.user.userId] = false;
+
+  LocalData.currentGroup = newGroupObject;
+
+  var newGroupInfo = new GroupInfo(newGroupId, newGroupName);
+
+  if (isPossibleObjectEmpty(LocalData.user.groups)) {
+    LocalData.user.groups = [newGroupInfo];
+  } else {
+    LocalData.user.groups.push(newGroupInfo);
+  }
+
+  return [pushUserData(), pushGroupData()];
 }
 
 /**
@@ -433,17 +474,20 @@ async function joinGroup(groupId: string) {
           LocalData.user.groups.push(newGroupInfo);
         }
 
-        //Create new mapping in group members
+        //Create new mappings in group
         groupToJoin.members[LocalData.user.userId] = new MemberInfo(
           0,
           LocalData.user.name,
         );
         groupToJoin.settleLocks[LocalData.user.userId] = false;
+
+        //Upload to firestore
         firestore()
           .collection(Collection.Groups)
           .doc(groupId)
           .update({
             members: groupToJoin.members,
+            settleLocks: groupToJoin.settleLocks,
           })
           .then(
             () => console.log('Successfully updated group'),
@@ -454,6 +498,13 @@ async function joinGroup(groupId: string) {
         throw new Error(ErrorCode.DoesNotExist);
       }
     });
+}
+
+function swapGroup(groupId: string, callback: () => void) {
+  deleteAllItems(false);
+  LocalData.currentGroup = null;
+  LocalData.virtualReceipts = null;
+  StoreData(Key.CurrentGroup, groupId).then(() => callback());
 }
 
 function getUpdatedKeyValuesOnly(reference: any, compare: any) {
