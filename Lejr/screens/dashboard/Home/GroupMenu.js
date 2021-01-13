@@ -162,7 +162,8 @@ const Styles = StyleSheet.create({
   },
   textContainer: {
     flex: 4,
-    margin: 10,
+    marginVertical: 10,
+    marginHorizontal: 15,
   },
   text: {
     textAlign: 'center',

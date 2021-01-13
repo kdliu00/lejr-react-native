@@ -18,18 +18,19 @@ import FormStyles from '../../../util/FormStyles';
 import {Item} from '../../../util/DataObjects';
 import * as yup from 'yup';
 import {
+  getTotal,
   JSONCopy,
   MergeState,
   nearestHundredth,
   StoreData,
 } from '../../../util/UtilityMethods';
-import {SplitSlider} from '../../../util/ComponentUtil';
 import {
   getKeyForCurrentGroupItems,
   isPossibleObjectEmpty,
   LocalData,
 } from '../../../util/LocalData';
 import {AnimDefaultDuration} from '../../../util/Constants';
+import {TwoColCheck} from '../../../util/ContributionUI';
 
 export default class NewItem extends Component {
   constructor(props) {
@@ -63,15 +64,9 @@ export default class NewItem extends Component {
 
     this.itemSplitPercent =
       this.passedItem == null ? {} : JSONCopy(this.passedItem.itemSplit);
-    this.sliderDefault =
-      this.passedItem == null ? {} : JSONCopy(this.passedItem.sliderDefault);
-    this.sliderObjects = [];
+    this.itemSplitCheck = {};
 
     this.groupMemberIds = Object.keys(LocalData.currentGroup.members);
-  }
-
-  componentDidMount() {
-    console.log('Arrived at NewItem!');
 
     this.groupMemberIds.forEach(userId => {
       this.itemSplitPercent[userId] = isPossibleObjectEmpty(
@@ -81,30 +76,28 @@ export default class NewItem extends Component {
         : this.passedItem.itemSplit[userId] == null
         ? 0
         : this.passedItem.itemSplit[userId];
+      this.itemSplitCheck[userId] = isPossibleObjectEmpty(
+        this.passedItem.itemSplit,
+      )
+        ? 1
+        : this.itemSplitPercent[userId] === 0
+        ? 0
+        : 1;
     });
   }
 
-  sliderCallback() {
-    let customSum = 0;
-    let defaultUserIds = [];
+  componentDidMount() {
+    console.log('Arrived at NewItem!');
+  }
+
+  checkboxCallback(nextChecked, checkedUserId) {
+    this.itemSplitCheck[checkedUserId] = nextChecked ? 1 : 0;
+    var splitPercent =
+      Math.round(10000 / getTotal(Object.values(this.itemSplitCheck))) / 100;
     Object.keys(this.itemSplitPercent).forEach(userId => {
-      if (!this.sliderDefault[userId]) {
-        customSum += this.itemSplitPercent[userId];
-      } else {
-        defaultUserIds.push(userId);
-      }
+      this.itemSplitPercent[userId] =
+        this.itemSplitCheck[userId] * splitPercent;
     });
-    let defaultSum = 100 - customSum;
-    if (defaultUserIds.length > 0) {
-      let defaultValue = defaultSum / defaultUserIds.length;
-      if (defaultValue < 0) {
-        defaultValue = 0;
-      }
-      defaultUserIds.forEach(
-        userId => (this.itemSplitPercent[userId] = defaultValue),
-      );
-    }
-    this.sliderObjects.forEach(splitSlider => splitSlider.forceUpdate());
   }
 
   render() {
@@ -153,18 +146,22 @@ export default class NewItem extends Component {
                 keyboardType="numeric"
               />
             </Layout>
+            <Text style={Styles.subtitle} category="h6">
+              Item Split
+            </Text>
             <ScrollView style={Styles.scrollView}>
               {this.groupMemberIds.map(userId => {
                 return (
                   <Fragment key={userId}>
-                    <SplitSlider
-                      sliderLabel={Styles.sliderLabel}
-                      sliderStyle={Styles.slider}
-                      sliderContainer={Styles.sliderContainer}
-                      userId={userId}
-                      objectInstance={this}
-                      sliderCallback={this.sliderCallback}
-                    />
+                    <Layout style={Styles.checkboxRow}>
+                      <TwoColCheck
+                        isChecked={this.itemSplitCheck[userId] === 1}
+                        callback={nextChecked =>
+                          this.checkboxCallback(nextChecked, userId)
+                        }
+                        text={LocalData.currentGroup.members[userId].name}
+                      />
+                    </Layout>
                   </Fragment>
                 );
               })}
@@ -220,7 +217,6 @@ export default class NewItem extends Component {
                               nearestHundredth(Number(this.state.itemCost)),
                               this.itemSplitPercent,
                               this.passedItem ? this.passedItem.rawText : null,
-                              this.sliderDefault,
                             );
                             if (this.vrIndex != null) {
                               LocalData.items[this.vrIndex] = UpdatedItem;
@@ -261,29 +257,23 @@ const Styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'column',
   },
-  sliderLabel: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  slider: {
-    justifyContent: 'center',
-    width: Dimensions.get('window').width * 0.8,
-    height: 50,
-  },
-  sliderContainer: {
-    alignItems: 'center',
+  checkboxRow: {
+    marginHorizontal: 50,
   },
   scrollView: {
     flex: 1,
-    paddingTop: 10,
     width: Dimensions.get('window').width,
-    marginTop: 20,
+    marginTop: 15,
     marginBottom: 10,
   },
   titleText: {
     marginTop: 30,
     textAlign: 'center',
     fontWeight: 'bold',
+  },
+  subtitle: {
+    textAlign: 'center',
+    marginTop: 25,
+    textDecorationLine: 'underline',
   },
 });

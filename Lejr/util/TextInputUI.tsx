@@ -74,7 +74,7 @@ const Styles = StyleSheet.create({
   },
   textInputWrapper: {
     width: '65%',
-    marginTop: 10,
+    marginTop: 5,
   },
   errorText: {
     color: 'red',

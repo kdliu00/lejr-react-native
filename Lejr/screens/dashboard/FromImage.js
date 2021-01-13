@@ -123,11 +123,9 @@ export default class FromImage extends Component {
         //calculate default split
         var itemList = [];
         let defaultSplit = {};
-        let sliderDefault = {};
         let userIds = Object.keys(LocalData.currentGroup.members);
         userIds.forEach(userId => {
           defaultSplit[userId] = Math.round(10000 / userIds.length) / 100;
-          sliderDefault[userId] = true;
         });
 
         //filter for items
@@ -188,7 +186,6 @@ export default class FromImage extends Component {
                     itemCost,
                     JSONCopy(defaultSplit),
                     lineText,
-                    sliderDefault,
                   ),
                 );
               }

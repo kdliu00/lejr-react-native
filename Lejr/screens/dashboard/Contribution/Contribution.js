@@ -20,7 +20,7 @@ import {
 
 const AddIcon = props => <Icon name="plus-outline" {...props} />;
 const RestartIcon = props => <Icon name="refresh-outline" {...props} />;
-const SaveIcon = props => <Icon name="cloud-upload-outline" {...props} />;
+const SaveIcon = props => <Icon name="save-outline" {...props} />;
 
 export default class Contribution extends Component {
   constructor() {
@@ -111,7 +111,7 @@ export default class Contribution extends Component {
               accessoryLeft={AddIcon}
               onPress={() =>
                 this.props.navigation.navigate(Screen.NewItem, {
-                  item: new Item('', null, {}, '', {}),
+                  item: new Item('', null, {}, ''),
                 })
               }
               size="large"

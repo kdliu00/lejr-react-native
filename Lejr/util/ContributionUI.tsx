@@ -195,6 +195,10 @@ const PurchaseSplit = (props: any) => {
   );
 };
 
+/**
+ * Two columns of text for user balance
+ * @param props userName and userId
+ */
 const Balance = (props: any) => {
   return (
     <TwoColText
@@ -204,6 +208,10 @@ const Balance = (props: any) => {
   );
 };
 
+/**
+ * Two columns of text
+ * @param props text1 and text2
+ */
 const TwoColText = (props: any) => {
   var text1 = (
     <Text numberOfLines={1} category="h6">
@@ -218,6 +226,10 @@ const TwoColText = (props: any) => {
   return <TwoColElem elem1={text1} elem2={text2} />;
 };
 
+/**
+ * Column of text and column of checkbox
+ * @param props isChecked, callback, and text
+ */
 const TwoColCheck = (props: any) => {
   var [checked, setChecked] = React.useState(props.isChecked);
   var text = (

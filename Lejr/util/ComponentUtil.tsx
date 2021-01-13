@@ -127,37 +127,25 @@ class SplitSlider extends Component {
   }
 
   componentDidMount() {
-    if (this.objectInstance.sliderDefault[this.userId] == null) {
-      this.objectInstance.sliderDefault[this.userId] = true;
-    }
     this.objectInstance.sliderObjects.push(this);
     this.forceUpdate();
   }
 
   updatePercent(value: number) {
-    if (this.objectInstance.sliderDefault[this.userId]) {
-      this.objectInstance.sliderDefault[this.userId] = false;
-      this.forceUpdate();
-    }
     this.objectInstance.itemSplitPercent[this.userId] = value;
-    this.label.forceUpdate();
+    // this.label.forceUpdate();
   }
 
   render() {
     return (
       <ThemedLayout style={this.passProps.sliderContainer}>
-        <SliderLabel parent={this} />
+        {/* <SliderLabel parent={this} /> */}
         <ThemedSlider
           {...this.passProps}
           minimumValue={0}
           maximumValue={100}
           step={1}
           value={this.objectInstance.itemSplitPercent[this.userId]}
-          customColor={
-            this.objectInstance.sliderDefault[this.userId]
-              ? 'color-basic-500'
-              : ''
-          }
           style={this.passProps.sliderStyle}
           onValueChange={(value: number) => {
             this.updatePercent(value);
