@@ -70,11 +70,11 @@ const Styles = StyleSheet.create({
   textInput: {
     width: '100%',
     height: 40,
-    marginTop: 3,
+    marginTop: 2,
   },
   textInputWrapper: {
     width: '65%',
-    marginTop: 15,
+    marginTop: 10,
   },
   errorText: {
     color: 'red',

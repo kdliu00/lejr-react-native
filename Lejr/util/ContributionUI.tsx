@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {Icon, Layout, Text} from '@ui-kitten/components';
+import {CheckBox, Icon, Layout, Text} from '@ui-kitten/components';
 import {VirtualReceipt, Item} from './DataObjects';
 import {DangerSwipe, ThemedCard, CustomSwipeable} from './ComponentUtil';
 import {AnimDefaultDuration, AnimKeyboardDuration, Screen} from './Constants';
@@ -20,6 +20,7 @@ export {
   BlankCard,
   Balance,
   TwoColText,
+  TwoColCheck,
   getBalanceString,
 };
 
@@ -204,18 +205,43 @@ const Balance = (props: any) => {
 };
 
 const TwoColText = (props: any) => {
+  var text1 = (
+    <Text numberOfLines={1} category="h6">
+      {props.text1}
+    </Text>
+  );
+  var text2 = (
+    <Text numberOfLines={1} category="h6">
+      {props.text2}
+    </Text>
+  );
+  return <TwoColElem elem1={text1} elem2={text2} />;
+};
+
+const TwoColCheck = (props: any) => {
+  var [checked, setChecked] = React.useState(props.isChecked);
+  var text = (
+    <Text numberOfLines={1} category="h6">
+      {props.text}
+    </Text>
+  );
+  var check = (
+    <CheckBox
+      checked={checked}
+      onChange={nextChecked => {
+        setChecked(nextChecked);
+        props.callback(nextChecked);
+      }}
+    />
+  );
+  return <TwoColElem elem1={text} elem2={check} />;
+};
+
+const TwoColElem = (props: any) => {
   return (
     <Layout style={Styles.purchaseSplit}>
-      <Layout style={Styles.topLeft}>
-        <Text numberOfLines={1} category="h6">
-          {props.text1}
-        </Text>
-      </Layout>
-      <Layout style={Styles.topRight}>
-        <Text numberOfLines={1} category="h6">
-          {props.text2}
-        </Text>
-      </Layout>
+      <Layout style={Styles.topLeft}>{props.elem1}</Layout>
+      <Layout style={Styles.topRight}>{props.elem2}</Layout>
     </Layout>
   );
 };

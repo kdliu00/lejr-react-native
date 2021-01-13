@@ -223,9 +223,9 @@ export default class FromImage extends Component {
             <Text appearance="hint" style={Styles.placeholderText}>
               Use your Camera to take a receipt photo or select one from your
               Gallery. Make sure to allow camera permissions for Lejr in your
-              device settings. {'\n\n'} For best results, keep the receipt flat
-              and crop out the background. You can also use multiple photos to
-              scan the receipt in segments.
+              device settings. {'\n\n'} For best results, crop out everything
+              except the items and total. You can use multiple photos to upload
+              the receipt in segments.
             </Text>
             <Layout style={[FormStyles.buttonStyle]}>
               <Button
