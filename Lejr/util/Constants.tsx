@@ -57,6 +57,7 @@ enum Screen {
   NewItem = 'NewItem',
   ContribDetails = 'ContribDetails',
   GroupMenu = 'GroupMenu',
+  QuickAdd = 'QuickAdd',
 }
 
 enum ErrorCode {

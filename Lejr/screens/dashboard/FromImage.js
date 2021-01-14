@@ -112,9 +112,7 @@ export default class FromImage extends Component {
             (a, b) => a.cornerPoints[0][0] - b.cornerPoints[0][0],
           );
           var text = '';
-          groupedLines[p].forEach(
-            textObject => (text += ' ' + textObject.text),
-          );
+          groupedLines[p].forEach(textObject => (text += textObject.text));
           logText.push(text);
         }
 
@@ -134,12 +132,32 @@ export default class FromImage extends Component {
         var threshold = null;
         for (let m = 0; m < groupedLines.length; m++) {
           let line = groupedLines[m];
-          let lineText = line.map(chunk => chunk.text).join(' ');
+          let lineText = line.map(chunk => chunk.text).join('');
 
           if (
             lineText.toLowerCase().includes('total') &&
             !lineText.toLowerCase().includes('subtotal')
           ) {
+            let totalString = lineText.replace(/[^0-9.]/g, '');
+            let scanTotal = itemList.reduce(
+              (sumSoFar, nextItem) => sumSoFar + nextItem.itemCost,
+              0,
+            );
+            let detectedTotal = parseFloat(totalString);
+            let totalDifference = detectedTotal - scanTotal;
+            if (totalDifference === 0) {
+              break;
+            }
+            console.log('Scan total: ' + scanTotal);
+            console.log('Detected total: ' + detectedTotal);
+            itemList.push(
+              new Item(
+                'MISCELLANEOUS ITEMS',
+                totalDifference,
+                JSONCopy(defaultSplit),
+                lineText,
+              ),
+            );
             break;
           }
           if (
@@ -205,6 +223,7 @@ export default class FromImage extends Component {
         }
 
         MergeState(this, {isProcessing: false});
+        LocalData.isCamera = false;
         this.props.navigation.navigate(Screen.Contribution);
       });
   }
@@ -220,9 +239,9 @@ export default class FromImage extends Component {
             <Text appearance="hint" style={Styles.placeholderText}>
               Use your Camera to take a receipt photo or select one from your
               Gallery. Make sure to allow camera permissions for Lejr in your
-              device settings. {'\n\n'} For best results, crop out everything
-              except the items and total. You can use multiple photos to upload
-              the receipt in segments.
+              device settings.{'\n\n'}For best results, keep the receipt flat
+              and crop out everything except the items and total. For longer
+              receipts, use multiple scans.
             </Text>
             <Layout style={[FormStyles.buttonStyle]}>
               <Button
@@ -230,18 +249,18 @@ export default class FromImage extends Component {
                 disabled={this.state.isProcessing}
                 onPress={() => {
                   MergeState(this, {isProcessing: true});
+                  LocalData.isCamera = true;
                   ImagePicker.openPicker({
                     mediaType: 'photo',
                     cropping: true,
+                    height: 400,
+                    width: 300,
                   }).then(
                     image => this.processImage(image),
                     error => {
+                      LocalData.isCamera = false;
                       console.warn(error.message);
-                      if (!error.message.includes('cancelled')) {
-                        throw new Error(ErrorCode.ImagePickerError);
-                      } else {
-                        MergeState(this, {isProcessing: false});
-                      }
+                      MergeState(this, {isProcessing: false});
                     },
                   );
                 }}>
@@ -252,18 +271,18 @@ export default class FromImage extends Component {
                 disabled={this.state.isProcessing}
                 onPress={() => {
                   MergeState(this, {isProcessing: true});
+                  LocalData.isCamera = true;
                   ImagePicker.openCamera({
                     mediaType: 'photo',
                     cropping: true,
+                    height: 400,
+                    width: 300,
                   }).then(
                     image => this.processImage(image),
                     error => {
+                      LocalData.isCamera = false;
                       console.warn(error.message);
-                      if (!error.message.includes('cancelled')) {
-                        throw new Error(ErrorCode.ImagePickerError);
-                      } else {
-                        MergeState(this, {isProcessing: false});
-                      }
+                      MergeState(this, {isProcessing: false});
                     },
                   );
                 }}>

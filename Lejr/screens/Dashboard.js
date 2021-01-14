@@ -22,6 +22,7 @@ import NewItem from './dashboard/Contribution/NewItem';
 import {Component} from 'react';
 import ContribDetails from './dashboard/Contribution/ContribDetails';
 import GroupMenu from './dashboard/Home/GroupMenu';
+import QuickAdd from './dashboard/Contribution/QuickAdd';
 
 const MainStack = createBottomTabNavigator();
 const ModalStack = createStackNavigator();
@@ -61,6 +62,7 @@ const DashboardScreen = () => (
       name={Screen.ContribDetails}
       component={ContribDetails}
     />
+    <ModalStack.Screen name={Screen.QuickAdd} component={QuickAdd} />
   </ModalStack.Navigator>
 );
 

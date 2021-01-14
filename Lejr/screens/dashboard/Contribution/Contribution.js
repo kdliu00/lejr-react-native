@@ -21,6 +21,7 @@ import {
 const AddIcon = props => <Icon name="plus-outline" {...props} />;
 const RestartIcon = props => <Icon name="refresh-outline" {...props} />;
 const SaveIcon = props => <Icon name="save-outline" {...props} />;
+const ArrowIcon = props => <Icon name="arrowhead-right-outline" {...props} />;
 
 export default class Contribution extends Component {
   constructor() {
@@ -52,8 +53,9 @@ export default class Contribution extends Component {
           <ThemedLayout style={Styles.itemList}>
             {LocalData.items.length === 0 ? (
               <Text appearance="hint" style={Styles.placeholderText}>
-                This purchase is currently empty. Click on the plus button below
-                to add an item manually or use the camera tab to scan a receipt.
+                To create individualized item splits, tap the plus icon or use
+                the camera tab to scan a receipt.{'\n\n'}You can also Quick Add
+                by tapping the double arrows in the lower right.
               </Text>
             ) : (
               <ThemedScroll
@@ -116,22 +118,25 @@ export default class Contribution extends Component {
               }
               size="large"
             />
-            <Button
-              style={Styles.button}
-              appearance="ghost"
-              accessoryLeft={SaveIcon}
-              onPress={() => {
-                if (removeNullsFromList(LocalData.items).length === 0) {
-                  Alert.alert(
-                    'No Items',
-                    'There are no items to upload. Please add at least one item before uploading.',
-                  );
-                } else {
-                  this.props.navigation.navigate(Screen.ContribDetails);
+            {removeNullsFromList(LocalData.items).length === 0 ? (
+              <Button
+                style={Styles.button}
+                appearance="ghost"
+                accessoryLeft={ArrowIcon}
+                onPress={() => console.log('yay')}
+                size="large"
+              />
+            ) : (
+              <Button
+                style={Styles.button}
+                appearance="ghost"
+                accessoryLeft={SaveIcon}
+                onPress={() =>
+                  this.props.navigation.navigate(Screen.ContribDetails)
                 }
-              }}
-              size="large"
-            />
+                size="large"
+              />
+            )}
           </Layout>
         </SafeAreaView>
       </ThemedLayout>
