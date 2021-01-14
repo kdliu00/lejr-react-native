@@ -132,8 +132,8 @@ android {
         applicationId "com.kdlg.lejr"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 17
-        versionName "0.2.2"
+        versionCode 18
+        versionName "0.2.3"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
     }
