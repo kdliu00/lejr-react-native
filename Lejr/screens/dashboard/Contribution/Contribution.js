@@ -123,7 +123,7 @@ export default class Contribution extends Component {
                 style={Styles.button}
                 appearance="ghost"
                 accessoryLeft={ArrowIcon}
-                onPress={() => console.log('yay')}
+                onPress={() => this.props.navigation.navigate(Screen.QuickAdd)}
                 size="large"
               />
             ) : (

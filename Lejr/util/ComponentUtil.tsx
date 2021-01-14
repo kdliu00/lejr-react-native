@@ -7,6 +7,7 @@ import {LocalData} from './LocalData';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import {MergeState, nearestHundredth} from './UtilityMethods';
 import Animated from 'react-native-reanimated';
+import QuickAdd from '../screens/dashboard/Contribution/QuickAdd';
 
 export {
   ThemedLayout,
@@ -113,7 +114,7 @@ const ThemedSlider = withStyles(SliderWrapper, theme => ({
 
 class SplitSlider extends Component {
   userId: string;
-  objectInstance: NewItem;
+  objectInstance: QuickAdd;
   displayPercent: number;
   passProps: any;
   default: boolean;
@@ -126,13 +127,8 @@ class SplitSlider extends Component {
     this.objectInstance = this.passProps.objectInstance;
   }
 
-  componentDidMount() {
-    this.objectInstance.sliderObjects.push(this);
-    this.forceUpdate();
-  }
-
   updatePercent(value: number) {
-    this.objectInstance.itemSplitPercent[this.userId] = value;
+    this.objectInstance.splitPercent[this.userId] = value;
     // this.label.forceUpdate();
   }
 
@@ -145,7 +141,7 @@ class SplitSlider extends Component {
           minimumValue={0}
           maximumValue={100}
           step={1}
-          value={this.objectInstance.itemSplitPercent[this.userId]}
+          value={this.objectInstance.splitPercent[this.userId]}
           style={this.passProps.sliderStyle}
           onValueChange={(value: number) => {
             this.updatePercent(value);
@@ -182,7 +178,7 @@ class SliderLabel extends Component<SliderLabelProps> {
           {LocalData.currentGroup.members[this.parent.userId].name +
             ' pays ' +
             nearestHundredth(
-              this.parent.objectInstance.itemSplitPercent[this.parent.userId],
+              this.parent.objectInstance.splitPercent[this.parent.userId],
             ) +
             '%'}
         </Text>

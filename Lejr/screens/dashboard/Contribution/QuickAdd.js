@@ -13,71 +13,72 @@ import {
   onValidationError,
 } from '../../../util/TextInputUI';
 import {
-  getMoneyFormatString,
   getTotal,
+  JSONCopy,
   MergeState,
   nearestHundredth,
-  removeNullsFromList,
 } from '../../../util/UtilityMethods';
 import FormStyles from '../../../util/FormStyles';
 import * as yup from 'yup';
 import {
   deleteAllItems,
-  filterItemCosts,
   LocalData,
   uploadVirtualReceipt,
 } from '../../../util/LocalData';
-import {PurchaseSplit} from '../../../util/ContributionUI';
+import {PurchaseSplit, TwoColCheck} from '../../../util/ContributionUI';
 import {AnimKeyboardDuration, Screen} from '../../../util/Constants';
 import {ScrollView} from 'react-native-gesture-handler';
-import {VirtualReceipt} from '../../../util/DataObjects';
+import {Item, VirtualReceipt} from '../../../util/DataObjects';
+import {Fragment} from 'react';
 
 export default class QuickAdd extends Component {
   constructor() {
     super();
     this.state = {
-      memo: LocalData.currentVR ? LocalData.currentVR.memo : '',
+      memo: '',
       memoError: '',
+      total: '',
+      totalError: '',
       isSubmitting: false,
     };
     this.memoRef = React.createRef();
+    this.totalRef = React.createRef();
     this.validationSchema = yup.object().shape({
       memo: yup
         .string()
         .label('Memo')
         .required(),
+      total: yup
+        .string()
+        .test('is-number', 'Cost must be a number', function(value) {
+          return !isNaN(value);
+        })
+        .label('Total')
+        .required(),
     });
 
-    this.totalSplit = {};
-    this.totalSplitAmount = {};
-    LocalData.items = removeNullsFromList(LocalData.items);
-    this.currentTotal = getTotal(filterItemCosts());
-    this.purchaseSplit = this.getTotalPurchaseSplit();
+    this.splitPercent = {};
+    this.splitCheck = {};
+
+    this.groupMemberIds = Object.keys(LocalData.currentGroup.members);
+
+    this.groupMemberIds.forEach(userId => {
+      this.splitPercent[userId] =
+        Math.round(10000 / this.groupMemberIds.length) / 100;
+      this.splitCheck[userId] = 1;
+    });
   }
 
   componentDidMount() {
     console.log('Arrived at QuickAdd!');
   }
 
-  getTotalPurchaseSplit() {
-    return Object.keys(LocalData.currentGroup.members).map(userId => {
-      var userTotal = 0;
-      const userName = LocalData.currentGroup.members[userId].name;
-      LocalData.items.map(item => {
-        userTotal += item.itemCost * (item.itemSplit[userId] / 100);
-      });
-      const userTotalPercent = nearestHundredth(
-        (100 * userTotal) / this.currentTotal,
-      );
-      this.totalSplit[userId] = userTotalPercent;
-      return (
-        <PurchaseSplit
-          key={userId}
-          userName={userName}
-          userTotal={nearestHundredth(userTotal)}
-          userTotalPercent={Math.round(userTotalPercent)}
-        />
-      );
+  checkboxCallback(nextChecked, checkedUserId) {
+    this.splitCheck[checkedUserId] = nextChecked ? 1 : 0;
+    var splitValue =
+      Math.round(10000 / getTotal(Object.values(this.splitCheck))) / 100;
+    Object.keys(this.splitPercent).forEach(userId => {
+      this.splitPercent[userId] = this.splitCheck[userId] * splitValue;
     });
   }
 
@@ -88,9 +89,7 @@ export default class QuickAdd extends Component {
           <SafeAreaView style={Styles.container}>
             <Layout>
               <Text style={Styles.titleText} category="h4">
-                {LocalData.currentVR
-                  ? 'Update Existing Purchase'
-                  : 'Save New Purchase'}
+                Quick Add Purchase
               </Text>
             </Layout>
             <Layout>
@@ -109,14 +108,23 @@ export default class QuickAdd extends Component {
                 value={this.state.memo}
                 autoFocus={!this.state.memo}
               />
+              <InputField
+                fieldError={this.state.totalError}
+                refToPass={this.totalRef}
+                validationSchema={this.validationSchema}
+                fieldKey="total"
+                fieldParams={text => ({total: text})}
+                setField={value => MergeState(this, {total: value})}
+                setFieldError={value => MergeState(this, {totalError: value})}
+                placeholder="total"
+                onSubmitEditing={() => {
+                  Keyboard.dismiss();
+                }}
+                value={this.state.total}
+                keyboardType="numeric"
+              />
             </Layout>
             <Layout style={Styles.infoContainer}>
-              <Text style={Styles.centerText} category="h5">
-                Total: $
-                {getMoneyFormatString(
-                  nearestHundredth(getTotal(filterItemCosts())),
-                )}
-              </Text>
               <Text style={Styles.centerText}>
                 Purchased by{' '}
                 {LocalData.currentVR
@@ -124,9 +132,24 @@ export default class QuickAdd extends Component {
                       .name
                   : LocalData.currentGroup.members[LocalData.user.userId].name}
               </Text>
+              <Text style={Styles.subtitle} category="h6">
+                Item Split
+              </Text>
             </Layout>
             <ScrollView style={Styles.scrollView}>
-              {this.purchaseSplit}
+              {this.groupMemberIds.map(userId => {
+                return (
+                  <Fragment key={userId}>
+                    <TwoColCheck
+                      isChecked={this.splitCheck[userId] === 1}
+                      callback={nextChecked =>
+                        this.checkboxCallback(nextChecked, userId)
+                      }
+                      text={LocalData.currentGroup.members[userId].name}
+                    />
+                  </Fragment>
+                );
+              })}
             </ScrollView>
             <Layout style={FormStyles.buttonStyle}>
               <Button
@@ -150,29 +173,32 @@ export default class QuickAdd extends Component {
                     this.validationSchema
                       .validate({
                         memo: this.state.memo,
+                        total: this.state.total,
                       })
                       .catch(error =>
                         onValidationError(error, [
                           [this.memoRef, this.state.memo],
+                          [this.totalRef, this.state.total],
                         ]),
                       )
                       .then(valid => {
                         if (valid) {
                           uploadVirtualReceipt(
                             new VirtualReceipt(
-                              LocalData.currentVR
-                                ? LocalData.currentVR.buyerId
-                                : LocalData.user.userId,
-                              LocalData.currentVR
-                                ? LocalData.currentVR.virtualReceiptId
-                                : '',
+                              LocalData.user.userId,
+                              '',
                               this.state.memo,
-                              LocalData.currentVR
-                                ? LocalData.currentVR.timestamp
-                                : Date.now(),
-                              LocalData.items,
-                              this.currentTotal,
-                              this.totalSplit,
+                              Date.now(),
+                              [
+                                new Item(
+                                  'QUICK ADD ITEM',
+                                  parseFloat(this.state.total),
+                                  this.splitPercent,
+                                  '',
+                                ),
+                              ],
+                              parseFloat(this.state.total),
+                              this.splitPercent,
                               '',
                             ),
                             () => {
@@ -198,7 +224,7 @@ export default class QuickAdd extends Component {
                         }
                       });
                   }}>
-                  {LocalData.currentVR ? 'Update' : 'Save'}
+                  Save
                 </Button>
               )}
             </Layout>
@@ -216,7 +242,6 @@ const Styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    paddingTop: 10,
     width: Dimensions.get('window').width,
     marginTop: 10,
   },
@@ -227,7 +252,11 @@ const Styles = StyleSheet.create({
   },
   centerText: {
     textAlign: 'center',
-    marginVertical: 2,
+  },
+  subtitle: {
+    textAlign: 'center',
+    marginTop: 15,
+    textDecorationLine: 'underline',
   },
   infoContainer: {
     marginTop: 20,

@@ -92,11 +92,10 @@ export default class NewItem extends Component {
 
   checkboxCallback(nextChecked, checkedUserId) {
     this.itemSplitCheck[checkedUserId] = nextChecked ? 1 : 0;
-    var splitPercent =
+    var splitValue =
       Math.round(10000 / getTotal(Object.values(this.itemSplitCheck))) / 100;
     Object.keys(this.itemSplitPercent).forEach(userId => {
-      this.itemSplitPercent[userId] =
-        this.itemSplitCheck[userId] * splitPercent;
+      this.itemSplitPercent[userId] = this.itemSplitCheck[userId] * splitValue;
     });
   }
 
@@ -153,15 +152,13 @@ export default class NewItem extends Component {
               {this.groupMemberIds.map(userId => {
                 return (
                   <Fragment key={userId}>
-                    <Layout style={Styles.checkboxRow}>
-                      <TwoColCheck
-                        isChecked={this.itemSplitCheck[userId] === 1}
-                        callback={nextChecked =>
-                          this.checkboxCallback(nextChecked, userId)
-                        }
-                        text={LocalData.currentGroup.members[userId].name}
-                      />
-                    </Layout>
+                    <TwoColCheck
+                      isChecked={this.itemSplitCheck[userId] === 1}
+                      callback={nextChecked =>
+                        this.checkboxCallback(nextChecked, userId)
+                      }
+                      text={LocalData.currentGroup.members[userId].name}
+                    />
                   </Fragment>
                 );
               })}
@@ -256,9 +253,6 @@ const Styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     flexDirection: 'column',
-  },
-  checkboxRow: {
-    marginHorizontal: 50,
   },
   scrollView: {
     flex: 1,

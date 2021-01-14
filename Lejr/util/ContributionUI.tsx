@@ -246,7 +246,11 @@ const TwoColCheck = (props: any) => {
       }}
     />
   );
-  return <TwoColElem elem1={text} elem2={check} />;
+  return (
+    <Layout style={Styles.checkboxRow}>
+      <TwoColElem elem1={text} elem2={check} />
+    </Layout>
+  );
 };
 
 const TwoColElem = (props: any) => {
@@ -324,5 +328,8 @@ const Styles = StyleSheet.create({
   },
   splitText: {
     marginRight: 14,
+  },
+  checkboxRow: {
+    marginHorizontal: 50,
   },
 });
