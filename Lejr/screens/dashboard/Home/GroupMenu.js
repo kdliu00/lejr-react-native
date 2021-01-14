@@ -19,6 +19,8 @@ export default class GroupMenu extends Component {
     this.state = {
       isSubmitting: false,
     };
+
+    this.entryCallbacks = {};
   }
 
   componentDidMount() {
@@ -89,11 +91,14 @@ export default class GroupMenu extends Component {
             </Text>
             {Object.keys(LocalData.currentGroup.members).map(userId => {
               return (
-                <Balance
-                  key={userId}
-                  userName={LocalData.currentGroup.members[userId].name}
-                  userId={userId}
-                />
+                <Fragment key={userId}>
+                  <Balance
+                    groupMenuInstance={this}
+                    isChecked={LocalData.currentGroup.settleLocks[userId]}
+                    userName={LocalData.currentGroup.members[userId].name}
+                    userId={userId}
+                  />
+                </Fragment>
               );
             })}
             <Text style={[Styles.text, Styles.underlineText]} category="h6">

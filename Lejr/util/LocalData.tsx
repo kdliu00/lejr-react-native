@@ -243,6 +243,14 @@ function loadGroupAsMain(groupId: string, callback: () => void) {
         if (doc.exists) {
           console.log('Group document updated');
           LocalData.currentGroup = Group.firestoreConverter.fromFirestore(doc);
+
+          if (!isPossibleObjectEmpty(LocalData.groupMenu)) {
+            Object.keys(LocalData.currentGroup.settleLocks).forEach(userId => {
+              LocalData.groupMenu.entryCallbacks[userId](
+                LocalData.currentGroup.settleLocks[userId],
+              );
+            });
+          }
           if (
             !isPossibleObjectEmpty(LocalData.currentGroup.settleLocks) &&
             Object.values(LocalData.currentGroup.settleLocks).every(Boolean) &&
@@ -250,6 +258,7 @@ function loadGroupAsMain(groupId: string, callback: () => void) {
           ) {
             LocalData.groupMenu.settle();
           }
+
           getVirtualReceiptsForGroup(groupId, callback);
         } else {
           throw new Error(ErrorCode.InvalidId);

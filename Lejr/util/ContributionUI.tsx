@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {CheckBox, Icon, Layout, Text} from '@ui-kitten/components';
+import {Button, CheckBox, Icon, Layout, Text} from '@ui-kitten/components';
 import {VirtualReceipt, Item} from './DataObjects';
 import {DangerSwipe, ThemedCard, CustomSwipeable} from './ComponentUtil';
 import {AnimDefaultDuration, AnimKeyboardDuration, Screen} from './Constants';
@@ -23,6 +23,10 @@ export {
   TwoColCheck,
   getBalanceString,
 };
+
+const CheckIcon = (props: any) => (
+  <Icon name="checkmark-circle-2-outline" {...props} />
+);
 
 const ContributionCard = (props: any) => {
   const vr: VirtualReceipt = props.vr;
@@ -200,11 +204,30 @@ const PurchaseSplit = (props: any) => {
  * @param props userName and userId
  */
 const Balance = (props: any) => {
+  var [checked, setChecked] = React.useState(props.isChecked);
+  props.groupMenuInstance.entryCallbacks[props.userId] = setChecked;
   return (
-    <TwoColText
-      text1={props.userName as string}
-      text2={getBalanceString(props.userId)}
-    />
+    <Layout style={Styles.purchaseSplit}>
+      {checked ? (
+        <Layout>{<CheckIcon style={Styles.icon} />}</Layout>
+      ) : (
+        <Layout />
+      )}
+      <Layout style={Styles.topLeft}>
+        {
+          <Text numberOfLines={1} category="h6">
+            {props.userName as string}
+          </Text>
+        }
+      </Layout>
+      <Layout style={Styles.topRight}>
+        {
+          <Text numberOfLines={1} category="h6">
+            {getBalanceString(props.userId)}
+          </Text>
+        }
+      </Layout>
+    </Layout>
   );
 };
 
@@ -233,7 +256,10 @@ const TwoColText = (props: any) => {
 const TwoColCheck = (props: any) => {
   var [checked, setChecked] = React.useState(props.isChecked);
   var text = (
-    <Text numberOfLines={1} category="h6">
+    <Text
+      numberOfLines={1}
+      category="h6"
+      appearance={checked ? 'default' : 'hint'}>
       {props.text}
     </Text>
   );
@@ -331,5 +357,11 @@ const Styles = StyleSheet.create({
   },
   checkboxRow: {
     marginHorizontal: 50,
+  },
+  icon: {
+    width: 24,
+    height: 24,
+    tintColor: 'green',
+    marginRight: 5,
   },
 });
