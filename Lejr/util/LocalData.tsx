@@ -17,6 +17,7 @@ import Contribution from '../screens/dashboard/Contribution/Contribution';
 import Invitations from '../screens/dashboard/Home/Invitations';
 import GroupMenu from '../screens/dashboard/Home/GroupMenu';
 import {call} from 'react-native-reanimated';
+import {group} from 'console';
 
 export {
   LocalData,
@@ -32,6 +33,7 @@ export {
   uploadVirtualReceipt,
   loadGroupAsMain,
   getVirtualReceiptsForGroup,
+  leaveCurrentGroup,
   engageSettleLocks,
   disengageSettleLocks,
   CreateNewGroup,
@@ -308,6 +310,34 @@ function getVirtualReceiptsForGroup(groupId: string, callback: () => void) {
     );
 }
 
+function leaveCurrentGroup(callback: () => void) {
+  let userId = LocalData.user.userId;
+  if (isPossibleObjectEmpty(LocalData.currentGroup.memberArchive)) {
+    LocalData.currentGroup.memberArchive = new Map();
+  }
+  LocalData.currentGroup.memberArchive[userId] = LocalData.user.name;
+
+  delete LocalData.currentGroup.members[userId];
+  delete LocalData.currentGroup.settleLocks[userId];
+
+  let newGroupInfoList = [];
+  let currentGroupId = LocalData.currentGroup.groupId;
+  LocalData.user.groups.forEach(groupInfo => {
+    if (groupInfo.groupId != currentGroupId) {
+      newGroupInfoList.push(groupInfo);
+    }
+  });
+  LocalData.user.groups = newGroupInfoList;
+
+  console.log('Leaving group: ' + currentGroupId);
+
+  pushGroupData();
+  pushUserData();
+  detachListeners();
+
+  swapGroup(null, callback);
+}
+
 function detachListeners() {
   console.log('Detaching firestore listeners');
   if (LocalData.groupListener != null) {
@@ -377,11 +407,12 @@ async function CreateNewGroup(newGroupName: string) {
     newGroupId,
     newGroupName,
     null,
-    [],
+    null,
     Date.now(),
     null,
     null,
   );
+  newGroupObject.memberArchive = new Map();
   newGroupObject.members = new Map();
   newGroupObject.members[LocalData.user.userId] = new MemberInfo(
     0,

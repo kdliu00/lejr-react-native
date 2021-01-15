@@ -47,7 +47,7 @@ export default class Contribution extends Component {
           </ThemedLayout>
           {LocalData.items.length !== 0 && (
             <Text appearance="hint" style={Styles.placeholderText}>
-              Slide left to delete
+              Slide left to delete.
             </Text>
           )}
           <ThemedLayout style={Styles.itemList}>
@@ -95,11 +95,11 @@ export default class Contribution extends Component {
                         console.log('Deleting all items');
                         deleteAllItems();
                       },
-                      style: 'cancel',
                     },
                     {
                       text: 'No',
                       onPress: () => console.log('Not deleting items'),
+                      style: 'cancel',
                     },
                   ],
                   {cancelable: false},

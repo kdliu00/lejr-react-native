@@ -99,7 +99,7 @@ class Group {
   groupId: string;
   groupName: string;
   members: Map<string, MemberInfo>;
-  archives: string[];
+  memberArchive: Map<string, string>;
   lastSettleDate: number;
   settler: string;
   settleLocks: Map<string, boolean>;
@@ -108,7 +108,7 @@ class Group {
     groupId: string,
     groupName: string,
     members: Map<string, MemberInfo>,
-    archives: string[],
+    memberArchive: Map<string, string>,
     lastSettleDate: number,
     settler: string,
     settleLocks: Map<string, boolean>,
@@ -116,7 +116,7 @@ class Group {
     this.groupId = groupId;
     this.groupName = groupName;
     this.members = members;
-    this.archives = archives;
+    this.memberArchive = memberArchive;
     this.lastSettleDate = lastSettleDate;
     this.settler = settler;
     this.settleLocks = settleLocks;
@@ -128,7 +128,7 @@ class Group {
         groupId: group.groupId,
         groupName: group.groupName,
         members: group.members,
-        archives: group.archives,
+        memberArchive: group.memberArchive,
         lastSettleDate: group.lastSettleDate,
         settler: group.settler,
         settleLocks: group.settleLocks,
@@ -140,7 +140,7 @@ class Group {
         data.groupId,
         data.groupName,
         data.members,
-        data.archives,
+        data.memberArchive,
         data.lastSettleDate,
         data.settler,
         data.settleLocks,

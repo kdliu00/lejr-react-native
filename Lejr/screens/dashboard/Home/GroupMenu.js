@@ -1,17 +1,22 @@
-import {Button, Layout, Text} from '@ui-kitten/components';
+import {Button, Icon, Layout, Text} from '@ui-kitten/components';
 import React, {Component} from 'react';
 import {Fragment} from 'react';
 import {Alert} from 'react-native';
 import {SafeAreaView, StyleSheet} from 'react-native';
+import {Screen} from '../../../util/Constants';
 import {Balance, TwoColText} from '../../../util/ContributionUI';
 import {
   disengageSettleLocks,
   engageSettleLocks,
+  leaveCurrentGroup,
   LocalData,
   pushGroupData,
 } from '../../../util/LocalData';
 import {ButtonSpinner} from '../../../util/TextInputUI';
 import {getMoneyFormatString, MergeState} from '../../../util/UtilityMethods';
+
+const RemoveIcon = props => <Icon name="person-remove-outline" {...props} />;
+const LeaveIcon = props => <Icon name="log-out-outline" {...props} />;
 
 export default class GroupMenu extends Component {
   constructor() {
@@ -81,10 +86,6 @@ export default class GroupMenu extends Component {
           <Text style={Styles.titleText} category="h4">
             {LocalData.currentGroup.groupName}
           </Text>
-          <Text style={Styles.text} appearance="hint">
-            Here is an overview of your group. You can also settle balances by
-            tapping the button below.
-          </Text>
           <Layout style={Styles.textContainer}>
             <Text style={[Styles.text, Styles.underlineText]} category="h6">
               Member Balances
@@ -107,6 +108,27 @@ export default class GroupMenu extends Component {
             <TwoColText text1="Total Expenses" text2={getTotalExpenses()} />
           </Layout>
           <Layout style={Styles.buttonContainer}>
+            <Layout style={Styles.rowFlex}>
+              <Button
+                status="danger"
+                style={Styles.button}
+                accessoryLeft={LeaveIcon}
+                appearance="ghost"
+                size="large"
+                onPress={() =>
+                  handleLeaveGroup(() =>
+                    this.props.navigation.navigate(Screen.Loading),
+                  )
+                }
+              />
+              <Button
+                style={Styles.button}
+                accessoryLeft={RemoveIcon}
+                appearance="ghost"
+                size="large"
+                onPress={() => handleRemoveMember()}
+              />
+            </Layout>
             {this.state.isSubmitting ? (
               <Fragment>
                 <Button
@@ -144,6 +166,47 @@ export default class GroupMenu extends Component {
   }
 }
 
+function handleLeaveGroup(callback) {
+  if (LocalData.currentGroup.members[LocalData.user.userId].balance === 0) {
+    Alert.alert(
+      'Leave Group',
+      'Are you sure you want to leave ' +
+        LocalData.currentGroup.groupName +
+        '?',
+      [
+        {
+          text: 'Yes',
+          onPress: () => {
+            console.log('Submitted intent to leave group');
+            leaveCurrentGroup(callback);
+          },
+        },
+        {
+          text: 'No',
+          onPress: () => console.log('Cancelled intent to leave group'),
+          style: 'cancel',
+        },
+      ],
+      {cancelable: false},
+    );
+  } else {
+    Alert.alert(
+      'Unable to Leave Group',
+      'Your balance in the group must be zero in order to leave.',
+      [
+        {
+          text: 'Okay',
+          onPress: () => {
+            console.log('Cancelled intent to leave group');
+          },
+        },
+      ],
+    );
+  }
+}
+
+function handleRemoveMember() {}
+
 function getTotalExpenses() {
   var total = 0;
   Object.keys(LocalData.currentGroup.members).forEach(userId => {
@@ -166,7 +229,7 @@ const Styles = StyleSheet.create({
     alignItems: 'center',
   },
   textContainer: {
-    flex: 4,
+    flex: 1,
     marginVertical: 10,
     marginHorizontal: 15,
   },
@@ -176,7 +239,7 @@ const Styles = StyleSheet.create({
     marginVertical: 5,
   },
   buttonContainer: {
-    flex: 3,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -186,5 +249,8 @@ const Styles = StyleSheet.create({
   underlineText: {
     textDecorationLine: 'underline',
     marginVertical: 10,
+  },
+  rowFlex: {
+    flexDirection: 'row',
   },
 });

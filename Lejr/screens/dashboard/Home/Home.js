@@ -86,7 +86,7 @@ export default class Home extends Component {
           </ThemedLayout>
           {isPossibleObjectEmpty(safeGetListData(LocalData.virtualReceipts)) ? (
             <ThemedLayout style={Styles.center}>
-              <Text appearance="hint">No group purchases yet</Text>
+              <Text appearance="hint">No group purchases yet.</Text>
             </ThemedLayout>
           ) : (
             <ThemedScroll

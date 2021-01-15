@@ -5,7 +5,7 @@ import {VirtualReceipt, Item} from './DataObjects';
 import {DangerSwipe, ThemedCard, CustomSwipeable} from './ComponentUtil';
 import {AnimDefaultDuration, AnimKeyboardDuration, Screen} from './Constants';
 import Animated, {Easing} from 'react-native-reanimated';
-import {LocalData} from './LocalData';
+import {isPossibleObjectEmpty, LocalData} from './LocalData';
 import {
   getMoneyFormatString,
   removeNullsFromList,
@@ -57,8 +57,12 @@ const ContributionCard = (props: any) => {
       </Layout>
       <Layout style={Styles.footer}>
         {Object.keys(vr.totalSplit).map(userId => {
-          var initials =
-            LocalData.currentGroup.members[userId].name.match(/\b\w/g) || [];
+          let name = isPossibleObjectEmpty(
+            LocalData.currentGroup.members[userId],
+          )
+            ? LocalData.currentGroup.memberArchive[userId]
+            : LocalData.currentGroup.members[userId].name;
+          let initials = name.match(/\b\w/g) || [];
           initials = (
             (initials.shift() || '') + (initials.pop() || '')
           ).toUpperCase();
@@ -265,6 +269,7 @@ const TwoColCheck = (props: any) => {
   );
   var check = (
     <CheckBox
+      disabled={props.isDisabled}
       checked={checked}
       onChange={nextChecked => {
         setChecked(nextChecked);

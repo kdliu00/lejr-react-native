@@ -66,13 +66,19 @@ export default class NewItem extends Component {
       this.passedItem == null ? {} : JSONCopy(this.passedItem.itemSplit);
     this.itemSplitCheck = {};
 
-    this.groupMemberIds = Object.keys(LocalData.currentGroup.members);
+    let userIds = Object.keys(LocalData.currentGroup.members);
+    if (this.passedItem != null) {
+      userIds = userIds.concat(Object.keys(this.itemSplitPercent));
+    }
+    this.itemUserIds = userIds.filter((userId, index) => {
+      return userIds.indexOf(userId) === index;
+    });
 
-    this.groupMemberIds.forEach(userId => {
+    this.itemUserIds.forEach(userId => {
       this.itemSplitPercent[userId] = isPossibleObjectEmpty(
         this.passedItem.itemSplit,
       )
-        ? Math.round(10000 / this.groupMemberIds.length) / 100
+        ? Math.round(10000 / this.itemUserIds.length) / 100
         : this.passedItem.itemSplit[userId] == null
         ? 0
         : this.passedItem.itemSplit[userId];
@@ -149,15 +155,24 @@ export default class NewItem extends Component {
               Item Split
             </Text>
             <ScrollView style={Styles.scrollView}>
-              {this.groupMemberIds.map(userId => {
+              {this.itemUserIds.map(userId => {
                 return (
                   <Fragment key={userId}>
                     <TwoColCheck
+                      isDisabled={isPossibleObjectEmpty(
+                        LocalData.currentGroup.members[userId],
+                      )}
                       isChecked={this.itemSplitCheck[userId] === 1}
                       callback={nextChecked =>
                         this.checkboxCallback(nextChecked, userId)
                       }
-                      text={LocalData.currentGroup.members[userId].name}
+                      text={
+                        isPossibleObjectEmpty(
+                          LocalData.currentGroup.members[userId],
+                        )
+                          ? LocalData.currentGroup.memberArchive[userId]
+                          : LocalData.currentGroup.members[userId].name
+                      }
                     />
                   </Fragment>
                 );

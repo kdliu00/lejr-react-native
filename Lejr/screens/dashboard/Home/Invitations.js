@@ -48,11 +48,11 @@ export default class Invitations extends Component {
             </Text>
             {isPossibleObjectEmpty(LocalData.invitations) ? (
               <Text style={Styles.text} appearance="hint">
-                No invitations yet
+                No invitations yet.
               </Text>
             ) : (
               <Text style={Styles.text} appearance="hint">
-                Slide right to accept, left to delete
+                Slide right to accept, left to delete.
               </Text>
             )}
           </Layout>
