@@ -121,13 +121,13 @@ export default class GroupMenu extends Component {
                   )
                 }
               />
-              <Button
+              {/* <Button
                 style={Styles.button}
                 accessoryLeft={RemoveIcon}
                 appearance="ghost"
                 size="large"
                 onPress={() => handleRemoveMember()}
-              />
+              /> */}
             </Layout>
             {this.state.isSubmitting ? (
               <Fragment>

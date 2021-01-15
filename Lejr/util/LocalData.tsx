@@ -246,6 +246,7 @@ function loadGroupAsMain(groupId: string, callback: () => void) {
           console.log('Group document updated');
           LocalData.currentGroup = Group.firestoreConverter.fromFirestore(doc);
 
+          //settle lock management
           if (!isPossibleObjectEmpty(LocalData.groupMenu)) {
             Object.keys(LocalData.currentGroup.settleLocks).forEach(userId => {
               LocalData.groupMenu.entryCallbacks[userId](
@@ -259,6 +260,19 @@ function loadGroupAsMain(groupId: string, callback: () => void) {
             LocalData.currentGroup.settler == LocalData.user.userId
           ) {
             LocalData.groupMenu.settle();
+          }
+
+          //check if profile pic is updated
+          if (
+            LocalData.currentGroup.members[LocalData.user.userId].picUrl !=
+            LocalData.user.profilePic
+          ) {
+            LocalData.currentGroup.members[LocalData.user.userId].picUrl =
+              LocalData.user.profilePic;
+            firestore()
+              .collection(Collection.Groups)
+              .doc(groupId)
+              .update({members: LocalData.currentGroup.members});
           }
 
           getVirtualReceiptsForGroup(groupId, callback);
@@ -289,9 +303,8 @@ function getVirtualReceiptsForGroup(groupId: string, callback: () => void) {
       querySnapshot => {
         LocalData.virtualReceipts = [];
         querySnapshot.forEach(doc => {
-          LocalData.virtualReceipts.push(
-            VirtualReceipt.firestoreConverter.fromFirestore(doc),
-          );
+          let vr = VirtualReceipt.firestoreConverter.fromFirestore(doc);
+          LocalData.virtualReceipts.push(vr);
         });
         console.log('Virtual receipts updated');
         if (LocalData.home != null) {
@@ -417,6 +430,7 @@ async function CreateNewGroup(newGroupName: string) {
   newGroupObject.members[LocalData.user.userId] = new MemberInfo(
     0,
     LocalData.user.name,
+    LocalData.user.profilePic,
   );
   newGroupObject.settleLocks = new Map();
   newGroupObject.settleLocks[LocalData.user.userId] = false;
@@ -535,6 +549,7 @@ async function joinGroup(groupId: string) {
         groupToJoin.members[LocalData.user.userId] = new MemberInfo(
           0,
           LocalData.user.name,
+          LocalData.user.profilePic,
         );
         groupToJoin.settleLocks[LocalData.user.userId] = false;
 

@@ -152,10 +152,12 @@ class Group {
 class MemberInfo {
   balance: number;
   name: string;
+  picUrl: string;
 
-  constructor(balance: number, name: string) {
+  constructor(balance: number, name: string, picUrl: string) {
     this.balance = balance;
     this.name = name;
+    this.picUrl = picUrl;
   }
 
   static firestoreConverter = {
@@ -163,11 +165,12 @@ class MemberInfo {
       return {
         balance: memberInfo.balance,
         name: memberInfo.name,
+        picUrl: memberInfo.picUrl,
       };
     },
     fromFirestore: function(snapshot: {data: () => any}) {
       const data = snapshot.data();
-      return new MemberInfo(data.balance, data.name);
+      return new MemberInfo(data.balance, data.name, data.picUrl);
     },
   };
 }

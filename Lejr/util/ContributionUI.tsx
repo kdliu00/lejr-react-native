@@ -1,9 +1,21 @@
 import React, {Component} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {Button, CheckBox, Icon, Layout, Text} from '@ui-kitten/components';
+import {
+  Avatar,
+  Button,
+  CheckBox,
+  Icon,
+  Layout,
+  Text,
+} from '@ui-kitten/components';
 import {VirtualReceipt, Item} from './DataObjects';
 import {DangerSwipe, ThemedCard, CustomSwipeable} from './ComponentUtil';
-import {AnimDefaultDuration, AnimKeyboardDuration, Screen} from './Constants';
+import {
+  AnimDefaultDuration,
+  AnimKeyboardDuration,
+  defaultProfilePic,
+  Screen,
+} from './Constants';
 import Animated, {Easing} from 'react-native-reanimated';
 import {isPossibleObjectEmpty, LocalData} from './LocalData';
 import {
@@ -49,10 +61,26 @@ const ContributionCard = (props: any) => {
       }}>
       <Layout style={Styles.header}>
         <Layout style={Styles.topLeft}>
-          <Text numberOfLines={1}>{vr.memo}</Text>
+          <Avatar
+            style={Styles.avatar}
+            size="small"
+            source={{
+              uri: isPossibleObjectEmpty(
+                LocalData.currentGroup.members[vr.buyerId].picUrl,
+              )
+                ? defaultProfilePic
+                : LocalData.currentGroup.members[vr.buyerId].picUrl,
+            }}
+            shape="round"
+          />
+          <Text numberOfLines={1} category="h6">
+            {vr.memo}
+          </Text>
         </Layout>
         <Layout style={Styles.topRight}>
-          <Text numberOfLines={1}>${getMoneyFormatString(vr.total)}</Text>
+          <Text numberOfLines={1} category="h6">
+            ${getMoneyFormatString(vr.total)}
+          </Text>
         </Layout>
       </Layout>
       <Layout style={Styles.footer}>
@@ -333,23 +361,24 @@ const Styles = StyleSheet.create({
   topLeft: {
     flex: 5,
     flexDirection: 'row',
+    alignItems: 'center',
     marginRight: 8,
     backgroundColor: 'rgba(0, 0, 0, 0.0)',
   },
   topRight: {
     flex: 2,
+    alignItems: 'center',
     flexDirection: 'row-reverse',
     backgroundColor: 'rgba(0, 0, 0, 0.0)',
   },
   footer: {
     flex: 1,
-    marginTop: 20,
+    marginTop: 10,
     flexDirection: 'row',
     backgroundColor: 'rgba(0, 0, 0, 0.0)',
   },
   avatar: {
-    marginLeft: 8,
-    marginRight: 8,
+    marginRight: 10,
   },
   purchaseSplit: {
     height: 42,
