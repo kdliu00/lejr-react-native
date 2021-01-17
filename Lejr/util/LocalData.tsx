@@ -9,7 +9,7 @@ import {
 } from './DataObjects';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import {Collection, ErrorCode, Key} from './Constants';
+import {Collection, ErrorCode, Key, Theme} from './Constants';
 import {Alert} from 'react-native';
 import {nearestHundredth, StoreData} from './UtilityMethods';
 import Home from '../screens/dashboard/Home/Home';
@@ -70,6 +70,9 @@ class LocalData {
 
   //camera stuff
   static isCamera: boolean = false;
+
+  //local app data
+  static theme: Theme = Theme.Light;
 }
 
 function deleteAllItems(forceUpdate: boolean = true) {

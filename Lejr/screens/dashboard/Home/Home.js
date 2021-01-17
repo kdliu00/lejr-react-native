@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {StyleSheet, SafeAreaView} from 'react-native';
-import {Layout, Text, Button, Icon} from '@ui-kitten/components';
+import {Layout, Text} from '@ui-kitten/components';
 import {ContributionCard, getBalanceString} from '../../../util/ContributionUI';
 import {
   LocalData,
@@ -9,21 +9,23 @@ import {
   getKeyForCurrentGroupItems,
   swapGroup,
 } from '../../../util/LocalData';
-import {
-  Screen,
-  BannerHeight,
-  AnimDefaultDuration,
-} from '../../../util/Constants';
+import {Screen, AnimDefaultDuration} from '../../../util/Constants';
 import {
   ThemedLayout,
   ThemedCard,
   ThemedScroll,
+  IconButton,
 } from '../../../util/ComponentUtil';
 import {RetrieveData} from '../../../util/UtilityMethods';
 import Animated, {Easing} from 'react-native-reanimated';
+import {
+  AddIcon,
+  CameraIcon,
+  GearIcon,
+  InviteIcon,
+  PeopleIcon,
+} from '../../../util/Icons';
 
-const InviteIcon = props => <Icon name="person-add-outline" {...props} />;
-const MenuIcon = props => <Icon name="menu-outline" {...props} />;
 const GROUP_RENDER_HEIGHT = 150;
 
 export default class Home extends Component {
@@ -81,7 +83,7 @@ export default class Home extends Component {
     return (
       <ThemedLayout style={Styles.container}>
         <SafeAreaView style={Styles.container}>
-          <ThemedLayout style={Styles.banner}>
+          <ThemedLayout style={[Styles.banner]}>
             <BalanceText ref={this.balanceRef} />
           </ThemedLayout>
           {isPossibleObjectEmpty(safeGetListData(LocalData.virtualReceipts)) ? (
@@ -103,6 +105,23 @@ export default class Home extends Component {
               })}
             </ThemedScroll>
           )}
+          <Layout style={Styles.row}>
+            <IconButton
+              style={[Styles.container, Styles.squared]}
+              icon={GearIcon}
+              onPress={() => this.props.navigation.navigate(Screen.Settings)}
+            />
+            <IconButton
+              style={[Styles.container, Styles.squared]}
+              icon={AddIcon}
+              onPress={() => this.props.navigation.navigate(Screen.QuickAdd)}
+            />
+            <IconButton
+              style={[Styles.container, Styles.squared]}
+              icon={CameraIcon}
+              onPress={() => this.props.navigation.navigate(Screen.FromImage)}
+            />
+          </Layout>
           <Animated.View style={{height: this.state.renderHeight}}>
             <ThemedScroll
               style={Styles.scrollView}
@@ -116,11 +135,9 @@ export default class Home extends Component {
               )}
             </ThemedScroll>
           </Animated.View>
-          <Layout style={Styles.groupSelect}>
-            <Button
-              accessoryLeft={MenuIcon}
-              appearance="ghost"
-              size="large"
+          <Layout style={[Styles.banner, Styles.row]}>
+            <IconButton
+              icon={PeopleIcon}
               onPress={() => this.props.navigation.navigate(Screen.GroupMenu)}
             />
             <ThemedCard
@@ -131,10 +148,8 @@ export default class Home extends Component {
                 {this.selectedGroup}
               </Text>
             </ThemedCard>
-            <Button
-              accessoryLeft={InviteIcon}
-              appearance="ghost"
-              size="large"
+            <IconButton
+              icon={InviteIcon}
               onPress={() =>
                 this.props.navigation.navigate(Screen.InviteToGroup, {
                   groupName: this.selectedGroup,
@@ -151,8 +166,8 @@ export default class Home extends Component {
 class BalanceText extends Component {
   render() {
     return (
-      <Text style={Styles.titleText} category="h4">
-        Balance: {getBalanceString(LocalData.user.userId)}
+      <Text style={Styles.titleText} category="h6">
+        Your balance in this group is {getBalanceString(LocalData.user.userId)}
       </Text>
     );
   }
@@ -197,37 +212,37 @@ const Styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 12,
     marginHorizontal: 8,
-    marginVertical: 4,
+    marginVertical: 6,
     borderRadius: 8,
-  },
-  groupSelect: {
-    height: BannerHeight,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
   },
   groupPlaceholder: {
     textAlign: 'center',
-    marginTop: 20,
+    marginTop: 10,
   },
   contentContainer: {
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
   scrollView: {
-    paddingTop: 6,
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
   },
-  banner: {
-    height: BannerHeight,
+  row: {
+    marginTop: 5,
     alignItems: 'center',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
+    alignSelf: 'center',
     flexDirection: 'row',
   },
+  banner: {
+    marginBottom: 10,
+  },
   titleText: {
-    marginTop: 10,
+    marginTop: 20,
     textAlign: 'center',
     fontWeight: 'bold',
+  },
+  squared: {
+    borderRadius: 0,
   },
 });

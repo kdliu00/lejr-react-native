@@ -6,7 +6,6 @@ import {
   signOut,
   isPossibleObjectEmpty,
   CreateNewGroup,
-  swapGroup,
 } from '../util/LocalData';
 import {AnimKeyboardDuration, Screen} from '../util/Constants';
 import * as yup from 'yup';

@@ -1,7 +1,11 @@
 import React, {Component, Fragment} from 'react';
 import {StyleSheet, SafeAreaView, Dimensions, Alert} from 'react-native';
-import {Layout, Text, Button, Icon} from '@ui-kitten/components';
-import {ThemedLayout, ThemedScroll} from '../../../util/ComponentUtil';
+import {Layout, Text} from '@ui-kitten/components';
+import {
+  IconButton,
+  ThemedLayout,
+  ThemedScroll,
+} from '../../../util/ComponentUtil';
 import {
   deleteAllItems,
   filterItemCosts,
@@ -9,19 +13,14 @@ import {
   LocalData,
 } from '../../../util/LocalData';
 import {Item} from '../../../util/DataObjects';
-import {BannerHeight, Screen} from '../../../util/Constants';
+import {Screen} from '../../../util/Constants';
 import {BlankCard, ItemCard} from '../../../util/ContributionUI';
 import {
   getMoneyFormatString,
   getTotal,
-  removeNullsFromList,
   StoreData,
 } from '../../../util/UtilityMethods';
-
-const AddIcon = props => <Icon name="plus-outline" {...props} />;
-const RestartIcon = props => <Icon name="refresh-outline" {...props} />;
-const SaveIcon = props => <Icon name="save-outline" {...props} />;
-const ArrowIcon = props => <Icon name="arrowhead-right-outline" {...props} />;
+import {AddCircleIcon, TrashIcon, SaveIcon} from '../../../util/Icons';
 
 export default class Contribution extends Component {
   constructor() {
@@ -80,20 +79,21 @@ export default class Contribution extends Component {
             )}
           </ThemedLayout>
           <Layout style={Styles.banner}>
-            <Button
+            <IconButton
               style={Styles.button}
-              appearance="ghost"
-              accessoryLeft={RestartIcon}
+              status="danger"
+              icon={TrashIcon}
               onPress={() =>
                 Alert.alert(
-                  'Create New Purchase',
-                  'Are you sure you want to create a new purchase? This will delete all current items and changes will not be saved.',
+                  'Delete Purchase',
+                  'Are you sure you want to delete this purchase?',
                   [
                     {
                       text: 'Yes',
                       onPress: () => {
                         console.log('Deleting all items');
                         deleteAllItems();
+                        this.props.navigation.navigate(Screen.Home);
                       },
                     },
                     {
@@ -105,38 +105,24 @@ export default class Contribution extends Component {
                   {cancelable: false},
                 )
               }
-              size="large"
             />
-            <Button
+            <IconButton
               style={Styles.button}
-              appearance="ghost"
-              accessoryLeft={AddIcon}
+              icon={AddCircleIcon}
               onPress={() =>
                 this.props.navigation.navigate(Screen.NewItem, {
                   item: new Item('', null, {}, ''),
                 })
               }
-              size="large"
             />
-            {removeNullsFromList(LocalData.items).length === 0 ? (
-              <Button
-                style={Styles.button}
-                appearance="ghost"
-                accessoryLeft={ArrowIcon}
-                onPress={() => this.props.navigation.navigate(Screen.QuickAdd)}
-                size="large"
-              />
-            ) : (
-              <Button
-                style={Styles.button}
-                appearance="ghost"
-                accessoryLeft={SaveIcon}
-                onPress={() =>
-                  this.props.navigation.navigate(Screen.ContribDetails)
-                }
-                size="large"
-              />
-            )}
+            <IconButton
+              style={Styles.button}
+              status="success"
+              icon={SaveIcon}
+              onPress={() =>
+                this.props.navigation.navigate(Screen.ContribDetails)
+              }
+            />
           </Layout>
         </SafeAreaView>
       </ThemedLayout>
@@ -171,7 +157,7 @@ const Styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   banner: {
-    height: BannerHeight,
+    marginVertical: 10,
     alignItems: 'center',
     justifyContent: 'space-around',
     flexDirection: 'row',

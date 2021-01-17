@@ -1,10 +1,13 @@
-import {Button, Icon, Layout, Text} from '@ui-kitten/components';
+import {Button, Layout, Text} from '@ui-kitten/components';
 import React, {Component} from 'react';
 import {Fragment} from 'react';
 import {Alert} from 'react-native';
 import {SafeAreaView, StyleSheet} from 'react-native';
+import {ScrollView} from 'react-native-gesture-handler';
+import {IconButton} from '../../../util/ComponentUtil';
 import {Screen} from '../../../util/Constants';
 import {Balance, TwoColText} from '../../../util/ContributionUI';
+import {LeaveIcon, RemoveIcon} from '../../../util/Icons';
 import {
   disengageSettleLocks,
   engageSettleLocks,
@@ -14,9 +17,6 @@ import {
 } from '../../../util/LocalData';
 import {ButtonSpinner} from '../../../util/TextInputUI';
 import {getMoneyFormatString, MergeState} from '../../../util/UtilityMethods';
-
-const RemoveIcon = props => <Icon name="person-remove-outline" {...props} />;
-const LeaveIcon = props => <Icon name="log-out-outline" {...props} />;
 
 export default class GroupMenu extends Component {
   constructor() {
@@ -88,33 +88,32 @@ export default class GroupMenu extends Component {
           </Text>
           <Layout style={Styles.textContainer}>
             <Text style={[Styles.text, Styles.underlineText]} category="h6">
-              Member Balances
-            </Text>
-            {Object.keys(LocalData.currentGroup.members).map(userId => {
-              return (
-                <Fragment key={userId}>
-                  <Balance
-                    groupMenuInstance={this}
-                    isChecked={LocalData.currentGroup.settleLocks[userId]}
-                    userName={LocalData.currentGroup.members[userId].name}
-                    userId={userId}
-                  />
-                </Fragment>
-              );
-            })}
-            <Text style={[Styles.text, Styles.underlineText]} category="h6">
               Group Stats
             </Text>
             <TwoColText text1="Total Expenses" text2={getTotalExpenses()} />
+            <Text style={[Styles.text, Styles.underlineText]} category="h6">
+              Member Balances
+            </Text>
+            <ScrollView>
+              {Object.keys(LocalData.currentGroup.members).map(userId => {
+                return (
+                  <Fragment key={userId}>
+                    <Balance
+                      groupMenuInstance={this}
+                      isChecked={LocalData.currentGroup.settleLocks[userId]}
+                      userName={LocalData.currentGroup.members[userId].name}
+                      userId={userId}
+                    />
+                  </Fragment>
+                );
+              })}
+            </ScrollView>
           </Layout>
           <Layout style={Styles.buttonContainer}>
             <Layout style={Styles.rowFlex}>
-              <Button
+              <IconButton
                 status="danger"
-                style={Styles.button}
-                accessoryLeft={LeaveIcon}
-                appearance="ghost"
-                size="large"
+                icon={LeaveIcon}
                 onPress={() =>
                   handleLeaveGroup(() =>
                     this.props.navigation.navigate(Screen.Loading),
@@ -230,8 +229,6 @@ const Styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
-    marginVertical: 10,
-    marginHorizontal: 15,
   },
   text: {
     textAlign: 'center',
@@ -239,9 +236,9 @@ const Styles = StyleSheet.create({
     marginVertical: 5,
   },
   buttonContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 45,
   },
   button: {
     margin: 15,

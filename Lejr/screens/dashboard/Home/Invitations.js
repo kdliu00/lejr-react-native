@@ -1,6 +1,6 @@
 import React, {Fragment} from 'react';
 import {StyleSheet, SafeAreaView, Alert} from 'react-native';
-import {Text, Layout, Button, Icon} from '@ui-kitten/components';
+import {Text, Layout, Button} from '@ui-kitten/components';
 import {Collection, ErrorCode, Key, Screen} from '../../../util/Constants';
 import {
   LocalData,
@@ -19,9 +19,7 @@ import {Component} from 'react';
 import Animated from 'react-native-reanimated';
 import {BlankCard, ItemCard} from '../../../util/ContributionUI';
 import firestore from '@react-native-firebase/firestore';
-
-const AcceptIcon = props => <Icon name="checkmark-outline" {...props} />;
-const DenyIcon = props => <Icon name="close-outline" {...props} />;
+import {AcceptIcon, DenyIcon} from '../../../util/Icons';
 
 export default class Invitations extends Component {
   constructor() {

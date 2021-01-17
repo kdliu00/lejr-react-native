@@ -23,10 +23,9 @@ import CreateGroup from './screens/CreateGroup';
 import Invitations from './screens/dashboard/Home/Invitations';
 
 import {default as theme} from './eva-theme.json';
-import {Key, Screen} from './util/Constants';
+import {Key, Screen, Theme} from './util/Constants';
 import {
   detachListeners,
-  disengageSettleLocks,
   getKeyForCurrentGroupItems,
   getUserInvitations,
   isPossibleObjectEmpty,
@@ -110,36 +109,15 @@ BackHandler.addEventListener('hardwareBackPress', () => {
 export default function App() {
   console.log('Arrived at App');
 
-  let evaTheme = null;
-  let barStyle = null;
-  let appTheme = null;
-
-  RetrieveData(Key.Theme).then(
-    value => (appTheme = value),
-    error => console.warn(error),
-  );
-
-  if (appTheme === 'dark') {
-    evaTheme = eva.dark;
-    barStyle = 'light-content';
-  } else {
-    evaTheme = eva.light;
-    barStyle = 'dark-content';
-    appTheme = 'light';
-  }
-
-  console.log('Loaded app theme: ' + appTheme);
-  StoreData(Key.Theme, appTheme);
-
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={Styles.container}>
       <StatusBar
-        barStyle={Platform.OS === 'ios' ? barStyle : 'light-content'}
+        barStyle={Platform.OS === 'ios' ? 'dark-content' : 'light-content'}
       />
       <IconRegistry icons={EvaIconsPack} />
-      <ApplicationProvider {...eva} theme={{...evaTheme, ...theme}}>
+      <ApplicationProvider {...eva} theme={{...eva.light, ...theme}}>
         <NavigationContainer>
           <RootStack.Navigator
             mode="modal"

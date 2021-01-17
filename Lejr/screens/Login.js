@@ -3,16 +3,14 @@ import {StyleSheet, Platform} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-community/google-signin';
 import {Alert} from 'react-native';
-import {Layout, Button, Spinner, Icon} from '@ui-kitten/components';
+import {Layout, Button, Spinner} from '@ui-kitten/components';
 import {iOSWebClientId, androidWebClientId, Screen} from '../util/Constants';
 import {MergeState} from '../util/UtilityMethods';
+import {EmailIcon, GoogleIcon} from '../util/Icons';
 
 GoogleSignin.configure({
   webClientId: Platform.OS === 'ios' ? iOSWebClientId : androidWebClientId,
 });
-
-const GoogleIcon = props => <Icon name="google" {...props} />;
-const EmailIcon = props => <Icon name="email" {...props} />;
 
 export default class Login extends Component {
   constructor() {

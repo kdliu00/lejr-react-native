@@ -1,5 +1,4 @@
 export {
-  BannerHeight,
   AnimDefaultDuration,
   AnimKeyboardDuration,
   defaultProfilePic,
@@ -9,11 +8,11 @@ export {
   Collection,
   Screen,
   ErrorCode,
+  Theme,
 };
 
 const AnimDefaultDuration = 400;
 const AnimKeyboardDuration = 200;
-const BannerHeight = 80;
 
 const defaultProfilePic =
   'https://firebasestorage.googleapis.com/v0/b/lejr-fa6e3.appspot.com/o/default-profile-pic.jpg?alt=media&token=1ae60215-ca49-4da5-b759-d2fb56e33dd2';
@@ -33,6 +32,11 @@ enum Key {
   Theme = 'theme',
 }
 
+enum Theme {
+  Dark = 'dark',
+  Light = 'light',
+}
+
 enum Collection {
   Users = 'users',
   Groups = 'groups',
@@ -47,7 +51,6 @@ enum Screen {
   CreateAccount = 'CreateAccount',
   CreateGroup = 'CreateGroup',
   Dashboard = 'Dashboard',
-  DashboardMain = 'DashboardMain',
   Home = 'Home',
   Contribution = 'Contribution',
   FromImage = 'FromImage',

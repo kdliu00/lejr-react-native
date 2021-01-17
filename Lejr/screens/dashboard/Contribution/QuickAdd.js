@@ -157,7 +157,7 @@ export default class QuickAdd extends Component {
                 style={FormStyles.button}
                 onPress={() => this.props.navigation.goBack()}
                 appearance="outline">
-                Go back
+                Cancel
               </Button>
               {this.state.isSubmitting ? (
                 <Button
@@ -207,10 +207,7 @@ export default class QuickAdd extends Component {
                               LocalData.currentVRCopy = null;
                               setTimeout(
                                 () =>
-                                  this.props.navigation.navigate(
-                                    Screen.DashboardMain,
-                                    {screen: Screen.Home},
-                                  ),
+                                  this.props.navigation.navigate(Screen.Home),
                                 AnimKeyboardDuration,
                               );
                             },

@@ -181,10 +181,7 @@ export default class ContribDetails extends Component {
                               LocalData.currentVRCopy = null;
                               setTimeout(
                                 () =>
-                                  this.props.navigation.navigate(
-                                    Screen.DashboardMain,
-                                    {screen: Screen.Home},
-                                  ),
+                                  this.props.navigation.navigate(Screen.Home),
                                 AnimKeyboardDuration,
                               );
                             },

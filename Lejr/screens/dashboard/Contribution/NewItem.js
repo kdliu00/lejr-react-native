@@ -183,7 +183,7 @@ export default class NewItem extends Component {
                 style={FormStyles.button}
                 onPress={() => this.props.navigation.goBack()}
                 appearance="outline">
-                Go back
+                Cancel
               </Button>
               {this.state.isSubmitting ? (
                 <Button
@@ -253,7 +253,7 @@ export default class NewItem extends Component {
                         }
                       });
                   }}>
-                  Save
+                  Done
                 </Button>
               )}
             </Layout>

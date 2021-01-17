@@ -1,13 +1,6 @@
 import React, {Component} from 'react';
-import {StyleSheet, View} from 'react-native';
-import {
-  Avatar,
-  Button,
-  CheckBox,
-  Icon,
-  Layout,
-  Text,
-} from '@ui-kitten/components';
+import {StyleSheet} from 'react-native';
+import {Avatar, CheckBox, Layout, Text} from '@ui-kitten/components';
 import {VirtualReceipt, Item} from './DataObjects';
 import {DangerSwipe, ThemedCard, CustomSwipeable} from './ComponentUtil';
 import {
@@ -23,7 +16,7 @@ import {
   removeNullsFromList,
   JSONCopy,
 } from './UtilityMethods';
-import {Fragment} from 'react';
+import {CheckIcon} from './Icons';
 
 export {
   ContributionCard,
@@ -35,10 +28,6 @@ export {
   TwoColCheck,
   getBalanceString,
 };
-
-const CheckIcon = (props: any) => (
-  <Icon name="checkmark-circle-2-outline" {...props} />
-);
 
 const ContributionCard = (props: any) => {
   const vr: VirtualReceipt = props.vr;

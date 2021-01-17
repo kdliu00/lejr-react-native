@@ -4,7 +4,7 @@ import {Button, Layout, Spinner, Text} from '@ui-kitten/components';
 import ImagePicker from 'react-native-image-crop-picker';
 import {Component} from 'react';
 import FormStyles from '../../util/FormStyles';
-import {ErrorCode, Screen} from '../../util/Constants';
+import {Screen} from '../../util/Constants';
 import vision from '@react-native-firebase/ml-vision';
 import {
   JSONCopy,
@@ -15,6 +15,9 @@ import {
 } from '../../util/UtilityMethods';
 import {Item} from '../../util/DataObjects';
 import {LocalData} from '../../util/LocalData';
+
+const IMAGE_WIDTH = 600;
+const IMAGE_HEIGHT = 800;
 
 export default class FromImage extends Component {
   constructor() {
@@ -253,8 +256,8 @@ export default class FromImage extends Component {
                   ImagePicker.openPicker({
                     mediaType: 'photo',
                     cropping: true,
-                    height: 400,
-                    width: 300,
+                    height: IMAGE_HEIGHT,
+                    width: IMAGE_WIDTH,
                   }).then(
                     image => this.processImage(image),
                     error => {
@@ -275,8 +278,8 @@ export default class FromImage extends Component {
                   ImagePicker.openCamera({
                     mediaType: 'photo',
                     cropping: true,
-                    height: 400,
-                    width: 300,
+                    height: IMAGE_HEIGHT,
+                    width: IMAGE_WIDTH,
                   }).then(
                     image => this.processImage(image),
                     error => {

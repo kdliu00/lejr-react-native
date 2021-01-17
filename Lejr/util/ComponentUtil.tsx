@@ -1,19 +1,20 @@
 import React, {Component, Fragment} from 'react';
-import {Layout, withStyles, Text} from '@ui-kitten/components';
+import {Layout, withStyles, Text, Button} from '@ui-kitten/components';
 import {RectButton, ScrollView} from 'react-native-gesture-handler';
 import Slider from '@react-native-community/slider';
-import NewItem from '../screens/dashboard/Contribution/NewItem';
 import {LocalData} from './LocalData';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import {MergeState, nearestHundredth} from './UtilityMethods';
+import {nearestHundredth} from './UtilityMethods';
 import Animated from 'react-native-reanimated';
 import QuickAdd from '../screens/dashboard/Contribution/QuickAdd';
+import {Theme} from './Constants';
 
 export {
   ThemedLayout,
   ThemedScroll,
   ThemedCard,
   ThemedSlider,
+  IconButton,
   SplitSlider,
   CustomSwipeable,
   DangerSwipe,
@@ -39,6 +40,7 @@ const DangerSwipe = withStyles(RectButtonWrapper, theme => ({
   },
   text: {
     color: theme['background-basic-color-3'],
+    opacity: 0.9,
   },
 }));
 const SuccessSwipe = withStyles(RectButtonWrapper, theme => ({
@@ -83,9 +85,26 @@ const CardWrapper = (props: any) => {
 };
 const ThemedCard = withStyles(CardWrapper, theme => ({
   container: {
-    backgroundColor: theme['color-primary-100'],
+    backgroundColor:
+      theme[
+        LocalData.theme == Theme.Light
+          ? 'color-primary-200'
+          : 'color-primary-600'
+      ],
   },
 }));
+
+const IconButton = (props: any) => {
+  return (
+    <Button
+      {...props}
+      activeOpacity={0}
+      appearance="ghost"
+      accessoryLeft={props.icon}
+      size="large"
+    />
+  );
+};
 
 const SliderWrapper = (props: any) => {
   const {eva, style, ...restProps} = props;
