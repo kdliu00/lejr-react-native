@@ -48,7 +48,7 @@ export default class InviteToGroup extends Component {
                 style={FormStyles.button}
                 onPress={() => this.props.navigation.navigate(Screen.Home)}
                 appearance="outline">
-                Go back
+                Cancel
               </Button>
               <Layout>
                 {this.state.isInviting ? (

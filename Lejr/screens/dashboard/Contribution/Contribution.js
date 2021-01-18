@@ -12,7 +12,6 @@ import {
   getKeyForCurrentGroupItems,
   LocalData,
 } from '../../../util/LocalData';
-import {Item} from '../../../util/DataObjects';
 import {Screen} from '../../../util/Constants';
 import {BlankCard, ItemCard} from '../../../util/ContributionUI';
 import {
@@ -20,7 +19,12 @@ import {
   getTotal,
   StoreData,
 } from '../../../util/UtilityMethods';
-import {AddCircleIcon, TrashIcon, SaveIcon} from '../../../util/Icons';
+import {
+  AddCircleIcon,
+  TrashIcon,
+  SaveIcon,
+  BackIcon,
+} from '../../../util/Icons';
 
 export default class Contribution extends Component {
   constructor() {
@@ -79,39 +83,48 @@ export default class Contribution extends Component {
             )}
           </ThemedLayout>
           <Layout style={Styles.banner}>
-            <IconButton
-              style={Styles.button}
-              status="danger"
-              icon={TrashIcon}
-              onPress={() =>
-                Alert.alert(
-                  'Delete Purchase',
-                  'Are you sure you want to delete this purchase?',
-                  [
-                    {
-                      text: 'Yes',
-                      onPress: () => {
-                        console.log('Deleting all items');
-                        deleteAllItems();
-                        this.props.navigation.navigate(Screen.Home);
+            {LocalData.currentVR ? (
+              <IconButton
+                style={Styles.button}
+                status="basic"
+                icon={BackIcon}
+                onPress={() => this.props.navigation.goBack()}
+              />
+            ) : (
+              <IconButton
+                style={Styles.button}
+                status="danger"
+                icon={TrashIcon}
+                onPress={() =>
+                  Alert.alert(
+                    'Discard Purchase',
+                    'Are you sure you want to discard this purchase?',
+                    [
+                      {
+                        text: 'Yes',
+                        onPress: () => {
+                          console.log('Deleting all items');
+                          deleteAllItems();
+                          this.props.navigation.navigate(Screen.Home);
+                        },
                       },
-                    },
-                    {
-                      text: 'No',
-                      onPress: () => console.log('Not deleting items'),
-                      style: 'cancel',
-                    },
-                  ],
-                  {cancelable: false},
-                )
-              }
-            />
+                      {
+                        text: 'No',
+                        onPress: () => console.log('Not deleting items'),
+                        style: 'cancel',
+                      },
+                    ],
+                    {cancelable: false},
+                  )
+                }
+              />
+            )}
             <IconButton
               style={Styles.button}
               icon={AddCircleIcon}
               onPress={() =>
-                this.props.navigation.navigate(Screen.NewItem, {
-                  item: new Item('', null, {}, ''),
+                this.props.navigation.navigate(Screen.FromImage, {
+                  addMore: true,
                 })
               }
             />

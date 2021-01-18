@@ -16,17 +16,17 @@ import {
   getTotal,
   JSONCopy,
   MergeState,
-  nearestHundredth,
+  removeNullsFromList,
 } from '../../../util/UtilityMethods';
 import FormStyles from '../../../util/FormStyles';
 import * as yup from 'yup';
 import {
-  deleteAllItems,
   LocalData,
+  resetVR,
   uploadVirtualReceipt,
 } from '../../../util/LocalData';
-import {PurchaseSplit, TwoColCheck} from '../../../util/ContributionUI';
-import {AnimKeyboardDuration, Screen} from '../../../util/Constants';
+import {TwoColCheck} from '../../../util/ContributionUI';
+import {AnimKeyboardDuration, QuickAddLabel} from '../../../util/Constants';
 import {ScrollView} from 'react-native-gesture-handler';
 import {Item, VirtualReceipt} from '../../../util/DataObjects';
 import {Fragment} from 'react';
@@ -35,9 +35,10 @@ export default class QuickAdd extends Component {
   constructor() {
     super();
     this.state = {
-      memo: '',
+      memo: LocalData.currentVR == null ? '' : LocalData.currentVR.memo,
       memoError: '',
-      total: '',
+      total:
+        LocalData.currentVR == null ? '' : LocalData.currentVR.total.toString(),
       totalError: '',
       isSubmitting: false,
     };
@@ -57,15 +58,22 @@ export default class QuickAdd extends Component {
         .required(),
     });
 
-    this.splitPercent = {};
+    this.splitPercent =
+      LocalData.currentVR == null
+        ? {}
+        : JSONCopy(LocalData.currentVR.totalSplit);
     this.splitCheck = {};
 
     this.groupMemberIds = Object.keys(LocalData.currentGroup.members);
 
     this.groupMemberIds.forEach(userId => {
-      this.splitPercent[userId] =
-        Math.round(10000 / this.groupMemberIds.length) / 100;
-      this.splitCheck[userId] = 1;
+      if (LocalData.currentVR == null) {
+        this.splitPercent[userId] =
+          Math.round(10000 / this.groupMemberIds.length) / 100;
+        this.splitCheck[userId] = 1;
+      } else {
+        this.splitCheck[userId] = this.splitPercent[userId] === 0 ? 0 : 1;
+      }
     });
   }
 
@@ -89,7 +97,7 @@ export default class QuickAdd extends Component {
           <SafeAreaView style={Styles.container}>
             <Layout>
               <Text style={Styles.titleText} category="h4">
-                Quick Add Purchase
+                {LocalData.currentVR ? 'Edit Purchase' : 'Create Purchase'}
               </Text>
             </Layout>
             <Layout>
@@ -185,29 +193,34 @@ export default class QuickAdd extends Component {
                         if (valid) {
                           uploadVirtualReceipt(
                             new VirtualReceipt(
-                              LocalData.user.userId,
-                              '',
+                              LocalData.currentVR
+                                ? LocalData.currentVR.buyerId
+                                : LocalData.user.userId,
+                              LocalData.currentVR
+                                ? LocalData.currentVR.virtualReceiptId
+                                : '',
                               this.state.memo,
-                              Date.now(),
-                              [
-                                new Item(
-                                  'QUICK ADD ITEM',
-                                  parseFloat(this.state.total),
-                                  this.splitPercent,
-                                  '',
-                                ),
-                              ],
+                              LocalData.currentVR
+                                ? LocalData.currentVR.timestamp
+                                : Date.now(),
+                              LocalData.currentVR
+                                ? removeNullsFromList(LocalData.currentVR.items)
+                                : [
+                                    new Item(
+                                      QuickAddLabel,
+                                      parseFloat(this.state.total),
+                                      this.splitPercent,
+                                      '',
+                                    ),
+                                  ],
                               parseFloat(this.state.total),
                               this.splitPercent,
                               '',
                             ),
                             () => {
-                              deleteAllItems();
-                              LocalData.currentVR = null;
-                              LocalData.currentVRCopy = null;
+                              resetVR();
                               setTimeout(
-                                () =>
-                                  this.props.navigation.navigate(Screen.Home),
+                                () => this.props.navigation.popToTop(),
                                 AnimKeyboardDuration,
                               );
                             },

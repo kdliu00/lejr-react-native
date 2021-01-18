@@ -7,10 +7,11 @@ import {
   AnimDefaultDuration,
   AnimKeyboardDuration,
   defaultProfilePic,
+  QuickAddLabel,
   Screen,
 } from './Constants';
 import Animated, {Easing} from 'react-native-reanimated';
-import {isPossibleObjectEmpty, LocalData} from './LocalData';
+import {isPossibleObjectEmpty, LocalData, resetVR} from './LocalData';
 import {
   getMoneyFormatString,
   removeNullsFromList,
@@ -27,6 +28,7 @@ export {
   TwoColText,
   TwoColCheck,
   getBalanceString,
+  SeeInvitations,
 };
 
 const ContributionCard = (props: any) => {
@@ -37,16 +39,20 @@ const ContributionCard = (props: any) => {
     <ThemedCard
       style={Styles.contribCard}
       onPress={() => {
+        resetVR();
         LocalData.currentVR = JSONCopy(vr);
         LocalData.currentVRCopy = JSONCopy(vr);
         LocalData.items = JSONCopy(vr.items);
         if (LocalData.container != null) {
           LocalData.container.forceUpdate();
         }
-        setTimeout(
-          () => nav.navigate(Screen.Contribution),
-          AnimKeyboardDuration,
-        );
+
+        setTimeout(() => {
+          LocalData.items.length == 1 &&
+          LocalData.items[0].itemName === QuickAddLabel
+            ? nav.navigate(Screen.QuickAdd)
+            : nav.navigate(Screen.Contribution);
+        }, AnimKeyboardDuration);
       }}>
       <Layout style={Styles.header}>
         <Layout style={Styles.topLeft}>
@@ -160,18 +166,17 @@ class ItemCard extends Component {
           ref={this.swipeableRef}
           renderRightActions={this.renderRightActions}
           onSwipeableRightWillOpen={() => {
-            // LocalData.items[this.index] = null;
-            // LocalData.items = removeNullsFromList(LocalData.items);
-            LocalData.items.splice(this.index, 1);
-            this.totalRef.current.forceUpdate();
             this.closeAnim();
           }}
           onSwipeableRightOpen={() => {
+            LocalData.items[this.index] = null;
+            this.totalRef.current.forceUpdate();
             this.closeSwipeable();
             if (removeNullsFromList(LocalData.items).length == 0) {
               LocalData.items = [];
+              LocalData.container.forceUpdate();
             }
-            LocalData.container.forceUpdate();
+            console.log(LocalData.items);
           }}>
           <ThemedCard
             style={[Styles.itemCard, {justifyContent: 'center'}]}
@@ -317,13 +322,34 @@ function getBalanceString(userId: string) {
     : '$' + getMoneyFormatString(Math.abs(balance));
 }
 
-const BlankCard = () => {
+const BlankCard = (props: any) => {
   return (
     <ThemedCard
       style={[Styles.itemCard, {justifyContent: 'center', height: 32}]}
-      customBackground="background-basic-color-1"
+      customBackground={
+        props.background ? props.background : 'background-basic-color-1'
+      }
       enabled={false}
     />
+  );
+};
+
+const SeeInvitations = (props: any) => {
+  var [count, setCount] = React.useState(
+    isPossibleObjectEmpty(LocalData.invitations)
+      ? 0
+      : LocalData.invitations.length,
+  );
+  LocalData.setInvCount = setCount;
+  console.log('Set invitation count setter');
+  return (
+    <Text
+      style={[Styles.text, Styles.boldText]}
+      category="h6"
+      status="primary"
+      onPress={() => props.navigation.navigate(Screen.Invitations)}>
+      See invitations {'(' + count + ')'}
+    </Text>
   );
 };
 
@@ -386,5 +412,12 @@ const Styles = StyleSheet.create({
     height: 24,
     tintColor: 'green',
     marginRight: 5,
+  },
+  text: {
+    textAlign: 'center',
+    marginVertical: 15,
+  },
+  boldText: {
+    fontWeight: 'bold',
   },
 });

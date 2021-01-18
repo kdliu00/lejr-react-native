@@ -1,13 +1,8 @@
 import React from 'react';
 import {TouchableWithoutFeedback, StyleSheet, Keyboard} from 'react-native';
 import {Layout, Text, Button} from '@ui-kitten/components';
-import {
-  LocalData,
-  signOut,
-  isPossibleObjectEmpty,
-  CreateNewGroup,
-} from '../util/LocalData';
-import {AnimKeyboardDuration, Screen} from '../util/Constants';
+import {LocalData, signOut, CreateNewGroup} from '../util/LocalData';
+import {AnimKeyboardDuration} from '../util/Constants';
 import * as yup from 'yup';
 import {
   ButtonSpinner,
@@ -17,6 +12,7 @@ import {
 import FormStyles from '../util/FormStyles';
 import {MergeState} from '../util/UtilityMethods';
 import {Component} from 'react';
+import {SeeInvitations} from '../util/ContributionUI';
 
 export default class CreateGroup extends Component {
   constructor(props) {
@@ -58,20 +54,7 @@ export default class CreateGroup extends Component {
                     existing group.
                   </Text>
                 </Layout>
-                <Text
-                  style={[Styles.text, Styles.boldText]}
-                  category="h6"
-                  status="primary"
-                  onPress={() =>
-                    this.props.navigation.navigate(Screen.Invitations)
-                  }>
-                  See invitations{' '}
-                  {'(' +
-                    (isPossibleObjectEmpty(LocalData.invitations)
-                      ? 0
-                      : LocalData.invitations.length) +
-                    ')'}
-                </Text>
+                <SeeInvitations navigation={this.props.navigation} />
               </Layout>
             ) : (
               <Layout style={Styles.textSubContainer}>
@@ -115,7 +98,7 @@ export default class CreateGroup extends Component {
                   appearance="outline"
                   disabled={this.state.isCreating}
                   onPress={() => this.props.navigation.pop()}>
-                  Go back
+                  Cancel
                 </Button>
               )}
               <Layout>
@@ -194,9 +177,6 @@ const Styles = StyleSheet.create({
   },
   text: {
     textAlign: 'center',
-    marginTop: 15,
-  },
-  boldText: {
-    fontWeight: 'bold',
+    marginTop: 10,
   },
 });

@@ -8,6 +8,7 @@ import {
   isPossibleObjectEmpty,
   getKeyForCurrentGroupItems,
   swapGroup,
+  resetVR,
 } from '../../../util/LocalData';
 import {Screen, AnimDefaultDuration} from '../../../util/Constants';
 import {
@@ -114,12 +115,20 @@ export default class Home extends Component {
             <IconButton
               style={[Styles.container, Styles.squared]}
               icon={AddIcon}
-              onPress={() => this.props.navigation.navigate(Screen.QuickAdd)}
+              onPress={() => {
+                resetVR();
+                this.props.navigation.navigate(Screen.QuickAdd);
+              }}
             />
             <IconButton
               style={[Styles.container, Styles.squared]}
               icon={CameraIcon}
-              onPress={() => this.props.navigation.navigate(Screen.FromImage)}
+              onPress={() => {
+                resetVR();
+                this.props.navigation.navigate(Screen.FromImage, {
+                  addMore: false,
+                });
+              }}
             />
           </Layout>
           <Animated.View style={{height: this.state.renderHeight}}>
@@ -178,7 +187,7 @@ function onGroupPress(groupId, component) {
     console.warn('Already loaded this group, invalid action!');
     return;
   }
-  swapGroup(groupId, component.props.navigation.popToTop);
+  swapGroup(groupId, () => component.props.navigation.popToTop());
 }
 
 const CustomMenuItem = ({groupId, groupName, component}) => {
@@ -212,7 +221,7 @@ const Styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 12,
     marginHorizontal: 8,
-    marginVertical: 6,
+    marginVertical: 4,
     borderRadius: 8,
   },
   groupPlaceholder: {

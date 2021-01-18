@@ -10,6 +10,7 @@ export {
   GoogleIcon,
   EmailIcon,
   AddCircleIcon,
+  BackIcon,
   TrashIcon,
   SaveIcon,
   RemoveIcon,
@@ -35,6 +36,7 @@ const AddIcon = (props: any) => <Icon name="plus-outline" {...props} />;
 const PeopleIcon = (props: any) => <Icon name="people-outline" {...props} />;
 const GearIcon = (props: any) => <Icon name="settings-2-outline" {...props} />;
 const CameraIcon = (props: any) => <Icon name="camera-outline" {...props} />;
+const BackIcon = (props: any) => <Icon name="arrow-back-outline" {...props} />;
 
 const AcceptIcon = (props: any) => <Icon name="checkmark-outline" {...props} />;
 const DenyIcon = (props: any) => <Icon name="close-outline" {...props} />;

@@ -20,8 +20,9 @@ const IMAGE_WIDTH = 600;
 const IMAGE_HEIGHT = 800;
 
 export default class FromImage extends Component {
-  constructor() {
+  constructor(props) {
     super();
+    this.addMore = props.route.params.addMore;
     this.state = {
       isProcessing: false,
     };
@@ -227,7 +228,7 @@ export default class FromImage extends Component {
 
         MergeState(this, {isProcessing: false});
         LocalData.isCamera = false;
-        this.props.navigation.navigate(Screen.Contribution);
+        this.props.navigation.replace(Screen.Contribution);
       });
   }
 
@@ -241,12 +242,14 @@ export default class FromImage extends Component {
           <Layout style={Styles.container}>
             <Text appearance="hint" style={Styles.placeholderText}>
               Use your Camera to take a receipt photo or select one from your
-              Gallery. Make sure to allow camera permissions for Lejr in your
-              device settings.{'\n\n'}For best results, keep the receipt flat
-              and crop out everything except the items and total. For longer
-              receipts, use multiple scans.
+              Gallery.{' '}
+              {this.addMore
+                ? 'This will add the scanned items to your existing items.'
+                : 'This will scan your receipt and create an itemized purchase.'}
+              {'\n\n'}For best results, keep the receipt flat and crop out
+              everything except the items and total.
             </Text>
-            <Layout style={[FormStyles.buttonStyle]}>
+            <Layout style={Styles.buttonRow}>
               <Button
                 style={FormStyles.button}
                 disabled={this.state.isProcessing}
@@ -292,6 +295,17 @@ export default class FromImage extends Component {
                 Camera
               </Button>
             </Layout>
+            <Layout style={FormStyles.buttonStyle}>
+              <Button
+                style={FormStyles.button}
+                appearance="outline"
+                disabled={this.state.isProcessing}
+                onPress={() => {
+                  this.props.navigation.goBack();
+                }}>
+                Cancel
+              </Button>
+            </Layout>
           </Layout>
         </SafeAreaView>
       </Layout>
@@ -305,13 +319,17 @@ const Styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  buttonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   placeholderText: {
     textAlign: 'center',
-    marginHorizontal: 20,
-    marginVertical: 20,
+    margin: 20,
   },
   spinnerContainer: {
     flex: 1,
     flexDirection: 'column-reverse',
+    marginBottom: 50,
   },
 });

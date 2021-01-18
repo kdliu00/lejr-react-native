@@ -22,13 +22,13 @@ import {
 import FormStyles from '../../../util/FormStyles';
 import * as yup from 'yup';
 import {
-  deleteAllItems,
   filterItemCosts,
   LocalData,
+  resetVR,
   uploadVirtualReceipt,
 } from '../../../util/LocalData';
 import {PurchaseSplit} from '../../../util/ContributionUI';
-import {AnimKeyboardDuration, Screen} from '../../../util/Constants';
+import {AnimKeyboardDuration} from '../../../util/Constants';
 import {ScrollView} from 'react-native-gesture-handler';
 import {VirtualReceipt} from '../../../util/DataObjects';
 
@@ -134,7 +134,7 @@ export default class ContribDetails extends Component {
                 style={FormStyles.button}
                 onPress={() => this.props.navigation.goBack()}
                 appearance="outline">
-                Go back
+                Cancel
               </Button>
               {this.state.isSubmitting ? (
                 <Button
@@ -170,18 +170,15 @@ export default class ContribDetails extends Component {
                               LocalData.currentVR
                                 ? LocalData.currentVR.timestamp
                                 : Date.now(),
-                              LocalData.items,
+                              removeNullsFromList(LocalData.items),
                               this.currentTotal,
                               this.totalSplit,
                               '',
                             ),
                             () => {
-                              deleteAllItems();
-                              LocalData.currentVR = null;
-                              LocalData.currentVRCopy = null;
+                              resetVR();
                               setTimeout(
-                                () =>
-                                  this.props.navigation.navigate(Screen.Home),
+                                () => this.props.navigation.popToTop(),
                                 AnimKeyboardDuration,
                               );
                             },

@@ -16,11 +16,10 @@ import Home from '../screens/dashboard/Home/Home';
 import Contribution from '../screens/dashboard/Contribution/Contribution';
 import Invitations from '../screens/dashboard/Home/Invitations';
 import GroupMenu from '../screens/dashboard/Home/GroupMenu';
-import {call} from 'react-native-reanimated';
-import {group} from 'console';
 
 export {
   LocalData,
+  resetVR,
   deleteAllItems,
   filterItemCosts,
   getKeyForCurrentGroupItems,
@@ -48,6 +47,7 @@ class LocalData {
   static user: User = null;
   static userCopy: User = null;
   static invitations: InviteInfo[] = null;
+  static setInvCount: React.Dispatch<React.SetStateAction<number>> = null;
 
   //group and purchase data
   static currentGroup: Group = null;
@@ -73,6 +73,12 @@ class LocalData {
 
   //local app data
   static theme: Theme = Theme.Light;
+}
+
+function resetVR(forceUpdate: boolean = true) {
+  deleteAllItems(forceUpdate);
+  LocalData.currentVR = null;
+  LocalData.currentVRCopy = null;
 }
 
 function deleteAllItems(forceUpdate: boolean = true) {
@@ -124,6 +130,9 @@ function getUserInvitations(userId: string) {
             InviteInfo.firestoreConverter.fromFirestore(doc),
           );
         });
+        if (LocalData.setInvCount != null) {
+          LocalData.setInvCount(LocalData.invitations.length);
+        }
         console.log('User invitations updated');
         if (
           LocalData.invScreen != null &&
@@ -576,7 +585,7 @@ async function joinGroup(groupId: string) {
 }
 
 function swapGroup(groupId: string, callback: () => void) {
-  deleteAllItems(false);
+  resetVR();
   LocalData.currentGroup = null;
   LocalData.virtualReceipts = null;
   StoreData(Key.CurrentGroup, groupId).then(() => callback());

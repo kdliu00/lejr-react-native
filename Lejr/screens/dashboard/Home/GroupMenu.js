@@ -113,6 +113,7 @@ export default class GroupMenu extends Component {
             <Layout style={Styles.rowFlex}>
               <IconButton
                 status="danger"
+                style={Styles.button}
                 icon={LeaveIcon}
                 onPress={() =>
                   handleLeaveGroup(() =>
@@ -154,7 +155,7 @@ export default class GroupMenu extends Component {
                   style={Styles.button}
                   onPress={() => this.props.navigation.goBack()}
                   appearance="outline">
-                  Go back
+                  Back
                 </Button>
               </Fragment>
             )}
@@ -241,7 +242,7 @@ const Styles = StyleSheet.create({
     marginBottom: 45,
   },
   button: {
-    margin: 15,
+    marginBottom: 20,
   },
   underlineText: {
     textDecorationLine: 'underline',

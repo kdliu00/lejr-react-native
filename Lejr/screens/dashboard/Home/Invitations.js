@@ -34,6 +34,10 @@ export default class Invitations extends Component {
 
   componentWillUnmount() {
     this._mounted = false;
+    if (LocalData.setInvCount != null) {
+      LocalData.setInvCount(LocalData.invitations.length);
+      console.log('Invitation count updated');
+    }
   }
 
   render() {
