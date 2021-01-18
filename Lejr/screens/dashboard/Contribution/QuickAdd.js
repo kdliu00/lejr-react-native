@@ -21,6 +21,7 @@ import {
 import FormStyles from '../../../util/FormStyles';
 import * as yup from 'yup';
 import {
+  isPossibleObjectEmpty,
   LocalData,
   resetVR,
   uploadVirtualReceipt,
@@ -64,7 +65,13 @@ export default class QuickAdd extends Component {
         : JSONCopy(LocalData.currentVR.totalSplit);
     this.splitCheck = {};
 
-    this.groupMemberIds = Object.keys(LocalData.currentGroup.members);
+    let userIds = Object.keys(LocalData.currentGroup.members);
+    if (this.passedItem != null) {
+      userIds = userIds.concat(Object.keys(this.splitPercent));
+    }
+    this.groupMemberIds = userIds.filter((userId, index) => {
+      return userIds.indexOf(userId) === index;
+    });
 
     this.groupMemberIds.forEach(userId => {
       if (LocalData.currentVR == null) {
@@ -72,6 +79,9 @@ export default class QuickAdd extends Component {
           Math.round(10000 / this.groupMemberIds.length) / 100;
         this.splitCheck[userId] = 1;
       } else {
+        if (isPossibleObjectEmpty(this.splitPercent[userId])) {
+          this.splitPercent[userId] = 0;
+        }
         this.splitCheck[userId] = this.splitPercent[userId] === 0 ? 0 : 1;
       }
     });

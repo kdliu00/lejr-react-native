@@ -115,7 +115,6 @@ class ItemCard extends Component {
     this.index = props.index;
     this.totalRef = props.totalRef;
     this.nav = props.nav;
-    this.swipeableRef = React.createRef();
 
     this.state = {
       renderScaleY: new Animated.Value<number>(1),
@@ -134,10 +133,6 @@ class ItemCard extends Component {
       toValue: 0,
       easing: Easing.out(Easing.exp),
     }).start();
-  }
-
-  closeSwipeable() {
-    (this.swipeableRef.current as CustomSwipeable).close();
   }
 
   renderRightActions = () => {
@@ -163,7 +158,6 @@ class ItemCard extends Component {
         <CustomSwipeable
           containerStyle={{height: this.RENDER_HEIGHT}}
           childrenContainerStyle={{height: this.RENDER_HEIGHT}}
-          ref={this.swipeableRef}
           renderRightActions={this.renderRightActions}
           onSwipeableRightWillOpen={() => {
             this.closeAnim();
@@ -171,12 +165,10 @@ class ItemCard extends Component {
           onSwipeableRightOpen={() => {
             LocalData.items[this.index] = null;
             this.totalRef.current.forceUpdate();
-            // this.closeSwipeable();
             if (removeNullsFromList(LocalData.items).length == 0) {
               LocalData.items = [];
               LocalData.container.forceUpdate();
             }
-            console.log(LocalData.items);
           }}>
           <ThemedCard
             style={[Styles.itemCard, {justifyContent: 'center'}]}
@@ -325,7 +317,7 @@ function getBalanceString(userId: string) {
 const BlankCard = (props: any) => {
   return (
     <ThemedCard
-      style={[Styles.itemCard, {justifyContent: 'center', height: 32}]}
+      style={{justifyContent: 'center', height: 64}}
       customBackground={
         props.background ? props.background : 'background-basic-color-1'
       }
