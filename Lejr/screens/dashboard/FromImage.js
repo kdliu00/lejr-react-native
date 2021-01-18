@@ -16,8 +16,8 @@ import {
 import {Item} from '../../util/DataObjects';
 import {LocalData} from '../../util/LocalData';
 
-const IMAGE_WIDTH = 600;
-const IMAGE_HEIGHT = 800;
+const IMAGE_WIDTH = 300;
+const IMAGE_HEIGHT = 400;
 
 export default class FromImage extends Component {
   constructor(props) {

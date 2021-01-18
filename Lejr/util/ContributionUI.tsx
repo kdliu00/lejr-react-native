@@ -171,7 +171,7 @@ class ItemCard extends Component {
           onSwipeableRightOpen={() => {
             LocalData.items[this.index] = null;
             this.totalRef.current.forceUpdate();
-            this.closeSwipeable();
+            // this.closeSwipeable();
             if (removeNullsFromList(LocalData.items).length == 0) {
               LocalData.items = [];
               LocalData.container.forceUpdate();

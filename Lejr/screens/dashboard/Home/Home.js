@@ -142,6 +142,7 @@ export default class Home extends Component {
               ) : (
                 this.GroupElements
               )}
+              <Layout style={Styles.scrollPad} />
             </ThemedScroll>
           </Animated.View>
           <Layout style={[Styles.banner, Styles.row]}>
@@ -221,7 +222,7 @@ const Styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 12,
     marginHorizontal: 8,
-    marginVertical: 4,
+    marginTop: 8,
     borderRadius: 8,
   },
   groupPlaceholder: {
@@ -235,6 +236,9 @@ const Styles = StyleSheet.create({
   scrollView: {
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
+  },
+  scrollPad: {
+    margin: 4,
   },
   row: {
     marginTop: 5,
