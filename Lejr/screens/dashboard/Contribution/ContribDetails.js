@@ -88,9 +88,7 @@ export default class ContribDetails extends Component {
           <SafeAreaView style={Styles.container}>
             <Layout>
               <Text style={Styles.titleText} category="h4">
-                {LocalData.currentVR
-                  ? 'Update Existing Purchase'
-                  : 'Save New Purchase'}
+                {LocalData.currentVR ? 'Update Purchase' : 'Create Purchase'}
               </Text>
             </Layout>
             <Layout>

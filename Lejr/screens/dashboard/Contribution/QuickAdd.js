@@ -66,7 +66,7 @@ export default class QuickAdd extends Component {
     this.splitCheck = {};
 
     let userIds = Object.keys(LocalData.currentGroup.members);
-    if (this.passedItem != null) {
+    if (LocalData.currentVR != null) {
       userIds = userIds.concat(Object.keys(this.splitPercent));
     }
     this.groupMemberIds = userIds.filter((userId, index) => {
@@ -74,12 +74,12 @@ export default class QuickAdd extends Component {
     });
 
     this.groupMemberIds.forEach(userId => {
-      if (LocalData.currentVR == null) {
+      if (isPossibleObjectEmpty(this.splitPercent)) {
         this.splitPercent[userId] =
           Math.round(10000 / this.groupMemberIds.length) / 100;
         this.splitCheck[userId] = 1;
       } else {
-        if (isPossibleObjectEmpty(this.splitPercent[userId])) {
+        if (this.splitPercent[userId] == null) {
           this.splitPercent[userId] = 0;
         }
         this.splitCheck[userId] = this.splitPercent[userId] === 0 ? 0 : 1;
@@ -159,6 +159,9 @@ export default class QuickAdd extends Component {
                 return (
                   <Fragment key={userId}>
                     <TwoColCheck
+                      isDisabled={isPossibleObjectEmpty(
+                        LocalData.currentGroup.members[userId],
+                      )}
                       isChecked={this.splitCheck[userId] === 1}
                       callback={nextChecked =>
                         this.checkboxCallback(nextChecked, userId)

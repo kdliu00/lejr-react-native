@@ -210,7 +210,7 @@ const PurchaseSplit = (props: any) => {
       </Layout>
       <Layout style={Styles.topRight}>
         <Text numberOfLines={1} category="h6">
-          {props.userTotalPercent}%
+          {isNaN(props.userTotalPercent) ? '0' : props.userTotalPercent}%
         </Text>
       </Layout>
     </Layout>

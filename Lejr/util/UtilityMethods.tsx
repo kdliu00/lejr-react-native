@@ -86,6 +86,9 @@ function nearestHundredth(num: number) {
 function getMoneyFormatString(amount: number) {
   var returnString = nearestHundredth(amount).toString();
   const h = Math.round(amount * 100);
+  if (isNaN(amount)) {
+    return '0';
+  }
   if (h % 100 != 0) {
     if (h % 10 == 0) {
       returnString += '0';
