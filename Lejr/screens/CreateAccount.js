@@ -6,7 +6,7 @@ import {onValidationError, InputField} from '../util/TextInputUI';
 import {LocalData} from '../util/LocalData';
 import {User} from '../util/DataObjects';
 import FormStyles from '../util/FormStyles';
-import {Screen} from '../util/Constants';
+import {defaultProfilePic, Screen} from '../util/Constants';
 import {MergeState} from '../util/UtilityMethods';
 import {Component} from 'react';
 
@@ -46,7 +46,7 @@ export default class CreateAccount extends Component {
               style={FormStyles.button}
               onPress={() => this.props.navigation.navigate(Screen.Login)}
               appearance="outline">
-              Go back
+              Cancel
             </Button>
             <Button
               style={FormStyles.button}
@@ -68,7 +68,8 @@ export default class CreateAccount extends Component {
                       LocalData.user = new User(
                         '',
                         '',
-                        '',
+                        defaultProfilePic,
+                        false,
                         this.state.firstName.trim() +
                           ' ' +
                           this.state.lastName.trim(),

@@ -11,6 +11,7 @@ import {LeaveIcon, RemoveIcon} from '../../../util/Icons';
 import {
   disengageSettleLocks,
   engageSettleLocks,
+  getMemberName,
   leaveCurrentGroup,
   LocalData,
   pushGroupData,
@@ -101,7 +102,7 @@ export default class GroupMenu extends Component {
                     <Balance
                       groupMenuInstance={this}
                       isChecked={LocalData.currentGroup.settleLocks[userId]}
-                      userName={LocalData.currentGroup.members[userId].name}
+                      userName={getMemberName(userId)}
                       userId={userId}
                     />
                   </Fragment>

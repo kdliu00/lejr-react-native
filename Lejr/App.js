@@ -35,7 +35,7 @@ import {
 } from './util/LocalData';
 import {BackHandler} from 'react-native';
 import {Alert} from 'react-native';
-import {RetrieveData, StoreData} from './util/UtilityMethods';
+import {StoreData} from './util/UtilityMethods';
 import {LogBox} from 'react-native';
 
 LogBox.ignoreAllLogs();
@@ -71,12 +71,11 @@ AppState.addEventListener('change', state => {
     case 'background':
       if (!LocalData.isCamera) {
         detachListeners();
+        if (!isPossibleObjectEmpty(LocalData.groupMenu)) {
+          LocalData.groupMenu.cancelSettle();
+        }
+        StoreData(getKeyForCurrentGroupItems(), LocalData.items);
       }
-      console.log('Saving data, updating firestore');
-      if (!isPossibleObjectEmpty(LocalData.groupMenu)) {
-        LocalData.groupMenu.cancelSettle();
-      }
-      StoreData(getKeyForCurrentGroupItems(), LocalData.items);
       pushUserData();
       break;
 

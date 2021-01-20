@@ -1,7 +1,6 @@
 import React from 'react';
 import {StyleSheet, SafeAreaView} from 'react-native';
 import {Button, Layout, Spinner, Text} from '@ui-kitten/components';
-import ImagePicker from 'react-native-image-crop-picker';
 import {Component} from 'react';
 import FormStyles from '../../util/FormStyles';
 import {Screen} from '../../util/Constants';
@@ -15,6 +14,8 @@ import {
 } from '../../util/UtilityMethods';
 import {Item} from '../../util/DataObjects';
 import {LocalData} from '../../util/LocalData';
+import ImageCropPicker from 'react-native-image-crop-picker';
+import {Image} from 'react-native';
 
 const IMAGE_WIDTH = 300;
 const IMAGE_HEIGHT = 400;
@@ -235,20 +236,19 @@ export default class FromImage extends Component {
   render() {
     return (
       <Layout style={Styles.container}>
-        <SafeAreaView style={Styles.container}>
-          <Layout style={Styles.spinnerContainer}>
-            {this.state.isProcessing && <Spinner size="large" />}
+        <SafeAreaView style={[Styles.container, Styles.reverseCenter]}>
+          <Layout style={FormStyles.buttonStyle}>
+            <Button
+              style={FormStyles.button}
+              appearance="outline"
+              disabled={this.state.isProcessing}
+              onPress={() => {
+                this.props.navigation.goBack();
+              }}>
+              Cancel
+            </Button>
           </Layout>
-          <Layout style={Styles.container}>
-            <Text appearance="hint" style={Styles.placeholderText}>
-              Use your Camera to take a receipt photo or select one from your
-              Gallery.{' '}
-              {this.addMore
-                ? 'This will add the scanned items to your existing items.'
-                : 'This will scan your receipt and create an itemized purchase.'}
-              {'\n\n'}For best results, keep the receipt flat and crop out
-              everything except the items and total.
-            </Text>
+          <Layout style={Styles.reverseCenter}>
             <Layout style={Styles.buttonRow}>
               <Button
                 style={FormStyles.button}
@@ -256,9 +256,10 @@ export default class FromImage extends Component {
                 onPress={() => {
                   MergeState(this, {isProcessing: true});
                   LocalData.isCamera = true;
-                  ImagePicker.openPicker({
+                  ImageCropPicker.openPicker({
                     mediaType: 'photo',
                     cropping: true,
+                    freeStyleCropEnabled: true,
                     height: IMAGE_HEIGHT,
                     width: IMAGE_WIDTH,
                   }).then(
@@ -278,9 +279,10 @@ export default class FromImage extends Component {
                 onPress={() => {
                   MergeState(this, {isProcessing: true});
                   LocalData.isCamera = true;
-                  ImagePicker.openCamera({
+                  ImageCropPicker.openCamera({
                     mediaType: 'photo',
                     cropping: true,
+                    freeStyleCropEnabled: true,
                     height: IMAGE_HEIGHT,
                     width: IMAGE_WIDTH,
                   }).then(
@@ -295,17 +297,26 @@ export default class FromImage extends Component {
                 Camera
               </Button>
             </Layout>
-            <Layout style={FormStyles.buttonStyle}>
-              <Button
-                style={FormStyles.button}
-                appearance="outline"
-                disabled={this.state.isProcessing}
-                onPress={() => {
-                  this.props.navigation.goBack();
-                }}>
-                Cancel
-              </Button>
-            </Layout>
+            <Text appearance="hint" style={Styles.placeholderText}>
+              {this.addMore
+                ? 'This will scan your receipt and add the scanned items to your current purchase.'
+                : 'This will scan your receipt and create a new purchase using the scanned items.'}
+              {'\n\n'}
+              For best results, keep the receipt flat and crop out everything
+              except the items and total.
+            </Text>
+          </Layout>
+          <Layout style={Styles.spinnerContainer}>
+            {this.state.isProcessing ? (
+              <Spinner size="large" />
+            ) : (
+              <Layout style={Styles.container}>
+                <Image
+                  style={Styles.infographic}
+                  source={require('./../../from_image_info.png')}
+                />
+              </Layout>
+            )}
           </Layout>
         </SafeAreaView>
       </Layout>
@@ -316,20 +327,30 @@ export default class FromImage extends Component {
 const Styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  reverseCenter: {
+    flexDirection: 'column-reverse',
     alignItems: 'center',
     justifyContent: 'center',
   },
   buttonRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 10,
   },
   placeholderText: {
     textAlign: 'center',
-    margin: 20,
+    marginVertical: 20,
+    marginHorizontal: 30,
   },
   spinnerContainer: {
     flex: 1,
     flexDirection: 'column-reverse',
     marginBottom: 50,
+  },
+  infographic: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    transform: [{scaleX: 0.7}, {scaleY: 0.7}],
   },
 });

@@ -26,6 +26,7 @@ import {
 } from '../../../util/UtilityMethods';
 import {
   getKeyForCurrentGroupItems,
+  getMemberName,
   isPossibleObjectEmpty,
   LocalData,
 } from '../../../util/LocalData';
@@ -166,13 +167,7 @@ export default class NewItem extends Component {
                       callback={nextChecked =>
                         this.checkboxCallback(nextChecked, userId)
                       }
-                      text={
-                        isPossibleObjectEmpty(
-                          LocalData.currentGroup.members[userId],
-                        )
-                          ? LocalData.currentGroup.memberArchive[userId]
-                          : LocalData.currentGroup.members[userId].name
-                      }
+                      text={getMemberName(userId)}
                     />
                   </Fragment>
                 );

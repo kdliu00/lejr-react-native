@@ -1,17 +1,76 @@
 import React, {Component} from 'react';
 import {StyleSheet, SafeAreaView} from 'react-native';
 import {Button, Text, Avatar, Layout} from '@ui-kitten/components';
-import {isPossibleObjectEmpty, LocalData, signOut} from '../../util/LocalData';
+import ImageCropPicker from 'react-native-image-crop-picker';
+import {
+  LocalData,
+  pushUserData,
+  signOut,
+  updatePicUrlForGroup,
+} from '../../util/LocalData';
 import {Screen} from '../../util/Constants';
 import {SeeInvitations} from '../../util/ContributionUI';
+import {TouchableWithoutFeedback} from 'react-native';
+import {Alert} from 'react-native';
+
+import storage from '@react-native-firebase/storage';
+
+const IMAGE_WIDTH = 96;
+const IMAGE_HEIGHT = 96;
 
 export default class Settings extends Component {
   constructor() {
     super();
+    this._mounted = false;
   }
 
   componentDidMount() {
     console.log('Arrived at Settings');
+    this._mounted = true;
+  }
+
+  componentWillUnmount() {
+    this._mounted = false;
+  }
+
+  processImage(image) {
+    console.log('Processing image: ' + image.path);
+
+    //Must be .jpg
+    if (image.path.slice(-4) !== '.jpg') {
+      console.log('Wrong image format');
+      Alert.alert(
+        'Image Error',
+        'The image provided was not in the correct format.',
+        [{text: 'Okay'}],
+        {cancelable: false},
+      );
+      return;
+    }
+
+    let userProfilePath = LocalData.user.userId + '.jpg';
+    const storageRef = storage().ref(userProfilePath);
+
+    storageRef.putFile(image.path).then(
+      (snapshot) => {
+        console.log(snapshot.totalBytes + ' bytes transferred');
+        storageRef.getDownloadURL().then((url) => {
+          LocalData.user.profilePic = url;
+          LocalData.user.picIsCustom = true;
+          console.log('User profile pic updated');
+          updatePicUrlForGroup(LocalData.currentGroup.groupId).then(() => {
+            if (LocalData.home != null) {
+              LocalData.home.forceUpdate();
+            }
+            if (this._mounted) {
+              this.forceUpdate();
+            }
+            LocalData.isCamera = false;
+          });
+        });
+      },
+      (error) => console.warn(error),
+    );
   }
 
   render() {
@@ -39,12 +98,67 @@ export default class Settings extends Component {
           <SeeInvitations navigation={this.props.navigation} />
           <Text>{LocalData.user.email}</Text>
           <Text category="h6">{LocalData.user.name}</Text>
-          <Avatar
-            style={Styles.avatar}
-            size="giant"
-            source={{uri: LocalData.user.profilePic}}
-            shape="round"
-          />
+          <TouchableWithoutFeedback
+            onPress={() => {
+              Alert.alert(
+                'Edit Profile Picture',
+                'Select a picture from your Gallery or take one using your Camera.',
+                [
+                  {
+                    text: 'Gallery',
+                    onPress: () => {
+                      LocalData.isCamera = true;
+                      ImageCropPicker.openPicker({
+                        mediaType: 'photo',
+                        cropping: true,
+                        compressImageMaxWidth: IMAGE_WIDTH,
+                        compressImageMaxHeight: IMAGE_HEIGHT,
+                        cropperCircleOverlay: true,
+                        height: IMAGE_HEIGHT,
+                        width: IMAGE_WIDTH,
+                        forceJpg: true,
+                      }).then(
+                        (image) => this.processImage(image),
+                        (error) => {
+                          LocalData.isCamera = false;
+                          console.warn(error.message);
+                        },
+                      );
+                    },
+                  },
+                  {
+                    text: 'Camera',
+                    onPress: () => {
+                      LocalData.isCamera = true;
+                      ImageCropPicker.openCamera({
+                        mediaType: 'photo',
+                        cropping: true,
+                        compressImageMaxWidth: IMAGE_WIDTH,
+                        compressImageMaxHeight: IMAGE_HEIGHT,
+                        cropperCircleOverlay: true,
+                        height: IMAGE_HEIGHT,
+                        width: IMAGE_WIDTH,
+                        forceJpg: true,
+                      }).then(
+                        (image) => this.processImage(image),
+                        (error) => {
+                          LocalData.isCamera = false;
+                          console.warn(error.message);
+                        },
+                      );
+                    },
+                  },
+                ],
+                {cancelable: true},
+              );
+            }}>
+            <Avatar
+              style={Styles.avatar}
+              size="giant"
+              source={{uri: LocalData.user.profilePic}}
+              shape="round"
+            />
+          </TouchableWithoutFeedback>
         </SafeAreaView>
       </Layout>
     );

@@ -97,7 +97,7 @@ export default class EmailLogin extends Component {
               }}
               appearance="outline"
               disabled={this.state.isSubmitting}>
-              Go back
+              {this.showConfirm ? 'Back' : 'Cancel'}
             </Button>
             <Layout>
               {this.state.isSubmitting ? (

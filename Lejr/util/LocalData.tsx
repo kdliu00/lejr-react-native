@@ -19,6 +19,7 @@ import GroupMenu from '../screens/dashboard/Home/GroupMenu';
 
 export {
   LocalData,
+  getMemberName,
   resetVR,
   deleteAllItems,
   filterItemCosts,
@@ -31,6 +32,7 @@ export {
   getUserInvitations,
   uploadVirtualReceipt,
   loadGroupAsMain,
+  updatePicUrlForGroup,
   getVirtualReceiptsForGroup,
   leaveCurrentGroup,
   engageSettleLocks,
@@ -73,6 +75,11 @@ class LocalData {
 
   //local app data
   static theme: Theme = Theme.Light;
+}
+
+function getMemberName(userId: string) {
+  let member = LocalData.currentGroup.members[userId];
+  return member ? member.name : LocalData.currentGroup.memberArchive[userId];
 }
 
 function resetVR(forceUpdate: boolean = true) {
@@ -274,20 +281,10 @@ function loadGroupAsMain(groupId: string, callback: () => void) {
             LocalData.groupMenu.settle();
           }
 
-          //check if profile pic is updated
-          if (
-            LocalData.currentGroup.members[LocalData.user.userId].picUrl !=
-            LocalData.user.profilePic
-          ) {
-            LocalData.currentGroup.members[LocalData.user.userId].picUrl =
-              LocalData.user.profilePic;
-            firestore()
-              .collection(Collection.Groups)
-              .doc(groupId)
-              .update({members: LocalData.currentGroup.members});
-          }
-
-          getVirtualReceiptsForGroup(groupId, callback);
+          //check if profile pic is updated, then pull virtual receipts
+          updatePicUrlForGroup(groupId).then(() =>
+            getVirtualReceiptsForGroup(groupId, callback),
+          );
         } else {
           throw new Error(ErrorCode.InvalidId);
         }
@@ -297,6 +294,21 @@ function loadGroupAsMain(groupId: string, callback: () => void) {
         throw new Error(ErrorCode.DatabaseError);
       },
     );
+}
+
+async function updatePicUrlForGroup(groupId: string) {
+  if (
+    LocalData.currentGroup.members[LocalData.user.userId].picUrl !=
+    LocalData.user.profilePic
+  ) {
+    LocalData.currentGroup.members[LocalData.user.userId].picUrl =
+      LocalData.user.profilePic;
+    return firestore()
+      .collection(Collection.Groups)
+      .doc(groupId)
+      .update({members: LocalData.currentGroup.members});
+  }
+  return Promise.resolve();
 }
 
 function getVirtualReceiptsForGroup(groupId: string, callback: () => void) {

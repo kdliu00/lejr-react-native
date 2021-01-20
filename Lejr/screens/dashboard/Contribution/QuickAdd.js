@@ -21,6 +21,7 @@ import {
 import FormStyles from '../../../util/FormStyles';
 import * as yup from 'yup';
 import {
+  getMemberName,
   isPossibleObjectEmpty,
   LocalData,
   resetVR,
@@ -74,7 +75,7 @@ export default class QuickAdd extends Component {
     });
 
     this.groupMemberIds.forEach(userId => {
-      if (isPossibleObjectEmpty(this.splitPercent)) {
+      if (LocalData.currentVR == null) {
         this.splitPercent[userId] =
           Math.round(10000 / this.groupMemberIds.length) / 100;
         this.splitCheck[userId] = 1;
@@ -166,7 +167,7 @@ export default class QuickAdd extends Component {
                       callback={nextChecked =>
                         this.checkboxCallback(nextChecked, userId)
                       }
-                      text={LocalData.currentGroup.members[userId].name}
+                      text={getMemberName(userId)}
                     />
                   </Fragment>
                 );
@@ -204,6 +205,7 @@ export default class QuickAdd extends Component {
                       )
                       .then(valid => {
                         if (valid) {
+                          LocalData.currentVR.items[0].itemSplit = this.splitPercent;
                           uploadVirtualReceipt(
                             new VirtualReceipt(
                               LocalData.currentVR

@@ -11,7 +11,12 @@ import {
   Screen,
 } from './Constants';
 import Animated, {Easing} from 'react-native-reanimated';
-import {isPossibleObjectEmpty, LocalData, resetVR} from './LocalData';
+import {
+  getMemberName,
+  isPossibleObjectEmpty,
+  LocalData,
+  resetVR,
+} from './LocalData';
 import {
   getMoneyFormatString,
   removeNullsFromList,
@@ -80,11 +85,7 @@ const ContributionCard = (props: any) => {
       </Layout>
       <Layout style={Styles.footer}>
         {Object.keys(vr.totalSplit).map(userId => {
-          let name = isPossibleObjectEmpty(
-            LocalData.currentGroup.members[userId],
-          )
-            ? LocalData.currentGroup.memberArchive[userId]
-            : LocalData.currentGroup.members[userId].name;
+          let name = getMemberName(userId);
           let initials = name.match(/\b\w/g) || [];
           initials = (
             (initials.shift() || '') + (initials.pop() || '')

@@ -6,6 +6,7 @@ class User {
   userId: string;
   email: string;
   profilePic: string;
+  picIsCustom: boolean;
   name: string;
   groups: GroupInfo[];
 
@@ -13,12 +14,14 @@ class User {
     userId: string,
     email: string,
     profilePic: string,
+    picIsCustom: boolean,
     name: string,
     groups: GroupInfo[],
   ) {
     this.userId = userId;
     this.email = email;
     this.profilePic = profilePic;
+    this.picIsCustom = picIsCustom;
     this.name = name;
     this.groups = groups;
   }
@@ -29,6 +32,7 @@ class User {
         userId: user.userId,
         email: user.email,
         profilePic: user.profilePic,
+        picIsCustom: user.picIsCustom,
         name: user.name,
         groups: user.groups,
       };
@@ -39,6 +43,7 @@ class User {
         data.userId,
         data.email,
         data.profilePic,
+        data.picIsCustom,
         data.name,
         data.groups,
       );

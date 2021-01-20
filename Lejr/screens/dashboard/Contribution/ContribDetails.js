@@ -23,6 +23,7 @@ import FormStyles from '../../../util/FormStyles';
 import * as yup from 'yup';
 import {
   filterItemCosts,
+  getMemberName,
   LocalData,
   resetVR,
   uploadVirtualReceipt,
@@ -62,7 +63,7 @@ export default class ContribDetails extends Component {
   getTotalPurchaseSplit() {
     return Object.keys(LocalData.currentGroup.members).map(userId => {
       var userTotal = 0;
-      const userName = LocalData.currentGroup.members[userId].name;
+      const userName = getMemberName(userId);
       LocalData.items.map(item => {
         userTotal += item.itemCost * (item.itemSplit[userId] / 100);
       });

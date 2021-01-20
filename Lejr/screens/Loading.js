@@ -71,6 +71,7 @@ export default class Loading extends Component {
                   user.uid,
                   user.email,
                   user.photoURL,
+                  false,
                   user.displayName,
                   [],
                 );
