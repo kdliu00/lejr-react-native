@@ -205,7 +205,9 @@ export default class QuickAdd extends Component {
                       )
                       .then(valid => {
                         if (valid) {
-                          LocalData.currentVR.items[0].itemSplit = this.splitPercent;
+                          if (LocalData.currentVR) {
+                            LocalData.currentVR.items[0].itemSplit = this.splitPercent;
+                          }
                           uploadVirtualReceipt(
                             new VirtualReceipt(
                               LocalData.currentVR
