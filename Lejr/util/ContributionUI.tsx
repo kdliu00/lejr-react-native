@@ -66,7 +66,11 @@ const ContributionCard = (props: any) => {
             size="small"
             source={{
               uri: isPossibleObjectEmpty(
-                LocalData.currentGroup.members[vr.buyerId].picUrl,
+                isPossibleObjectEmpty(
+                  LocalData.currentGroup.members[vr.buyerId],
+                )
+                  ? null
+                  : LocalData.currentGroup.members[vr.buyerId].picUrl,
               )
                 ? defaultProfilePic
                 : LocalData.currentGroup.members[vr.buyerId].picUrl,

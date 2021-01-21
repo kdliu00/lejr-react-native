@@ -50,6 +50,7 @@ firebase.apps.forEach(app => {
 });
 
 Bugfender.init(bugfenderAppId);
+Bugfender.enableCrashReporting();
 
 const Stack = createStackNavigator();
 const RootStack = createStackNavigator();
