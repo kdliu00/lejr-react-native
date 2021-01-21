@@ -11,7 +11,7 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import {Collection, ErrorCode, Key, Theme} from './Constants';
 import {Alert} from 'react-native';
-import {nearestHundredth, StoreData} from './UtilityMethods';
+import {errorLog, nearestHundredth, StoreData, warnLog} from './UtilityMethods';
 import Home from '../screens/dashboard/Home/Home';
 import Contribution from '../screens/dashboard/Contribution/Contribution';
 import Invitations from '../screens/dashboard/Home/Invitations';
@@ -79,7 +79,12 @@ class LocalData {
 
 function getMemberName(userId: string) {
   let member = LocalData.currentGroup.members[userId];
-  return member ? member.name : LocalData.currentGroup.memberArchive[userId];
+  let memberArchive = isPossibleObjectEmpty(
+    LocalData.currentGroup.memberArchive,
+  )
+    ? null
+    : LocalData.currentGroup.memberArchive[userId];
+  return member ? member.name : memberArchive ? memberArchive : '';
 }
 
 function resetVR(forceUpdate: boolean = true) {
@@ -152,7 +157,7 @@ function getUserInvitations(userId: string) {
         }
       },
       error => {
-        console.error(error);
+        errorLog(error);
         throw new Error(ErrorCode.DatabaseError);
       },
     );
@@ -197,17 +202,18 @@ function uploadVirtualReceipt(
             Object.keys(groupData.members).forEach(userId => {
               //calculate split value from percent and total
               let dBalance = -getSplitValue(userId, vr);
+              let dBalanceOld = isOld
+                ? -getSplitValue(userId, LocalData.currentVRCopy)
+                : 0;
 
               //determine the change in balance
               if (vr.buyerId == userId) {
                 dBalance += nearestHundredth(vr.total);
                 if (isOld) {
-                  dBalance -=
-                    -getSplitValue(userId, LocalData.currentVRCopy) +
-                    nearestHundredth(LocalData.currentVRCopy.total);
+                  dBalanceOld + nearestHundredth(LocalData.currentVRCopy.total);
                 }
               } else if (isOld) {
-                dBalance -= -getSplitValue(userId, LocalData.currentVRCopy);
+                dBalance -= dBalanceOld;
               }
 
               groupData.members[userId].balance += dBalance;
@@ -224,7 +230,7 @@ function uploadVirtualReceipt(
               callback();
             },
             error => {
-              console.error('Update group balances failed: ' + error.message);
+              errorLog('Update group balances failed: ' + error.message);
               Alert.alert(
                 'Database Error',
                 'We were not able to update your group balances. Please reload the app and try again.',
@@ -234,7 +240,7 @@ function uploadVirtualReceipt(
           );
       },
       error => {
-        console.error('Virtual receipt upload failed: ' + error.message);
+        errorLog('Virtual receipt upload failed: ' + error.message);
         Alert.alert(
           'Database Error',
           'We were not able to upload your purchase. Please reload the app and try again.',
@@ -290,7 +296,7 @@ function loadGroupAsMain(groupId: string, callback: () => void) {
         }
       },
       error => {
-        console.error(error);
+        errorLog(error);
         throw new Error(ErrorCode.DatabaseError);
       },
     );
@@ -341,7 +347,7 @@ function getVirtualReceiptsForGroup(groupId: string, callback: () => void) {
         callback();
       },
       error => {
-        console.error(error);
+        errorLog(error);
         throw new Error(ErrorCode.DatabaseError);
       },
     );
@@ -426,7 +432,7 @@ function pushLock() {
     .then(
       () => console.log('Successfully pushed lock'),
       error => {
-        console.error('Push lock failed: ' + error.message);
+        errorLog('Push lock failed: ' + error.message);
         Alert.alert(
           'Database Error',
           'We were not able to save your group data. Please reload the app and try again.',
@@ -528,16 +534,14 @@ async function pushInvite(
           .then(
             () => callback(),
             error => {
-              console.error(error);
+              errorLog(error);
               throw new Error(ErrorCode.DatabaseError);
             },
           );
       } else if (query.size == 0) {
         throw new Error(ErrorCode.UserNotFound);
       } else {
-        console.error(
-          'There should not be multiple users with the same email!',
-        );
+        errorLog('There should not be multiple users with the same email!');
         throw new Error(ErrorCode.DatabaseError);
       }
     });
@@ -569,6 +573,8 @@ async function joinGroup(groupId: string) {
           LocalData.user.groups.push(newGroupInfo);
         }
 
+        pushUserData();
+
         //Create new mappings in group
         groupToJoin.members[LocalData.user.userId] = new MemberInfo(
           0,
@@ -587,7 +593,7 @@ async function joinGroup(groupId: string) {
           })
           .then(
             () => console.log('Successfully updated group'),
-            error => console.warn(error.message),
+            error => warnLog(error.message),
           );
       } else {
         Alert.alert('Group Error', 'This group no longer exists.');
@@ -626,7 +632,7 @@ function pushUserData() {
       .then(
         () => console.log('Successfully pushed user data'),
         error => {
-          console.error('Push user data failed: ' + error.message);
+          errorLog('Push user data failed: ' + error.message);
           if (error.code != 'firestore/permission-denied') {
             Alert.alert(
               'Database Error',
@@ -649,7 +655,7 @@ function pushGroupData() {
       .then(
         () => console.log('Successfully pushed group data'),
         error => {
-          console.error('Push group data failed: ' + error.message);
+          errorLog('Push group data failed: ' + error.message);
           Alert.alert(
             'Database Error',
             'We were not able to save your group data. Please reload the app and try again.',

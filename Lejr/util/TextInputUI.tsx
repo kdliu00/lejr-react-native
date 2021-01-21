@@ -1,6 +1,7 @@
 import React from 'react';
 import {StyleSheet} from 'react-native';
 import {Layout, Input, Text, Spinner} from '@ui-kitten/components';
+import {warnLog} from './UtilityMethods';
 
 export {ButtonSpinner, onValidationError, InputField, InputFieldWrapper};
 
@@ -11,7 +12,7 @@ const ButtonSpinner = props => (
 );
 
 function onValidationError(error: {message: any}, fieldRefs: any[][]) {
-  console.warn(error.message);
+  warnLog(error.message);
   fieldRefs.forEach((ref: any[]) => ref[0].current.props.onChangeText(ref[1]));
 }
 

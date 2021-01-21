@@ -10,7 +10,7 @@ import {
   InputField,
 } from '../util/TextInputUI';
 import FormStyles from '../util/FormStyles';
-import {MergeState} from '../util/UtilityMethods';
+import {MergeState, warnLog} from '../util/UtilityMethods';
 import {Component} from 'react';
 import {SeeInvitations} from '../util/ContributionUI';
 
@@ -133,7 +133,7 @@ export default class CreateGroup extends Component {
                                 );
                               },
                               error => {
-                                console.warn(
+                                warnLog(
                                   'Group creation failed: ' + error.message,
                                 );
                                 MergeState(this, {isCreating: false});

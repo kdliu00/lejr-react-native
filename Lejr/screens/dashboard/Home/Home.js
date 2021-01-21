@@ -17,7 +17,7 @@ import {
   ThemedScroll,
   IconButton,
 } from '../../../util/ComponentUtil';
-import {RetrieveData} from '../../../util/UtilityMethods';
+import {RetrieveData, warnLog} from '../../../util/UtilityMethods';
 import Animated, {Easing} from 'react-native-reanimated';
 import {
   AddIcon,
@@ -185,7 +185,7 @@ class BalanceText extends Component {
 
 function onGroupPress(groupId, component) {
   if (LocalData.currentGroup.groupId === groupId) {
-    console.warn('Already loaded this group, invalid action!');
+    warnLog('Already loaded this group, invalid action!');
     return;
   }
   swapGroup(groupId, () => component.props.navigation.popToTop());

@@ -11,6 +11,7 @@ import {
   midpoint,
   pointDistance,
   pointToLineDistance,
+  warnLog,
 } from '../../util/UtilityMethods';
 import {Item} from '../../util/DataObjects';
 import {LocalData} from '../../util/LocalData';
@@ -266,7 +267,7 @@ export default class FromImage extends Component {
                     image => this.processImage(image),
                     error => {
                       LocalData.isCamera = false;
-                      console.warn(error.message);
+                      warnLog(error.message);
                       MergeState(this, {isProcessing: false});
                     },
                   );
@@ -289,7 +290,7 @@ export default class FromImage extends Component {
                     image => this.processImage(image),
                     error => {
                       LocalData.isCamera = false;
-                      console.warn(error.message);
+                      warnLog(error.message);
                       MergeState(this, {isProcessing: false});
                     },
                   );

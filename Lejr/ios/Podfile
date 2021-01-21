@@ -8,6 +8,8 @@ target 'Lejr' do
 
   use_react_native!(:path => config["reactNativePath"])
 
+  pod 'RNBugfender', :path => '../node_modules/@bugfender/rn-bugfender'
+
   target 'LejrTests' do
     inherit! :complete
     # Pods for testing

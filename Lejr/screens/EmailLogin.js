@@ -12,7 +12,7 @@ import {
 import {LocalData} from '../util/LocalData';
 import FormStyles from '../util/FormStyles';
 import {Screen} from '../util/Constants';
-import {MergeState} from '../util/UtilityMethods';
+import {MergeState, warnLog} from '../util/UtilityMethods';
 
 export default class EmailLogin extends Component {
   constructor(props) {
@@ -263,7 +263,7 @@ async function signIn(email, password, setIsSubmitting) {
 }
 
 function onEmailLoginError(error) {
-  console.warn(error);
+  warnLog(error);
 
   var code = error.userInfo.code;
   var message = error.userInfo.message;

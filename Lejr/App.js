@@ -23,7 +23,7 @@ import CreateGroup from './screens/CreateGroup';
 import Invitations from './screens/dashboard/Home/Invitations';
 
 import {default as theme} from './eva-theme.json';
-import {Key, Screen, Theme} from './util/Constants';
+import {bugfenderAppId, Key, Screen, Theme} from './util/Constants';
 import {
   detachListeners,
   getKeyForCurrentGroupItems,
@@ -35,8 +35,9 @@ import {
 } from './util/LocalData';
 import {BackHandler} from 'react-native';
 import {Alert} from 'react-native';
-import {StoreData} from './util/UtilityMethods';
+import {StoreData, warnLog} from './util/UtilityMethods';
 import {LogBox} from 'react-native';
+import Bugfender from '@bugfender/rn-bugfender';
 
 LogBox.ignoreAllLogs();
 
@@ -47,6 +48,8 @@ if (firebase.apps.length === 0) {
 firebase.apps.forEach(app => {
   console.log('Loading Firebase app: ', app.name);
 });
+
+Bugfender.init(bugfenderAppId);
 
 const Stack = createStackNavigator();
 const RootStack = createStackNavigator();
@@ -80,7 +83,7 @@ AppState.addEventListener('change', state => {
       break;
 
     default:
-      console.warn('App state unrecognized: ' + state);
+      warnLog('App state unrecognized: ' + state);
       break;
   }
 });

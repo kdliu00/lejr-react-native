@@ -5,7 +5,7 @@ import {GoogleSignin} from '@react-native-community/google-signin';
 import {Alert} from 'react-native';
 import {Layout, Button, Spinner} from '@ui-kitten/components';
 import {iOSWebClientId, androidWebClientId, Screen} from '../util/Constants';
-import {MergeState} from '../util/UtilityMethods';
+import {MergeState, warnLog} from '../util/UtilityMethods';
 import {EmailIcon, GoogleIcon} from '../util/Icons';
 
 GoogleSignin.configure({
@@ -92,7 +92,7 @@ export default class Login extends Component {
 }
 
 function onLoginError(error) {
-  console.warn(error);
+  warnLog(error);
 
   const errorString = JSON.stringify(error).toLowerCase();
   if (

@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Alert} from 'react-native';
+import {Key} from './Constants';
+import Bugfender from '@bugfender/rn-bugfender';
 
 export {
   MergeState,
@@ -14,6 +16,8 @@ export {
   pointToLineDistance,
   pointDistance,
   midpoint,
+  warnLog,
+  errorLog,
 };
 
 /**
@@ -149,4 +153,14 @@ function pointDistance(p0: number[], p1: number[]) {
  */
 function midpoint(p0: number[], p1: number[]) {
   return [(p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2];
+}
+
+function warnLog(message: any) {
+  console.warn(message);
+  Bugfender.w(Key.Warn, message);
+}
+
+function errorLog(message: any) {
+  console.error(message);
+  Bugfender.e(Key.Error, message);
 }

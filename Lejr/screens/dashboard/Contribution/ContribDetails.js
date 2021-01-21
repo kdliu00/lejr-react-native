@@ -13,6 +13,7 @@ import {
   onValidationError,
 } from '../../../util/TextInputUI';
 import {
+  errorLog,
   getMoneyFormatString,
   getTotal,
   MergeState,
@@ -182,7 +183,7 @@ export default class ContribDetails extends Component {
                               );
                             },
                             error => {
-                              console.error('Received error: ' + error);
+                              errorLog('Received error: ' + error);
                               MergeState(this, {isSubmitting: false});
                             },
                           );

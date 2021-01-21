@@ -23,7 +23,14 @@ import {
   ErrorCode,
 } from '../util/Constants';
 import {Component} from 'react';
-import {JSONCopy, RetrieveData, StoreData} from '../util/UtilityMethods';
+import {
+  errorLog,
+  JSONCopy,
+  RetrieveData,
+  StoreData,
+  warnLog,
+} from '../util/UtilityMethods';
+import Bugfender from '@bugfender/rn-bugfender';
 
 export default class Loading extends Component {
   constructor() {
@@ -31,6 +38,7 @@ export default class Loading extends Component {
   }
 
   handleScreen() {
+    Bugfender.setDeviceString(Key.Email, LocalData.user.email);
     getUserInvitations(LocalData.user.userId);
     LocalData.container = null;
     if (isPossibleObjectEmpty(LocalData.user.groups)) {
@@ -89,18 +97,19 @@ export default class Loading extends Component {
                     console.log('Successfully created new user document');
                     this.handleScreen();
                   },
-                  error => console.warn(error.message),
+                  error => warnLog(error.message),
                 );
             }
           },
           error => {
-            console.error(error);
+            errorLog(error);
             throw new Error(ErrorCode.DatabaseError);
           },
         );
     } else if (user && LocalData.user) {
       setTimeout(() => this.handleScreen(), AnimDefaultDuration);
     } else {
+      Bugfender.removeDeviceKey(Key.Email);
       detachListeners();
       StoreData(getKeyForCurrentGroupItems(), null);
       StoreData(Key.CurrentGroup, null);

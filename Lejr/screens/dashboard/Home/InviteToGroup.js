@@ -11,7 +11,7 @@ import * as yup from 'yup';
 import {Screen, ErrorCode} from '../../../util/Constants';
 import {StyleSheet} from 'react-native';
 import {pushInvite, LocalData} from '../../../util/LocalData';
-import {MergeState} from '../../../util/UtilityMethods';
+import {MergeState, warnLog} from '../../../util/UtilityMethods';
 
 export default class InviteToGroup extends Component {
   constructor(props) {
@@ -83,7 +83,7 @@ export default class InviteToGroup extends Component {
                                 MergeState(this, newState);
                               },
                             ).catch(error => {
-                              console.warn(error.message);
+                              warnLog(error.message);
                               switch (error.message) {
                                 case ErrorCode.UserDuplicate:
                                   newState.textStatus = 'warning';

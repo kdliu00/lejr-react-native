@@ -13,6 +13,7 @@ import {
   onValidationError,
 } from '../../../util/TextInputUI';
 import {
+  errorLog,
   getTotal,
   JSONCopy,
   MergeState,
@@ -242,7 +243,7 @@ export default class QuickAdd extends Component {
                               );
                             },
                             error => {
-                              console.error('Received error: ' + error);
+                              errorLog('Received error: ' + error);
                               MergeState(this, {isSubmitting: false});
                             },
                           );

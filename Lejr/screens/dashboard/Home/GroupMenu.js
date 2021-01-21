@@ -17,7 +17,11 @@ import {
   pushGroupData,
 } from '../../../util/LocalData';
 import {ButtonSpinner} from '../../../util/TextInputUI';
-import {getMoneyFormatString, MergeState} from '../../../util/UtilityMethods';
+import {
+  getMoneyFormatString,
+  MergeState,
+  nearestHundredth,
+} from '../../../util/UtilityMethods';
 
 export default class GroupMenu extends Component {
   constructor() {
@@ -168,7 +172,11 @@ export default class GroupMenu extends Component {
 }
 
 function handleLeaveGroup(callback) {
-  if (LocalData.currentGroup.members[LocalData.user.userId].balance === 0) {
+  if (
+    nearestHundredth(
+      LocalData.currentGroup.members[LocalData.user.userId].balance,
+    ) === 0
+  ) {
     Alert.alert(
       'Leave Group',
       'Are you sure you want to leave ' +

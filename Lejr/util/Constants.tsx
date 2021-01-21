@@ -5,6 +5,7 @@ export {
   defaultProfilePic,
   iOSWebClientId,
   androidWebClientId,
+  bugfenderAppId,
   Key,
   Collection,
   Screen,
@@ -26,6 +27,8 @@ const iOSWebClientId =
 const androidWebClientId =
   '746843927000-1kd2tbmtr59ba41i9k4bk2gr8252jhau.apps.googleusercontent.com';
 
+const bugfenderAppId = 'UUiginsDdHNrT9aWlpztix9egLB2Kj4z';
+
 enum Key {
   Items = 'items_key_',
   CurrentGroup = 'current_group_id',
@@ -33,6 +36,9 @@ enum Key {
   Invitations = 'invitations',
   Timestamp = 'timestamp',
   Theme = 'theme',
+  Email = 'email',
+  Warn = 'WARN',
+  Error = 'ERROR',
 }
 
 enum Theme {

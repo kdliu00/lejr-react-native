@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {StyleSheet, SafeAreaView} from 'react-native';
-import {Button, Text, Avatar, Layout} from '@ui-kitten/components';
+import {Button, Text, Avatar, Layout, Spinner} from '@ui-kitten/components';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import {
   LocalData,
@@ -14,6 +14,7 @@ import {TouchableWithoutFeedback} from 'react-native';
 import {Alert} from 'react-native';
 
 import storage from '@react-native-firebase/storage';
+import {MergeState, warnLog} from '../../util/UtilityMethods';
 
 const IMAGE_WIDTH = 96;
 const IMAGE_HEIGHT = 96;
@@ -22,6 +23,9 @@ export default class Settings extends Component {
   constructor() {
     super();
     this._mounted = false;
+    this.state = {
+      profileUpdating: false,
+    };
   }
 
   componentDidMount() {
@@ -51,25 +55,29 @@ export default class Settings extends Component {
     let userProfilePath = LocalData.user.userId + '.jpg';
     const storageRef = storage().ref(userProfilePath);
 
+    MergeState(this, {profileUpdating: true});
+
     storageRef.putFile(image.path).then(
-      (snapshot) => {
+      snapshot => {
         console.log(snapshot.totalBytes + ' bytes transferred');
-        storageRef.getDownloadURL().then((url) => {
+        storageRef.getDownloadURL().then(url => {
           LocalData.user.profilePic = url;
           LocalData.user.picIsCustom = true;
           console.log('User profile pic updated');
           updatePicUrlForGroup(LocalData.currentGroup.groupId).then(() => {
+            pushUserData();
             if (LocalData.home != null) {
               LocalData.home.forceUpdate();
             }
             if (this._mounted) {
+              MergeState(this, {profileUpdating: false});
               this.forceUpdate();
             }
             LocalData.isCamera = false;
           });
         });
       },
-      (error) => console.warn(error),
+      error => warnLog(error),
     );
   }
 
@@ -118,10 +126,10 @@ export default class Settings extends Component {
                         width: IMAGE_WIDTH,
                         forceJpg: true,
                       }).then(
-                        (image) => this.processImage(image),
-                        (error) => {
+                        image => this.processImage(image),
+                        error => {
                           LocalData.isCamera = false;
-                          console.warn(error.message);
+                          warnLog(error.message);
                         },
                       );
                     },
@@ -140,10 +148,10 @@ export default class Settings extends Component {
                         width: IMAGE_WIDTH,
                         forceJpg: true,
                       }).then(
-                        (image) => this.processImage(image),
-                        (error) => {
+                        image => this.processImage(image),
+                        error => {
                           LocalData.isCamera = false;
-                          console.warn(error.message);
+                          warnLog(error.message);
                         },
                       );
                     },
@@ -152,12 +160,18 @@ export default class Settings extends Component {
                 {cancelable: true},
               );
             }}>
-            <Avatar
-              style={Styles.avatar}
-              size="giant"
-              source={{uri: LocalData.user.profilePic}}
-              shape="round"
-            />
+            {this.state.profileUpdating ? (
+              <Layout style={Styles.spinner}>
+                <Spinner size="large" />
+              </Layout>
+            ) : (
+              <Avatar
+                style={Styles.avatar}
+                size="giant"
+                source={{uri: LocalData.user.profilePic}}
+                shape="round"
+              />
+            )}
           </TouchableWithoutFeedback>
         </SafeAreaView>
       </Layout>
@@ -177,6 +191,9 @@ const Styles = StyleSheet.create({
   },
   button: {
     margin: 10,
+  },
+  spinner: {
+    marginBottom: 48,
   },
   avatar: {
     width: 96,

@@ -20,6 +20,7 @@ import Animated from 'react-native-reanimated';
 import {BlankCard, ItemCard} from '../../../util/ContributionUI';
 import firestore from '@react-native-firebase/firestore';
 import {AcceptIcon, DenyIcon} from '../../../util/Icons';
+import {warnLog} from '../../../util/UtilityMethods';
 
 export default class Invitations extends Component {
   constructor() {
@@ -161,11 +162,9 @@ class InvitationCard extends ItemCard {
             this.closeAnim();
           }}
           onSwipeableRightOpen={() => {
-            this.closeSwipeable();
             removeInvitation(this);
           }}
           onSwipeableLeftOpen={() => {
-            this.closeSwipeable();
             joinGroup(this.item.groupId).then(
               () => {
                 removeInvitation(this);
@@ -174,7 +173,7 @@ class InvitationCard extends ItemCard {
                 );
               },
               error => {
-                console.warn(error.message);
+                warnLog(error.message);
                 if (error.message !== ErrorCode.DoesNotExist) {
                   Alert.alert(
                     'Join Group Error',
