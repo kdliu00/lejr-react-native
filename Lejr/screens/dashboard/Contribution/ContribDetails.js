@@ -107,6 +107,7 @@ export default class ContribDetails extends Component {
                   Keyboard.dismiss();
                 }}
                 value={this.state.memo}
+                autoCorrect={true}
                 autoFocus={!this.state.memo}
               />
             </Layout>

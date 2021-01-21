@@ -126,6 +126,7 @@ export default class QuickAdd extends Component {
                   Keyboard.dismiss();
                 }}
                 value={this.state.memo}
+                autoCorrect={true}
                 autoFocus={!this.state.memo}
               />
               <InputField

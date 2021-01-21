@@ -181,7 +181,11 @@ export default class EmailLogin extends Component {
                 }}
                 value={this.state.confirmPassword}
                 editable={!this.state.isSubmitting}
-                secureTextEntry
+                autoCompleteType="password"
+                importantForAutofill="yes"
+                textContentType="password"
+                autoCorrect={false}
+                secureTextEntry={true}
               />
             )}
             <InputField
@@ -202,7 +206,11 @@ export default class EmailLogin extends Component {
               }}
               value={this.state.password}
               editable={!this.state.isSubmitting}
-              secureTextEntry
+              autoCompleteType="password"
+              importantForAutofill="yes"
+              textContentType={this.showConfirm ? 'newPassword' : 'password'}
+              autoCorrect={false}
+              secureTextEntry={true}
             />
             <InputField
               fieldError={this.state.emailError}
@@ -218,7 +226,11 @@ export default class EmailLogin extends Component {
               }}
               value={this.state.email}
               editable={!this.state.isSubmitting}
-              autoFocus
+              autoCompleteType="email"
+              importantForAutofill="yes"
+              textContentType="emailAddress"
+              autoCorrect={false}
+              autoFocus={true}
             />
           </Layout>
         </Layout>

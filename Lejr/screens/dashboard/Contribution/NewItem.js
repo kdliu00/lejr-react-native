@@ -132,6 +132,7 @@ export default class NewItem extends Component {
                   Keyboard.dismiss();
                 }}
                 value={this.state.itemName}
+                autoCorrect={true}
                 autoFocus={this.vrIndex == null}
               />
               <InputField
@@ -149,7 +150,7 @@ export default class NewItem extends Component {
                   Keyboard.dismiss();
                 }}
                 value={this.state.itemCost}
-                keyboardType="numeric"
+                keyboardType="decimal-pad"
               />
             </Layout>
             <Text style={Styles.subtitle} category="h6">
