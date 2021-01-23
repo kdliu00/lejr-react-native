@@ -210,9 +210,12 @@ function uploadVirtualReceipt(
               if (vr.buyerId == userId) {
                 dBalance += nearestHundredth(vr.total);
                 if (isOld) {
-                  dBalanceOld + nearestHundredth(LocalData.currentVRCopy.total);
+                  dBalanceOld += nearestHundredth(
+                    LocalData.currentVRCopy.total,
+                  );
                 }
-              } else if (isOld) {
+              }
+              if (isOld) {
                 dBalance -= dBalanceOld;
               }
 

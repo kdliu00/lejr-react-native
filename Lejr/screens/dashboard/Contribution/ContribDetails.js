@@ -52,7 +52,6 @@ export default class ContribDetails extends Component {
 
     this.totalSplit = {};
     this.totalSplitAmount = {};
-    LocalData.items = removeNullsFromList(LocalData.items);
     this.currentTotal = getTotal(filterItemCosts());
     this.purchaseSplit = this.getTotalPurchaseSplit();
   }

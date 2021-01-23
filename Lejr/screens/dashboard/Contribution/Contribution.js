@@ -17,6 +17,7 @@ import {BlankCard, ItemCard} from '../../../util/ContributionUI';
 import {
   getMoneyFormatString,
   getTotal,
+  removeNullsFromList,
   StoreData,
 } from '../../../util/UtilityMethods';
 import {
@@ -122,19 +123,21 @@ export default class Contribution extends Component {
             <IconButton
               style={Styles.button}
               icon={AddCircleIcon}
-              onPress={() =>
+              onPress={() => {
+                LocalData.items = removeNullsFromList(LocalData.items);
                 this.props.navigation.navigate(Screen.FromImage, {
                   addMore: true,
-                })
-              }
+                });
+              }}
             />
             <IconButton
               style={Styles.button}
               status="success"
               icon={SaveIcon}
-              onPress={() =>
-                this.props.navigation.navigate(Screen.ContribDetails)
-              }
+              onPress={() => {
+                LocalData.items = removeNullsFromList(LocalData.items);
+                this.props.navigation.navigate(Screen.ContribDetails);
+              }}
             />
           </Layout>
         </SafeAreaView>

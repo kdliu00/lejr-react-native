@@ -71,7 +71,10 @@ export default class FromImage extends Component {
             refLine.cornerPoints[2],
           ); //top right, bottom right
 
-          let threshold = pointDistance(refLine.cornerPoints[0], refCoordML); //top left, bottom left
+          let threshold = pointDistance(
+            refLine.cornerPoints[0],
+            refLine.cornerPoints[3],
+          ); //top left, bottom left
 
           let lineGroup = [];
           lineGroup.push(refLine);
@@ -139,26 +142,28 @@ export default class FromImage extends Component {
         for (let m = 0; m < groupedLines.length; m++) {
           let line = groupedLines[m];
           let lineText = line.map(chunk => chunk.text).join('');
+          console.log('Line: ' + lineText);
 
           if (
             lineText.toLowerCase().includes('total') &&
             !lineText.toLowerCase().includes('subtotal')
           ) {
             let totalString = lineText.replace(/[^0-9.]/g, '');
-            let scanTotal = itemList.reduce(
+            let curList = itemList.concat(LocalData.items);
+            let scanTotal = curList.reduce(
               (sumSoFar, nextItem) => sumSoFar + nextItem.itemCost,
               0,
             );
             let detectedTotal = parseFloat(totalString);
             let totalDifference = detectedTotal - scanTotal;
-            if (totalDifference === 0) {
+            if (isNaN(detectedTotal) || totalDifference === 0) {
               break;
             }
             console.log('Scan total: ' + scanTotal);
             console.log('Detected total: ' + detectedTotal);
             itemList.push(
               new Item(
-                'MISCELLANEOUS ITEMS',
+                'UNSCANNED ITEMS',
                 totalDifference,
                 JSONCopy(defaultSplit),
                 lineText,
@@ -177,6 +182,7 @@ export default class FromImage extends Component {
           for (let n = 0; n < line.length; n++) {
             let index = line.length - n - 1;
             let word = line[index].text.replace(/[^0-9.]/g, '');
+            console.log('Line ' + m + ' Word: ' + word);
             let p0 = midpoint(
               line[index].cornerPoints[0],
               line[index].cornerPoints[1],
@@ -198,10 +204,12 @@ export default class FromImage extends Component {
 
               line.splice(index, 1);
 
+              console.log(word);
               let itemCost = parseFloat(word);
+              console.log(itemCost);
               let itemName = '';
               line.forEach(chunk => (itemName += ' ' + chunk.text));
-              itemName = itemName.replace(/[0-9]/g, '');
+              itemName = itemName.replace(/[0-9]/g, '').trim();
 
               if (itemName.length > 3) {
                 itemList.push(
@@ -299,12 +307,13 @@ export default class FromImage extends Component {
               </Button>
             </Layout>
             <Text appearance="hint" style={Styles.placeholderText}>
+              For best results, keep the receipt flat and crop out everything
+              except the items and total.
+            </Text>
+            <Text appearance="hint" style={Styles.boldText}>
               {this.addMore
                 ? 'This will scan your receipt and add the scanned items to your current purchase.'
                 : 'This will scan your receipt and create a new purchase using the scanned items.'}
-              {'\n\n'}
-              For best results, keep the receipt flat and crop out everything
-              except the items and total.
             </Text>
           </Layout>
           <Layout style={Styles.spinnerContainer}>
@@ -314,7 +323,7 @@ export default class FromImage extends Component {
               <Layout style={Styles.container}>
                 <Image
                   style={Styles.infographic}
-                  source={require('./../../from_image_info.png')}
+                  source={require('./../../resources/from_image_info.png')}
                 />
               </Layout>
             )}
@@ -342,6 +351,11 @@ const Styles = StyleSheet.create({
   placeholderText: {
     textAlign: 'center',
     marginVertical: 20,
+    marginHorizontal: 30,
+  },
+  boldText: {
+    textAlign: 'center',
+    fontWeight: 'bold',
     marginHorizontal: 30,
   },
   spinnerContainer: {

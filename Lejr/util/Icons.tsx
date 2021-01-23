@@ -21,31 +21,31 @@ export {
 };
 
 const AddCircleIcon = (props: any) => (
-  <Icon name="plus-circle-outline" {...props} />
+  <Icon {...props} name="plus-circle-outline" />
 );
-const TrashIcon = (props: any) => <Icon name="trash-2-outline" {...props} />;
-const SaveIcon = (props: any) => <Icon name="save-outline" {...props} />;
+const TrashIcon = (props: any) => <Icon {...props} name="trash-2-outline" />;
+const SaveIcon = (props: any) => <Icon {...props} name="save-outline" />;
 
-const GoogleIcon = (props: any) => <Icon name="google" {...props} />;
-const EmailIcon = (props: any) => <Icon name="email" {...props} />;
+const GoogleIcon = (props: any) => <Icon {...props} name="google" />;
+const EmailIcon = (props: any) => <Icon {...props} name="email" />;
 
 const InviteIcon = (props: any) => (
-  <Icon name="person-add-outline" {...props} />
+  <Icon {...props} name="person-add-outline" />
 );
-const AddIcon = (props: any) => <Icon name="plus-outline" {...props} />;
-const PeopleIcon = (props: any) => <Icon name="people-outline" {...props} />;
-const GearIcon = (props: any) => <Icon name="settings-2-outline" {...props} />;
-const CameraIcon = (props: any) => <Icon name="camera-outline" {...props} />;
-const BackIcon = (props: any) => <Icon name="arrow-back-outline" {...props} />;
+const AddIcon = (props: any) => <Icon {...props} name="plus-outline" />;
+const PeopleIcon = (props: any) => <Icon {...props} name="people-outline" />;
+const GearIcon = (props: any) => <Icon {...props} name="settings-2-outline" />;
+const CameraIcon = (props: any) => <Icon {...props} name="camera-outline" />;
+const BackIcon = (props: any) => <Icon {...props} name="arrow-back-outline" />;
 
-const AcceptIcon = (props: any) => <Icon name="checkmark-outline" {...props} />;
-const DenyIcon = (props: any) => <Icon name="close-outline" {...props} />;
+const AcceptIcon = (props: any) => <Icon {...props} name="checkmark-outline" />;
+const DenyIcon = (props: any) => <Icon {...props} name="close-outline" />;
 
 const RemoveIcon = (props: any) => (
-  <Icon name="person-remove-outline" {...props} />
+  <Icon {...props} name="person-remove-outline" />
 );
-const LeaveIcon = (props: any) => <Icon name="log-out-outline" {...props} />;
+const LeaveIcon = (props: any) => <Icon {...props} name="log-out-outline" />;
 
 const CheckIcon = (props: any) => (
-  <Icon name="checkmark-circle-2-outline" {...props} />
+  <Icon {...props} name="checkmark-circle-2-outline" />
 );

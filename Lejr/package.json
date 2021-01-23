@@ -12,6 +12,7 @@
   "dependencies": {
     "@bugfender/rn-bugfender": "^1.1.4",
     "@eva-design/eva": "^2.0.0",
+    "@invertase/react-native-apple-authentication": "^2.1.0",
     "@react-native-async-storage/async-storage": "^1.13.2",
     "@react-native-community/google-signin": "^4.0.3",
     "@react-native-community/hooks": "^2.6.0",
@@ -41,6 +42,7 @@
     "react-native-safe-area-context": "^3.1.8",
     "react-native-screens": "^2.11.0",
     "react-native-svg": "^9.13.6",
+    "react-native-svg-transformer": "^0.14.3",
     "react-navigation": "^4.4.0",
     "typescript": "^3.9.7",
     "use-subscription": "^1.4.0",

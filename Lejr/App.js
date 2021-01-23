@@ -22,8 +22,8 @@ import CreateAccount from './screens/CreateAccount';
 import CreateGroup from './screens/CreateGroup';
 import Invitations from './screens/dashboard/Home/Invitations';
 
-import {default as theme} from './eva-theme.json';
-import {bugfenderAppId, Key, Screen, Theme} from './util/Constants';
+import {default as theme} from './resources/eva-theme.json';
+import {bugfenderAppId, Screen} from './util/Constants';
 import {
   detachListeners,
   getKeyForCurrentGroupItems,
@@ -35,7 +35,7 @@ import {
 } from './util/LocalData';
 import {BackHandler} from 'react-native';
 import {Alert} from 'react-native';
-import {StoreData, warnLog} from './util/UtilityMethods';
+import {StoreData} from './util/UtilityMethods';
 import {LogBox} from 'react-native';
 import Bugfender from '@bugfender/rn-bugfender';
 
@@ -72,7 +72,7 @@ AppState.addEventListener('change', state => {
       }
       break;
 
-    case 'background':
+    default:
       if (!LocalData.isCamera) {
         detachListeners();
         if (!isPossibleObjectEmpty(LocalData.groupMenu)) {
@@ -81,10 +81,6 @@ AppState.addEventListener('change', state => {
         StoreData(getKeyForCurrentGroupItems(), LocalData.items);
       }
       pushUserData();
-      break;
-
-    default:
-      warnLog('App state unrecognized: ' + state);
       break;
   }
 });

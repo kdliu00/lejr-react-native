@@ -7,10 +7,14 @@ import {Layout, Button, Spinner} from '@ui-kitten/components';
 import {iOSWebClientId, androidWebClientId, Screen} from '../util/Constants';
 import {MergeState, warnLog} from '../util/UtilityMethods';
 import {EmailIcon, GoogleIcon} from '../util/Icons';
+import AppleLogo from '../resources/apple_sign_in.svg';
+import {appleAuth} from '@invertase/react-native-apple-authentication';
 
 GoogleSignin.configure({
   webClientId: Platform.OS === 'ios' ? iOSWebClientId : androidWebClientId,
 });
+
+const LOGO_WIDTH = 18;
 
 export default class Login extends Component {
   constructor() {
@@ -44,17 +48,39 @@ export default class Login extends Component {
           <Layout style={Styles.buffer} />
           {Platform.OS === 'ios' && (
             <Button
-              style={Styles.button}
+              style={[
+                Styles.button,
+                Styles.login,
+                {backgroundColor: 'black', borderColor: 'black'},
+              ]}
+              accessoryLeft={() => (
+                <AppleLogo style={{marginHorizontal: 7, marginVertical: -12}} />
+              )}
               onPress={() => {
                 console.log('Going to Apple login');
+                MergeState(this, {isLoggingIn: true});
+                onAppleButtonPress()
+                  .then(
+                    () => console.log('Signed in with Apple'),
+                    error => {
+                      onLoginError(error);
+                    },
+                  )
+                  .finally(() => MergeState(this, {isLoggingIn: false}));
               }}
               disabled={this.state.isLoggingIn}>
               Sign in with Apple
             </Button>
           )}
           <Button
-            style={Styles.button}
-            accessoryLeft={GoogleIcon}
+            style={[
+              Styles.button,
+              Styles.login,
+              {backgroundColor: 'blue', borderColor: 'blue'},
+            ]}
+            accessoryLeft={props => (
+              <GoogleIcon {...props} width={LOGO_WIDTH} />
+            )}
             onPress={() => {
               console.log('Going to Google login');
               MergeState(this, {isLoggingIn: true});
@@ -71,8 +97,8 @@ export default class Login extends Component {
             Sign in with Google
           </Button>
           <Button
-            style={Styles.button}
-            accessoryLeft={EmailIcon}
+            style={[Styles.button, Styles.login]}
+            accessoryLeft={props => <EmailIcon {...props} width={LOGO_WIDTH} />}
             onPress={() => {
               console.log('Going to email login');
               this.props.navigation.navigate(Screen.EmailLogin, {
@@ -130,6 +156,29 @@ async function onGoogleButtonPress() {
   return auth().signInWithCredential(googleCredential);
 }
 
+async function onAppleButtonPress() {
+  // Start the sign-in request
+  const appleAuthRequestResponse = await appleAuth.performRequest({
+    requestedOperation: appleAuth.Operation.LOGIN,
+    requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+  });
+
+  // Ensure Apple returned a user identityToken
+  if (!appleAuthRequestResponse.identityToken) {
+    throw 'Apple Sign-In failed - no identify token returned';
+  }
+
+  // Create a Firebase credential from the response
+  const {identityToken, nonce} = appleAuthRequestResponse;
+  const appleCredential = auth.AppleAuthProvider.credential(
+    identityToken,
+    nonce,
+  );
+
+  // Sign the user in with the credential
+  return auth().signInWithCredential(appleCredential);
+}
+
 const Styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -148,5 +197,9 @@ const Styles = StyleSheet.create({
   },
   button: {
     margin: 10,
+  },
+  login: {
+    width: 200,
+    justifyContent: 'flex-start',
   },
 });

@@ -172,7 +172,9 @@ class ItemCard extends Component {
             this.totalRef.current.forceUpdate();
             if (removeNullsFromList(LocalData.items).length == 0) {
               LocalData.items = [];
-              LocalData.container.forceUpdate();
+              if (LocalData.container != null) {
+                LocalData.container.forceUpdate();
+              }
             }
           }}>
           <ThemedCard
