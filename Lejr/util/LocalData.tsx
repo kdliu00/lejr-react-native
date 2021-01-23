@@ -16,9 +16,11 @@ import Home from '../screens/dashboard/Home/Home';
 import Contribution from '../screens/dashboard/Contribution/Contribution';
 import Invitations from '../screens/dashboard/Home/Invitations';
 import GroupMenu from '../screens/dashboard/Home/GroupMenu';
+import {Component} from 'react';
 
 export {
   LocalData,
+  updateComponent,
   getMemberName,
   resetVR,
   deleteAllItems,
@@ -77,6 +79,12 @@ class LocalData {
   static theme: Theme = Theme.Light;
 }
 
+function updateComponent(component: any) {
+  if (component != null && component._mounted) {
+    component.forceUpdate();
+  }
+}
+
 function getMemberName(userId: string) {
   let member = LocalData.currentGroup.members[userId];
   let memberArchive = isPossibleObjectEmpty(
@@ -98,8 +106,8 @@ function deleteAllItems(forceUpdate: boolean = true) {
   LocalData.currentVR = null;
   LocalData.items = [];
   StoreData(getKeyForCurrentGroupItems(), LocalData.items);
-  if (forceUpdate && LocalData.container != null) {
-    LocalData.container.forceUpdate();
+  if (forceUpdate) {
+    updateComponent(LocalData.container);
   }
 }
 
@@ -146,12 +154,8 @@ function getUserInvitations(userId: string) {
           LocalData.setInvCount(LocalData.invitations.length);
         }
         console.log('User invitations updated');
-        if (
-          LocalData.invScreen != null &&
-          LocalData.invScreen._mounted &&
-          LocalData.invShouldUpdate
-        ) {
-          LocalData.invScreen.forceUpdate();
+        if (LocalData.invShouldUpdate) {
+          updateComponent(LocalData.invScreen);
         } else {
           LocalData.invShouldUpdate = true;
         }

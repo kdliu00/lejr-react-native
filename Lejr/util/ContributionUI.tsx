@@ -16,6 +16,7 @@ import {
   isPossibleObjectEmpty,
   LocalData,
   resetVR,
+  updateComponent,
 } from './LocalData';
 import {
   getMoneyFormatString,
@@ -48,9 +49,7 @@ const ContributionCard = (props: any) => {
         LocalData.currentVR = JSONCopy(vr);
         LocalData.currentVRCopy = JSONCopy(vr);
         LocalData.items = JSONCopy(vr.items);
-        if (LocalData.container != null) {
-          LocalData.container.forceUpdate();
-        }
+        updateComponent(LocalData.container);
 
         setTimeout(() => {
           LocalData.items.length == 1 &&
@@ -172,9 +171,7 @@ class ItemCard extends Component {
             this.totalRef.current.forceUpdate();
             if (removeNullsFromList(LocalData.items).length == 0) {
               LocalData.items = [];
-              if (LocalData.container != null) {
-                LocalData.container.forceUpdate();
-              }
+              updateComponent(LocalData.container);
             }
           }}>
           <ThemedCard

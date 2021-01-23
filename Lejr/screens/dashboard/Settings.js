@@ -6,6 +6,7 @@ import {
   LocalData,
   pushUserData,
   signOut,
+  updateComponent,
   updatePicUrlForGroup,
 } from '../../util/LocalData';
 import {Screen} from '../../util/Constants';
@@ -66,9 +67,7 @@ export default class Settings extends Component {
           console.log('User profile pic updated');
           updatePicUrlForGroup(LocalData.currentGroup.groupId).then(() => {
             pushUserData();
-            if (LocalData.home != null) {
-              LocalData.home.forceUpdate();
-            }
+            updateComponent(LocalData.home);
             if (this._mounted) {
               MergeState(this, {profileUpdating: false});
               this.forceUpdate();

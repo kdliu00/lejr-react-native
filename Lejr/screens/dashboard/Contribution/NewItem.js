@@ -29,6 +29,7 @@ import {
   getMemberName,
   isPossibleObjectEmpty,
   LocalData,
+  updateComponent,
 } from '../../../util/LocalData';
 import {AnimDefaultDuration} from '../../../util/Constants';
 import {TwoColCheck} from '../../../util/ContributionUI';
@@ -238,7 +239,7 @@ export default class NewItem extends Component {
                               getKeyForCurrentGroupItems(),
                               LocalData.items,
                             );
-                            LocalData.container.forceUpdate();
+                            updateComponent(LocalData.container);
                             setTimeout(
                               () => this.props.navigation.goBack(),
                               AnimDefaultDuration,

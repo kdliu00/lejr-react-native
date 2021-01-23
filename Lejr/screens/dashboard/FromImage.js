@@ -14,12 +14,9 @@ import {
   warnLog,
 } from '../../util/UtilityMethods';
 import {Item} from '../../util/DataObjects';
-import {LocalData} from '../../util/LocalData';
+import {LocalData, updateComponent} from '../../util/LocalData';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import {Image} from 'react-native';
-
-const IMAGE_WIDTH = 300;
-const IMAGE_HEIGHT = 400;
 
 export default class FromImage extends Component {
   constructor(props) {
@@ -71,10 +68,7 @@ export default class FromImage extends Component {
             refLine.cornerPoints[2],
           ); //top right, bottom right
 
-          let threshold = pointDistance(
-            refLine.cornerPoints[0],
-            refLine.cornerPoints[3],
-          ); //top left, bottom left
+          let threshold = pointDistance(refLine.cornerPoints[0], refCoordML); //top left, middle left
 
           let lineGroup = [];
           lineGroup.push(refLine);
@@ -142,7 +136,6 @@ export default class FromImage extends Component {
         for (let m = 0; m < groupedLines.length; m++) {
           let line = groupedLines[m];
           let lineText = line.map(chunk => chunk.text).join('');
-          console.log('Line: ' + lineText);
 
           if (
             lineText.toLowerCase().includes('total') &&
@@ -182,7 +175,6 @@ export default class FromImage extends Component {
           for (let n = 0; n < line.length; n++) {
             let index = line.length - n - 1;
             let word = line[index].text.replace(/[^0-9.]/g, '');
-            console.log('Line ' + m + ' Word: ' + word);
             let p0 = midpoint(
               line[index].cornerPoints[0],
               line[index].cornerPoints[1],
@@ -204,9 +196,7 @@ export default class FromImage extends Component {
 
               line.splice(index, 1);
 
-              console.log(word);
               let itemCost = parseFloat(word);
-              console.log(itemCost);
               let itemName = '';
               line.forEach(chunk => (itemName += ' ' + chunk.text));
               itemName = itemName.replace(/[0-9]/g, '').trim();
@@ -232,9 +222,7 @@ export default class FromImage extends Component {
           LocalData.items.push(...itemList);
         }
 
-        if (LocalData.container != null) {
-          LocalData.container.forceUpdate();
-        }
+        updateComponent(LocalData.container);
 
         MergeState(this, {isProcessing: false});
         LocalData.isCamera = false;
@@ -269,8 +257,6 @@ export default class FromImage extends Component {
                     mediaType: 'photo',
                     cropping: true,
                     freeStyleCropEnabled: true,
-                    height: IMAGE_HEIGHT,
-                    width: IMAGE_WIDTH,
                   }).then(
                     image => this.processImage(image),
                     error => {
@@ -292,8 +278,6 @@ export default class FromImage extends Component {
                     mediaType: 'photo',
                     cropping: true,
                     freeStyleCropEnabled: true,
-                    height: IMAGE_HEIGHT,
-                    width: IMAGE_WIDTH,
                   }).then(
                     image => this.processImage(image),
                     error => {

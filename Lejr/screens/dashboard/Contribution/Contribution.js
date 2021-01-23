@@ -36,6 +36,11 @@ export default class Contribution extends Component {
   componentDidMount() {
     console.log('Arrived at Contribution');
     LocalData.container = this;
+    this._mounted = true;
+  }
+
+  componentWillUnmount() {
+    this._mounted = false;
   }
 
   render() {
@@ -57,9 +62,8 @@ export default class Contribution extends Component {
           <ThemedLayout style={Styles.itemList}>
             {LocalData.items.length === 0 ? (
               <Text appearance="hint" style={Styles.placeholderText}>
-                To create individualized item splits, tap the plus icon or use
-                the camera tab to scan a receipt.{'\n\n'}You can also Quick Add
-                by tapping the double arrows in the lower right.
+                This purchase is currently empty. To add items, tap the plus
+                icon to scan a receipt.
               </Text>
             ) : (
               <ThemedScroll

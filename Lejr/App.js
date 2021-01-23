@@ -56,7 +56,7 @@ const Stack = createStackNavigator();
 const RootStack = createStackNavigator();
 
 AppState.addEventListener('change', state => {
-  console.log('App state has changed');
+  console.log('App state has changed: ' + state);
   switch (state) {
     case 'active':
       console.log('Attaching firestore listeners');
