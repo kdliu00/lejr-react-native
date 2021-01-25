@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, SafeAreaView} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {Button, Layout, Spinner, Text} from '@ui-kitten/components';
 import {Component} from 'react';
 import FormStyles from '../../util/FormStyles';
@@ -11,7 +11,6 @@ import {
   Bounds,
   TextLine,
   Point,
-  warnLog,
   pointDistance,
   pointToLineDistance,
   errorLog,
@@ -22,12 +21,11 @@ import {
   LocalData,
   updateComponent,
 } from '../../util/LocalData';
-import ImageCropPicker from 'react-native-image-crop-picker';
-import {Image} from 'react-native';
 import ImageResizer from 'react-native-image-resizer';
 import DocumentScanner from '@woonivers/react-native-document-scanner';
+import {Fragment} from 'react';
 
-const MAX_DIM = 2000;
+const MAX_DIM = 2400;
 
 export default class FromImage extends Component {
   constructor(props) {
@@ -43,15 +41,18 @@ export default class FromImage extends Component {
   }
 
   processImage(data) {
-    console.log('Processing image: ' + image.path);
-    var image = data.croppedImage;
+    console.log('Processing image: ' + data.croppedImage);
 
     ImageResizer.createResizedImage(
-      image.path,
-      5 * image.width,
-      5 * image.width,
+      data.croppedImage,
+      MAX_DIM,
+      MAX_DIM,
       'PNG',
       100,
+      0,
+      null,
+      false,
+      {mode: 'cover'},
     )
       .then(response => {
         vision()
@@ -81,7 +82,7 @@ export default class FromImage extends Component {
             while (k < textLines.length) {
               var refTextLine = JSONCopy(textLines[k]);
               k += 1;
-              for (j = k; j < textLines.length; j++) {
+              for (let j = k; j < textLines.length; j++) {
                 k = j;
                 let candTextLine = JSONCopy(textLines[j]);
                 let threshold =
@@ -174,9 +175,28 @@ export default class FromImage extends Component {
 
   render() {
     return (
-      <Layout style={Styles.container}>
-        <SafeAreaView style={[Styles.container, Styles.reverseCenter]}>
-          <Layout style={FormStyles.buttonStyle}>
+      <Fragment>
+        <Layout style={Styles.scanner}>
+          {this.state.isProcessing ? (
+            <Layout style={Styles.center}>
+              <Spinner size="large" />
+            </Layout>
+          ) : (
+            <DocumentScanner
+              style={Styles.scanner}
+              onPictureTaken={data => {
+                MergeState(this, {isProcessing: true});
+                this.processImage(data);
+              }}
+              overlayColor="rgba(125,112,240,0.5)"
+              enableTorch={false}
+              detectionCountBeforeCapture={5}
+              detectionRefreshRateInMS={50}
+            />
+          )}
+        </Layout>
+        <Layout style={Styles.container}>
+          <Layout style={Styles.marginBottom}>
             <Button
               style={FormStyles.button}
               appearance="outline"
@@ -187,32 +207,13 @@ export default class FromImage extends Component {
               Cancel
             </Button>
           </Layout>
-          <Layout style={Styles.reverseCenter}>
-            <Text appearance="hint" style={Styles.boldText}>
-              {this.addMore
-                ? 'This will scan your receipt and add the scanned items to your current purchase.'
-                : 'This will scan your receipt and create a new purchase using the scanned items.'}
-            </Text>
-          </Layout>
-          <Layout style={Styles.spinnerContainer}>
-            {this.state.isProcessing ? (
-              <Spinner size="large" />
-            ) : (
-              <Layout style={Styles.container}>
-                <DocumentScanner
-                  style={Styles.scanner}
-                  onPictureTaken={this.processImage}
-                  overlayColor="rgba(125,112,240,0.7)"
-                  enableTorch={false}
-                  saturation={0}
-                  detectionCountBeforeCapture={5}
-                  detectionRefreshRateInMS={50}
-                />
-              </Layout>
-            )}
-          </Layout>
-        </SafeAreaView>
-      </Layout>
+          <Text appearance="hint" style={Styles.boldText}>
+            {this.addMore
+              ? 'This will scan your receipt and add the scanned items to your current purchase.'
+              : 'This will scan your receipt and create a new purchase using the scanned items.'}
+          </Text>
+        </Layout>
+      </Fragment>
     );
   }
 }
@@ -220,21 +221,24 @@ export default class FromImage extends Component {
 const Styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  reverseCenter: {
-    flexDirection: 'column-reverse',
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'column-reverse',
+  },
+  marginBottom: {
+    marginBottom: 50,
+  },
+  center: {
+    alignItems: 'center',
   },
   boldText: {
     textAlign: 'center',
     fontWeight: 'bold',
     marginHorizontal: 30,
+    marginBottom: 30,
   },
-  spinnerContainer: {
-    flex: 1,
-    flexDirection: 'column-reverse',
-    marginBottom: 50,
+  scanner: {
+    flex: 3,
+    justifyContent: 'center',
   },
-  scanner: {},
 });

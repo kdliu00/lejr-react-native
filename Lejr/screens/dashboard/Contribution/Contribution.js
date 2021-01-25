@@ -187,7 +187,7 @@ const Styles = StyleSheet.create({
   },
   placeholderText: {
     textAlign: 'center',
-    marginHorizontal: 20,
+    marginHorizontal: 30,
   },
   contentContainer: {
     paddingHorizontal: 8,

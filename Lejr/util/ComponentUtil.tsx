@@ -98,7 +98,7 @@ const IconButton = (props: any) => {
   return (
     <Button
       {...props}
-      activeOpacity={0}
+      activeOpacity={1}
       appearance="ghost"
       accessoryLeft={props.icon}
       size="large"
