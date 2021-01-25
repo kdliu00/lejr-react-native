@@ -16,6 +16,9 @@ export {
   pointToLineDistance,
   pointDistance,
   midpoint,
+  TextLine,
+  Bounds,
+  Point,
   warnLog,
   errorLog,
 };
@@ -126,14 +129,11 @@ function JSONCopy(obj: any) {
  * @param p1
  * @param p2
  */
-function pointToLineDistance(p0: number[], p1: number[], p2: number[]) {
+function pointToLineDistance(p0: Point, p1: Point, p2: Point) {
   return (
     Math.abs(
-      (p2[1] - p1[1]) * p0[0] -
-        (p2[0] - p1[0]) * p0[1] +
-        p2[0] * p1[1] -
-        p2[1] * p1[0],
-    ) / Math.sqrt(Math.pow(p2[1] - p1[1], 2) + Math.pow(p2[0] - p1[0], 2))
+      (p2.y - p1.y) * p0.x - (p2.x - p1.x) * p0.y + p2.x * p1.y - p2.y * p1.x,
+    ) / Math.sqrt(Math.pow(p2.y - p1.y, 2) + Math.pow(p2.x - p1.x, 2))
   );
 }
 
@@ -142,8 +142,8 @@ function pointToLineDistance(p0: number[], p1: number[], p2: number[]) {
  * @param p0
  * @param p1
  */
-function pointDistance(p0: number[], p1: number[]) {
-  return Math.sqrt(Math.pow(p0[0] - p1[0], 2) + Math.pow(p0[1] - p1[1], 2));
+function pointDistance(p0: Point, p1: Point) {
+  return Math.sqrt(Math.pow(p0.x - p1.x, 2) + Math.pow(p0.y - p1.y, 2));
 }
 
 /**
@@ -151,8 +151,52 @@ function pointDistance(p0: number[], p1: number[]) {
  * @param p0
  * @param p1
  */
-function midpoint(p0: number[], p1: number[]) {
-  return [(p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2];
+function midpoint(p0: Point, p1: Point) {
+  return new Point((p0.x + p1.x) / 2, (p0.y + p1.y) / 2);
+}
+
+class TextLine {
+  text: string;
+  bounds: Bounds;
+
+  constructor(text: string, bounds: Bounds) {
+    this.text = text;
+    this.bounds = bounds;
+  }
+}
+
+class Bounds {
+  upLeft: Point;
+  upRight: Point;
+  lowRight: Point;
+  lowLeft: Point;
+  midLeft: Point;
+  midRight: Point;
+  midUp: Point;
+  midLow: Point;
+  center: Point;
+
+  constructor(upLeft: Point, upRight: Point, lowRight: Point, lowLeft: Point) {
+    this.upLeft = upLeft;
+    this.upRight = upRight;
+    this.lowRight = lowRight;
+    this.lowLeft = lowLeft;
+    this.midLeft = midpoint(upLeft, lowLeft);
+    this.midRight = midpoint(upRight, lowRight);
+    this.midUp = midpoint(upLeft, upRight);
+    this.midLow = midpoint(lowLeft, lowRight);
+    this.center = midpoint(this.midLeft, this.midRight);
+  }
+}
+
+class Point {
+  x: number;
+  y: number;
+
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+  }
 }
 
 function warnLog(message: any) {
