@@ -226,7 +226,7 @@ export default class FromImage extends Component {
               overlayColor="rgba(125,112,240,0.5)"
               enableTorch={false}
               detectionCountBeforeCapture={5}
-              detectionRefreshRateInMS={50}
+              detectionRefreshRateInMS={200}
             />
           )}
         </Layout>
