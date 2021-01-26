@@ -25,7 +25,9 @@ import {
   TrashIcon,
   SaveIcon,
   BackIcon,
+  CameraIcon,
 } from '../../../util/Icons';
+import {Item} from '../../../util/DataObjects';
 
 export default class Contribution extends Component {
   constructor() {
@@ -62,8 +64,8 @@ export default class Contribution extends Component {
           <ThemedLayout style={Styles.itemList}>
             {LocalData.items.length === 0 ? (
               <Text appearance="hint" style={Styles.placeholderText}>
-                This purchase is currently empty. To add items, tap the plus
-                icon to scan a receipt.
+                Tap the camera icon to scan your receipt.{'\n\n'}Tap the plus
+                icon to add items manually.
               </Text>
             ) : (
               <ThemedScroll
@@ -129,9 +131,19 @@ export default class Contribution extends Component {
               icon={AddCircleIcon}
               onPress={() => {
                 LocalData.items = removeNullsFromList(LocalData.items);
-                this.props.navigation.navigate(Screen.FromImage, {
-                  addMore: true,
+                this.props.navigation.navigate(Screen.NewItem, {
+                  item: new Item(null, null, null, null),
+                  vrIndex: null,
                 });
+              }}
+            />
+            <IconButton
+              style={Styles.button}
+              status="info"
+              icon={CameraIcon}
+              onPress={() => {
+                LocalData.items = removeNullsFromList(LocalData.items);
+                this.props.navigation.navigate(Screen.FromImage);
               }}
             />
             <IconButton
@@ -154,7 +166,7 @@ class TotalText extends Component {
   render() {
     return (
       <Text style={Styles.titleText} category="h4">
-        Total: ${getMoneyFormatString(getTotal(filterItemCosts()))}
+        Total: {getMoneyFormatString(getTotal(filterItemCosts()))}
       </Text>
     );
   }

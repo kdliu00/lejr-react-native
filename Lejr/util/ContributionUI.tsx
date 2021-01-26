@@ -6,13 +6,12 @@ import {DangerSwipe, ThemedCard, CustomSwipeable} from './ComponentUtil';
 import {
   AnimDefaultDuration,
   AnimKeyboardDuration,
-  defaultProfilePic,
   QuickAddLabel,
   Screen,
 } from './Constants';
 import Animated, {Easing} from 'react-native-reanimated';
 import {
-  getMemberName,
+  getProfilePic,
   isPossibleObjectEmpty,
   LocalData,
   resetVR,
@@ -24,13 +23,15 @@ import {
   JSONCopy,
 } from './UtilityMethods';
 import {CheckIcon} from './Icons';
+import moment from 'moment';
+import {Fragment} from 'react';
 
 export {
   ContributionCard,
   ItemCard,
-  PurchaseSplit,
   BlankCard,
   Balance,
+  OneColText,
   TwoColText,
   TwoColCheck,
   getBalanceString,
@@ -62,17 +63,9 @@ const ContributionCard = (props: any) => {
         <Layout style={Styles.topLeft}>
           <Avatar
             style={Styles.avatar}
-            size="small"
+            size="medium"
             source={{
-              uri: isPossibleObjectEmpty(
-                isPossibleObjectEmpty(
-                  LocalData.currentGroup.members[vr.buyerId],
-                )
-                  ? null
-                  : LocalData.currentGroup.members[vr.buyerId].picUrl,
-              )
-                ? defaultProfilePic
-                : LocalData.currentGroup.members[vr.buyerId].picUrl,
+              uri: getProfilePic(vr.buyerId),
             }}
             shape="round"
           />
@@ -82,23 +75,32 @@ const ContributionCard = (props: any) => {
         </Layout>
         <Layout style={Styles.topRight}>
           <Text numberOfLines={1} category="h6">
-            ${getMoneyFormatString(vr.total)}
+            {getMoneyFormatString(vr.total)}
           </Text>
         </Layout>
       </Layout>
       <Layout style={Styles.footer}>
-        {Object.keys(vr.totalSplit).map(userId => {
-          let name = getMemberName(userId);
-          let initials = name.match(/\b\w/g) || [];
-          initials = (
-            (initials.shift() || '') + (initials.pop() || '')
-          ).toUpperCase();
-          return (
-            <Text style={Styles.splitText} key={userId}>
-              {initials}: {Math.round(vr.totalSplit[userId])}%
-            </Text>
-          );
-        })}
+        <Layout style={Styles.topLeft}>
+          {Object.keys(vr.totalSplit).map(userId => {
+            if (vr.totalSplit[userId] != 0) {
+              return (
+                <Fragment key={userId}>
+                  <Avatar
+                    style={Styles.avatar}
+                    size="tiny"
+                    source={{
+                      uri: getProfilePic(userId),
+                    }}
+                    shape="round"
+                  />
+                </Fragment>
+              );
+            }
+          })}
+        </Layout>
+        <Text style={Styles.splitText}>
+          {moment(new Date(vr.timestamp)).format('MMM. D, h:mm a')}
+        </Text>
       </Layout>
     </ThemedCard>
   );
@@ -188,7 +190,7 @@ class ItemCard extends Component {
               </Layout>
               <Layout style={Styles.topRight}>
                 <Text numberOfLines={1}>
-                  ${getMoneyFormatString(this.item.itemCost)}
+                  {getMoneyFormatString(this.item.itemCost)}
                 </Text>
               </Layout>
             </Layout>
@@ -198,28 +200,6 @@ class ItemCard extends Component {
     );
   }
 }
-
-const PurchaseSplit = (props: any) => {
-  return (
-    <Layout style={Styles.purchaseSplit}>
-      <Layout style={Styles.topLeft}>
-        <Text numberOfLines={1} category="h6">
-          {props.userName}
-        </Text>
-      </Layout>
-      <Layout style={Styles.topRight}>
-        <Text numberOfLines={1} category="h6">
-          ${getMoneyFormatString(props.userTotal)}
-        </Text>
-      </Layout>
-      <Layout style={Styles.topRight}>
-        <Text numberOfLines={1} category="h6">
-          {isNaN(props.userTotalPercent) ? '0' : props.userTotalPercent}%
-        </Text>
-      </Layout>
-    </Layout>
-  );
-};
 
 /**
  * Two columns of text for user balance
@@ -251,6 +231,19 @@ const Balance = (props: any) => {
       </Layout>
     </Layout>
   );
+};
+
+/**
+ * One column of text
+ * @param props text
+ */
+const OneColText = (props: any) => {
+  var text = (
+    <Text numberOfLines={1} category="h6">
+      {props.text}
+    </Text>
+  );
+  return <OneColElem elem={text} />;
 };
 
 /**
@@ -311,11 +304,17 @@ const TwoColElem = (props: any) => {
   );
 };
 
+const OneColElem = (props: any) => {
+  return (
+    <Layout style={Styles.purchaseSplit}>
+      <Layout style={Styles.topCenter}>{props.elem}</Layout>
+    </Layout>
+  );
+};
+
 function getBalanceString(userId: string) {
   let balance = LocalData.currentGroup.members[userId].balance;
-  return balance < 0
-    ? '-$' + getMoneyFormatString(Math.abs(balance))
-    : '$' + getMoneyFormatString(Math.abs(balance));
+  return getMoneyFormatString(balance);
 }
 
 const BlankCard = (props: any) => {
@@ -352,7 +351,7 @@ const SeeInvitations = (props: any) => {
 const Styles = StyleSheet.create({
   contribCard: {
     paddingTop: 12,
-    paddingBottom: 16,
+    paddingBottom: 14,
     paddingHorizontal: 20,
     marginVertical: 6,
     borderRadius: 8,
@@ -367,6 +366,13 @@ const Styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
+    backgroundColor: 'rgba(0, 0, 0, 0.0)',
+  },
+  topCenter: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.0)',
   },
   topLeft: {
@@ -396,9 +402,11 @@ const Styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 40,
     alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.0)',
   },
   splitText: {
-    marginRight: 14,
+    textAlign: 'right',
+    marginLeft: 14,
   },
   checkboxRow: {
     marginHorizontal: 50,

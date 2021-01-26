@@ -19,6 +19,7 @@ export {
   TextLine,
   Bounds,
   Point,
+  getItemFromTextLine,
   warnLog,
   errorLog,
 };
@@ -91,17 +92,18 @@ function nearestHundredth(num: number) {
  * @param amount money amount
  */
 function getMoneyFormatString(amount: number) {
-  var returnString = nearestHundredth(amount).toString();
-  const h = Math.round(amount * 100);
-  if (isNaN(amount)) {
-    return '0';
+  var absAmount = Math.abs(amount);
+  var returnString = nearestHundredth(absAmount).toString();
+  const h = Math.round(absAmount * 100);
+  if (isNaN(absAmount)) {
+    return '$0';
   }
   if (h % 100 != 0) {
     if (h % 10 == 0) {
       returnString += '0';
     }
   }
-  return returnString;
+  return amount < 0 ? '—$' + returnString : '$' + returnString;
 }
 
 /**
@@ -197,6 +199,70 @@ class Point {
     this.x = x;
     this.y = y;
   }
+}
+
+function getItemFromTextLine(textLine: TextLine) {
+  let reversedString = [...textLine.text].reverse();
+  var sawDecimal = false;
+  var sawOnes = false;
+  var sawCents = false;
+  var priceConstruct = '';
+  var k = 0;
+  while (k < reversedString.length) {
+    k += 1;
+    let curChar = reversedString[k];
+    if (k > 5 && !sawDecimal) {
+      //if we haven't seen a decimal point by now, probably not an item
+      return null;
+    } else {
+      if (sawCents) {
+        if (sawDecimal) {
+          if (sawOnes) {
+            //continue adding until non-numeral
+            if (!isNaN(parseInt(curChar))) {
+              priceConstruct = curChar + priceConstruct;
+            } else {
+              break;
+            }
+          } else {
+            //look for ones, disregard spaces/decimals, return null on else
+            if (!isNaN(parseInt(curChar))) {
+              priceConstruct = curChar + priceConstruct;
+              sawOnes = true;
+            } else if (
+              curChar.normalize() != ' '.normalize() &&
+              curChar.normalize() != '.'.normalize()
+            ) {
+              return null;
+            }
+          }
+        } else {
+          //look for more cents or decimal, return null on else
+          if (!isNaN(parseInt(curChar))) {
+            priceConstruct = curChar + priceConstruct;
+          } else if (curChar.normalize() === '.'.normalize()) {
+            priceConstruct = curChar + priceConstruct;
+            sawDecimal = true;
+          } else {
+            return null;
+          }
+        }
+      } else {
+        //look for cents, discard non-numerals
+        if (!isNaN(parseInt(curChar))) {
+          priceConstruct = curChar + priceConstruct;
+          sawCents = true;
+        }
+      }
+    }
+  }
+  let name = reversedString
+    .reverse()
+    .slice(0, -k + 1)
+    .join('')
+    .replace(/[0-9]/g, '')
+    .trim();
+  return {itemName: name, itemCost: priceConstruct};
 }
 
 function warnLog(message: any) {

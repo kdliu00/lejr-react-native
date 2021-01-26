@@ -14,6 +14,7 @@ import {
   pointDistance,
   pointToLineDistance,
   errorLog,
+  getItemFromTextLine,
 } from '../../util/UtilityMethods';
 import {Item} from '../../util/DataObjects';
 import {
@@ -24,13 +25,13 @@ import {
 import ImageResizer from 'react-native-image-resizer';
 import DocumentScanner from '@woonivers/react-native-document-scanner';
 import {Fragment} from 'react';
+import {Alert} from 'react-native';
 
 const MAX_DIM = 2400;
 
 export default class FromImage extends Component {
-  constructor(props) {
+  constructor() {
     super();
-    this.addMore = props.route.params.addMore;
     this.state = {
       isProcessing: false,
     };
@@ -145,6 +146,7 @@ export default class FromImage extends Component {
             console.log('Parsed text:\n' + logText.join('\n'));
 
             //calculate default split
+            var scanError = false;
             var itemList = [];
             let defaultSplit = {};
             let userIds = Object.keys(LocalData.currentGroup.members);
@@ -152,13 +154,46 @@ export default class FromImage extends Component {
               defaultSplit[userId] = Math.round(10000 / userIds.length) / 100;
             });
 
-            if (isPossibleObjectEmpty(LocalData.items)) {
-              LocalData.items = itemList;
-            } else {
-              LocalData.items.push(...itemList);
-            }
+            //find items
+            mergedTextLines.forEach(textLine => {
+              let itemProps = getItemFromTextLine(textLine);
+              if (itemProps != null) {
+                if (
+                  itemProps.itemName.toLowerCase().includes('total') ||
+                  itemProps.itemName.toLowerCase().includes('balance')
+                ) {
+                  let scannedTotal =
+                    itemList.reduce((a, b) => a + b.itemCost, 0) +
+                    LocalData.tax;
+                  scanError = scannedTotal != parseFloat(itemProps.itemCost);
+                } else if (itemProps.itemName.toLowerCase().includes('tax')) {
+                  LocalData.tax = itemProps.itemCost;
+                } else {
+                  let item = new Item(
+                    itemProps.itemName,
+                    parseFloat(itemProps.itemCost),
+                    JSONCopy(defaultSplit),
+                    textLine.text,
+                  );
+                  itemList.push(item);
+                }
+              }
+            });
 
+            LocalData.items = itemList;
             updateComponent(LocalData.container);
+
+            if (scanError) {
+              Alert.alert(
+                'Possible Scan Error',
+                'There may be a missing or extra item, or one of the scanned items was incorrect.',
+                [
+                  {
+                    text: 'Okay',
+                  },
+                ],
+              );
+            }
 
             MergeState(this, {isProcessing: false});
             LocalData.isCamera = false;
@@ -175,7 +210,7 @@ export default class FromImage extends Component {
 
   render() {
     return (
-      <Fragment>
+      <Layout style={{flex: 1}}>
         <Layout style={Styles.scanner}>
           {this.state.isProcessing ? (
             <Layout style={Styles.center}>
@@ -195,25 +230,18 @@ export default class FromImage extends Component {
             />
           )}
         </Layout>
-        <Layout style={Styles.container}>
-          <Layout style={Styles.marginBottom}>
-            <Button
-              style={FormStyles.button}
-              appearance="outline"
-              disabled={this.state.isProcessing}
-              onPress={() => {
-                this.props.navigation.goBack();
-              }}>
-              Cancel
-            </Button>
-          </Layout>
-          <Text appearance="hint" style={Styles.boldText}>
-            {this.addMore
-              ? 'This will scan your receipt and add the scanned items to your current purchase.'
-              : 'This will scan your receipt and create a new purchase using the scanned items.'}
-          </Text>
+        <Layout style={Styles.marginBottom}>
+          <Button
+            style={FormStyles.button}
+            appearance="outline"
+            disabled={this.state.isProcessing}
+            onPress={() => {
+              this.props.navigation.goBack();
+            }}>
+            Cancel
+          </Button>
         </Layout>
-      </Fragment>
+      </Layout>
     );
   }
 }
@@ -226,6 +254,8 @@ const Styles = StyleSheet.create({
     flexDirection: 'column-reverse',
   },
   marginBottom: {
+    alignItems: 'center',
+    marginTop: 20,
     marginBottom: 50,
   },
   center: {
@@ -238,7 +268,7 @@ const Styles = StyleSheet.create({
     marginBottom: 30,
   },
   scanner: {
-    flex: 3,
+    flex: 4,
     justifyContent: 'center',
   },
 });

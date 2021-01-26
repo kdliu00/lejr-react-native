@@ -46,7 +46,7 @@ export default class Loading extends Component {
     } else if (!LocalData.currentGroup) {
       RetrieveData(Key.CurrentGroup).then(value => {
         loadGroupAsMain(
-          value == null ? LocalData.user.groups[0].groupId : value,
+          value === null ? LocalData.user.groups[0].groupId : value,
           () => this.props.navigation.navigate(Screen.Dashboard),
         );
       });

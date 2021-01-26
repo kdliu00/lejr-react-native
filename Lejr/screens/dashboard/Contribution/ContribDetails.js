@@ -25,14 +25,16 @@ import * as yup from 'yup';
 import {
   filterItemCosts,
   getMemberName,
+  getTax,
   LocalData,
   resetVR,
   uploadVirtualReceipt,
 } from '../../../util/LocalData';
-import {PurchaseSplit} from '../../../util/ContributionUI';
+import {OneColText} from '../../../util/ContributionUI';
 import {AnimKeyboardDuration} from '../../../util/Constants';
 import {ScrollView} from 'react-native-gesture-handler';
 import {VirtualReceipt} from '../../../util/DataObjects';
+import {Fragment} from 'react';
 
 export default class ContribDetails extends Component {
   constructor() {
@@ -70,14 +72,18 @@ export default class ContribDetails extends Component {
       const userTotalPercent = nearestHundredth(
         (100 * userTotal) / this.currentTotal,
       );
+      userTotal += (getTax() * userTotalPercent) / 100;
       this.totalSplit[userId] = userTotalPercent;
       return (
-        <PurchaseSplit
-          key={userId}
-          userName={userName}
-          userTotal={nearestHundredth(userTotal)}
-          userTotalPercent={Math.round(userTotalPercent)}
-        />
+        <Fragment key={userId}>
+          <OneColText
+            text={
+              userName +
+              ' spent ' +
+              getMoneyFormatString(nearestHundredth(userTotal))
+            }
+          />
+        </Fragment>
       );
     });
   }
@@ -112,17 +118,20 @@ export default class ContribDetails extends Component {
             </Layout>
             <Layout style={Styles.infoContainer}>
               <Text style={Styles.centerText} category="h5">
-                Total: $
+                Total:{' '}
                 {getMoneyFormatString(
                   nearestHundredth(getTotal(filterItemCosts())),
                 )}
               </Text>
               <Text style={Styles.centerText}>
-                Purchased by{' '}
+                Paid by{' '}
                 {LocalData.currentVR
                   ? LocalData.currentGroup.members[LocalData.currentVR.buyerId]
                       .name
                   : LocalData.currentGroup.members[LocalData.user.userId].name}
+              </Text>
+              <Text style={Styles.centerText}>
+                Tax: {getMoneyFormatString(getTax(LocalData.currentVR))}
               </Text>
             </Layout>
             <ScrollView style={Styles.scrollView}>
@@ -172,6 +181,7 @@ export default class ContribDetails extends Component {
                                 : Date.now(),
                               removeNullsFromList(LocalData.items),
                               this.currentTotal,
+                              getTax(LocalData.currentVR),
                               this.totalSplit,
                               '',
                             ),

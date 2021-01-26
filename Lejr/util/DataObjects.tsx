@@ -187,6 +187,7 @@ class VirtualReceipt {
   timestamp: number;
   items: Item[];
   total: number;
+  tax: number;
   totalSplit: Map<string, number>;
   receiptImage: string;
 
@@ -197,6 +198,7 @@ class VirtualReceipt {
     timestamp: number,
     items: Item[],
     total: number,
+    tax: number,
     totalSplit: Map<string, number>,
     receiptImage: string,
   ) {
@@ -206,6 +208,7 @@ class VirtualReceipt {
     this.timestamp = timestamp;
     this.items = items;
     this.total = total;
+    this.tax = tax;
     this.totalSplit = totalSplit;
     this.receiptImage = receiptImage;
   }
@@ -219,6 +222,7 @@ class VirtualReceipt {
         timestamp: vr.timestamp,
         items: vr.items,
         total: vr.total,
+        tax: vr.tax,
         totalSplit: vr.totalSplit,
         receiptImage: vr.receiptImage,
       };
@@ -232,6 +236,7 @@ class VirtualReceipt {
         data.timestamp,
         data.items,
         data.total,
+        data.tax,
         data.totalSplit,
         data.receiptImage,
       );

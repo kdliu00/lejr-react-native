@@ -147,14 +147,14 @@ export default class QuickAdd extends Component {
             </Layout>
             <Layout style={Styles.infoContainer}>
               <Text style={Styles.centerText}>
-                Purchased by{' '}
+                Paid by{' '}
                 {LocalData.currentVR
                   ? LocalData.currentGroup.members[LocalData.currentVR.buyerId]
                       .name
                   : LocalData.currentGroup.members[LocalData.user.userId].name}
               </Text>
               <Text style={Styles.subtitle} category="h6">
-                Item Split
+                This purchase is for...
               </Text>
             </Layout>
             <ScrollView style={Styles.scrollView}>
@@ -233,6 +233,7 @@ export default class QuickAdd extends Component {
                                     ),
                                   ],
                               parseFloat(this.state.total),
+                              0,
                               this.splitPercent,
                               '',
                             ),

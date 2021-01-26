@@ -85,7 +85,7 @@ export default class Settings extends Component {
       <Layout style={Styles.container}>
         <SafeAreaView style={Styles.container}>
           <Button
-            style={[Styles.button, Styles.bottomButton]}
+            style={Styles.bottomButton}
             appearance="outline"
             onPress={() => this.props.navigation.goBack()}>
             Back
@@ -185,7 +185,7 @@ const Styles = StyleSheet.create({
     flexDirection: 'column-reverse',
   },
   bottomButton: {
-    marginBottom: 50,
+    marginBottom: 60,
     marginTop: 80,
   },
   button: {

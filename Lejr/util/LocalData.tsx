@@ -9,7 +9,13 @@ import {
 } from './DataObjects';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import {Collection, ErrorCode, Key, Theme} from './Constants';
+import {
+  Collection,
+  defaultProfilePic,
+  ErrorCode,
+  Key,
+  Theme,
+} from './Constants';
 import {Alert} from 'react-native';
 import {errorLog, nearestHundredth, StoreData, warnLog} from './UtilityMethods';
 import Home from '../screens/dashboard/Home/Home';
@@ -30,6 +36,8 @@ export {
   pushUserData,
   pushGroupData,
   safeGetListData,
+  getProfilePic,
+  getTax,
   isPossibleObjectEmpty,
   getUserInvitations,
   uploadVirtualReceipt,
@@ -59,6 +67,7 @@ class LocalData {
   static virtualReceipts: VirtualReceipt[] = null;
   static currentVR: VirtualReceipt = null;
   static currentVRCopy: VirtualReceipt = null;
+  static tax: number = 0;
 
   //screen references
   static container: Contribution = null;
@@ -103,6 +112,7 @@ function resetVR(forceUpdate: boolean = true) {
 
 function deleteAllItems(forceUpdate: boolean = true) {
   console.log('Deleting all items');
+  LocalData.tax = 0;
   LocalData.currentVR = null;
   LocalData.items = [];
   StoreData(getKeyForCurrentGroupItems(), LocalData.items);
@@ -212,10 +222,11 @@ function uploadVirtualReceipt(
 
               //determine the change in balance
               if (vr.buyerId == userId) {
-                dBalance += nearestHundredth(vr.total);
+                dBalance += nearestHundredth(vr.total + vr.tax);
                 if (isOld) {
                   dBalanceOld += nearestHundredth(
-                    LocalData.currentVRCopy.total,
+                    LocalData.currentVRCopy.total +
+                      getTax(LocalData.currentVRCopy),
                   );
                 }
               }
@@ -234,6 +245,7 @@ function uploadVirtualReceipt(
           .then(
             () => {
               console.log('Update group balances complete');
+              LocalData.tax = 0;
               callback();
             },
             error => {
@@ -257,11 +269,27 @@ function uploadVirtualReceipt(
     );
 }
 
+function getProfilePic(userId: string) {
+  return isPossibleObjectEmpty(
+    isPossibleObjectEmpty(LocalData.currentGroup.members[userId])
+      ? null
+      : LocalData.currentGroup.members[userId].picUrl,
+  )
+    ? defaultProfilePic
+    : LocalData.currentGroup.members[userId].picUrl;
+}
+
 function getSplitValue(userId: string, vr: VirtualReceipt) {
   if (vr.totalSplit[userId] == null) {
     return 0;
   }
-  return nearestHundredth((vr.total * vr.totalSplit[userId]) / 100);
+  return nearestHundredth(
+    ((vr.total + getTax(vr)) * vr.totalSplit[userId]) / 100,
+  );
+}
+
+function getTax(vr: VirtualReceipt) {
+  return vr ? (vr.tax ? vr.tax : LocalData.tax) : LocalData.tax;
 }
 
 function loadGroupAsMain(groupId: string, callback: () => void) {

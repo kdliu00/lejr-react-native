@@ -221,7 +221,7 @@ function getTotalExpenses() {
   Object.keys(LocalData.currentGroup.members).forEach(userId => {
     total += Math.abs(LocalData.currentGroup.members[userId].balance);
   });
-  return '$' + getMoneyFormatString(total.toString());
+  return getMoneyFormatString(total.toString());
 }
 
 const Styles = StyleSheet.create({
@@ -248,7 +248,7 @@ const Styles = StyleSheet.create({
   buttonContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 45,
+    marginBottom: 40,
   },
   button: {
     marginBottom: 20,

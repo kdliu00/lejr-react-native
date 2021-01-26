@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {StyleSheet, SafeAreaView} from 'react-native';
-import {Layout, Text} from '@ui-kitten/components';
+import {Button, Layout, Text} from '@ui-kitten/components';
 import {ContributionCard, getBalanceString} from '../../../util/ContributionUI';
 import {
   LocalData,
@@ -26,8 +26,10 @@ import {
   InviteIcon,
   PeopleIcon,
 } from '../../../util/Icons';
+import {Fragment} from 'react';
 
 const GROUP_RENDER_HEIGHT = 150;
+const ADD_OPTS_RENDER_HEIGHT = 54;
 
 export default class Home extends Component {
   constructor() {
@@ -37,8 +39,10 @@ export default class Home extends Component {
     );
     this.state = {
       renderHeight: new Animated.Value(0),
+      addOptsHeight: new Animated.Value(0),
     };
     this.groupSelectExpanded = false;
+    this.addOptsExpanded = false;
     this.selectedGroup = LocalData.currentGroup.groupName;
     this.GroupElements = LocalData.user.groups
       .filter(groupInfo => groupInfo.groupId !== LocalData.currentGroup.groupId)
@@ -63,6 +67,9 @@ export default class Home extends Component {
       if (this.groupSelectExpanded) {
         this.toggleGroupSelect();
       }
+      if (this.addOptsExpanded) {
+        this.toggleAddOptsSelect();
+      }
     });
   }
 
@@ -75,9 +82,19 @@ export default class Home extends Component {
     Animated.timing(renderHeight, {
       duration: AnimDefaultDuration,
       toValue: this.groupSelectExpanded ? 0 : GROUP_RENDER_HEIGHT,
-      easing: Easing.inOut(Easing.exp),
+      easing: Easing.out(Easing.cubic),
     }).start();
     this.groupSelectExpanded = !this.groupSelectExpanded;
+  }
+
+  toggleAddOptsSelect() {
+    const {addOptsHeight} = this.state;
+    Animated.timing(addOptsHeight, {
+      duration: AnimDefaultDuration,
+      toValue: this.addOptsExpanded ? 0 : ADD_OPTS_RENDER_HEIGHT,
+      easing: Easing.out(Easing.cubic),
+    }).start();
+    this.addOptsExpanded = !this.addOptsExpanded;
   }
 
   render() {
@@ -97,18 +114,44 @@ export default class Home extends Component {
               contentContainerStyle={Styles.contentContainer}>
               {LocalData.virtualReceipts.map(virtualReceipt => {
                 return (
-                  <ContributionCard
-                    key={virtualReceipt.virtualReceiptId}
-                    vr={virtualReceipt}
-                    nav={this.props.navigation}
-                  />
+                  <Fragment key={virtualReceipt.virtualReceiptId}>
+                    <ContributionCard
+                      vr={virtualReceipt}
+                      nav={this.props.navigation}
+                    />
+                  </Fragment>
                 );
               })}
             </ThemedScroll>
           )}
+          <Animated.View style={{height: this.state.addOptsHeight}}>
+            <ThemedScroll showsVerticalScrollIndicator={false}>
+              <Layout style={Styles.row}>
+                <Button
+                  appearance="outline"
+                  style={Styles.button}
+                  onPress={() => {
+                    resetVR();
+                    this.props.navigation.navigate(Screen.QuickAdd);
+                  }}>
+                  Quick Add
+                </Button>
+                <Button
+                  appearance="outline"
+                  style={Styles.button}
+                  onPress={() => {
+                    resetVR();
+                    this.props.navigation.navigate(Screen.Contribution);
+                  }}>
+                  Itemized
+                </Button>
+              </Layout>
+            </ThemedScroll>
+          </Animated.View>
           <Layout style={Styles.row}>
             <IconButton
               style={[Styles.container, Styles.squared]}
+              status="basic"
               icon={GearIcon}
               onPress={() => this.props.navigation.navigate(Screen.Settings)}
             />
@@ -116,18 +159,16 @@ export default class Home extends Component {
               style={[Styles.container, Styles.squared]}
               icon={AddIcon}
               onPress={() => {
-                resetVR();
-                this.props.navigation.navigate(Screen.QuickAdd);
+                this.toggleAddOptsSelect();
               }}
             />
             <IconButton
               style={[Styles.container, Styles.squared]}
+              status="info"
               icon={CameraIcon}
               onPress={() => {
                 resetVR();
-                this.props.navigation.navigate(Screen.FromImage, {
-                  addMore: false,
-                });
+                this.props.navigation.navigate(Screen.FromImage);
               }}
             />
           </Layout>
@@ -147,6 +188,7 @@ export default class Home extends Component {
           </Animated.View>
           <Layout style={[Styles.banner, Styles.row]}>
             <IconButton
+              status="warning"
               icon={PeopleIcon}
               onPress={() => this.props.navigation.navigate(Screen.GroupMenu)}
             />
@@ -159,6 +201,7 @@ export default class Home extends Component {
               </Text>
             </ThemedCard>
             <IconButton
+              status="success"
               icon={InviteIcon}
               onPress={() =>
                 this.props.navigation.navigate(Screen.InviteToGroup, {
@@ -175,9 +218,16 @@ export default class Home extends Component {
 
 class BalanceText extends Component {
   render() {
+    let curBalance = getBalanceString(LocalData.user.userId);
+    let text = '';
+    if (curBalance.startsWith('-')) {
+      text = 'You owe this group ' + curBalance.replace('-', '');
+    } else {
+      text = 'This group owes you ' + curBalance;
+    }
     return (
       <Text style={Styles.titleText} category="h6">
-        Your balance in this group is {getBalanceString(LocalData.user.userId)}
+        {text}
       </Text>
     );
   }
@@ -246,6 +296,10 @@ const Styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignSelf: 'center',
     flexDirection: 'row',
+  },
+  button: {
+    width: 120,
+    marginHorizontal: 20,
   },
   banner: {
     marginBottom: 10,

@@ -155,7 +155,7 @@ export default class NewItem extends Component {
               />
             </Layout>
             <Text style={Styles.subtitle} category="h6">
-              Item Split
+              This item is for...
             </Text>
             <ScrollView style={Styles.scrollView}>
               {this.itemUserIds.map(userId => {
@@ -250,7 +250,7 @@ export default class NewItem extends Component {
                         }
                       });
                   }}>
-                  Done
+                  {this.vrIndex ? 'Done' : 'Add'}
                 </Button>
               )}
             </Layout>
