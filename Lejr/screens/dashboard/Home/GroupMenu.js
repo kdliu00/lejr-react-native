@@ -97,7 +97,7 @@ export default class GroupMenu extends Component {
             </Text>
             <TwoColText text1="Total Expenses" text2={getTotalExpenses()} />
             <Text style={[Styles.text, Styles.underlineText]} category="h6">
-              Member Balances
+              Balances
             </Text>
             <ScrollView>
               {Object.keys(LocalData.currentGroup.members).map(userId => {

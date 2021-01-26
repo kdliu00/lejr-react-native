@@ -125,14 +125,14 @@ export default class ContribDetails extends Component {
                 )}
               </Text>
               <Text style={Styles.centerText}>
+                Tax: {getMoneyFormatString(getTax(LocalData.currentVR))}
+              </Text>
+              <Text style={Styles.centerText}>
                 Paid by{' '}
                 {LocalData.currentVR
                   ? LocalData.currentGroup.members[LocalData.currentVR.buyerId]
                       .name
                   : LocalData.currentGroup.members[LocalData.user.userId].name}
-              </Text>
-              <Text style={Styles.centerText}>
-                Tax: {getMoneyFormatString(getTax(LocalData.currentVR))}
               </Text>
             </Layout>
             <ScrollView style={Styles.scrollView}>

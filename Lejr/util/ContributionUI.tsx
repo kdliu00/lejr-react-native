@@ -38,73 +38,81 @@ export {
   SeeInvitations,
 };
 
-const ContributionCard = (props: any) => {
-  const vr: VirtualReceipt = props.vr;
-  const nav: any = props.nav;
+class ContributionCard extends Component {
+  vr: VirtualReceipt;
+  nav: any;
 
-  return (
-    <ThemedCard
-      style={Styles.contribCard}
-      onPress={() => {
-        resetVR();
-        LocalData.currentVR = JSONCopy(vr);
-        LocalData.currentVRCopy = JSONCopy(vr);
-        LocalData.items = JSONCopy(vr.items);
-        updateComponent(LocalData.container);
+  constructor(props: any) {
+    super(props);
+    this.vr = props.vr;
+    this.nav = props.nav;
+  }
 
-        setTimeout(() => {
-          LocalData.items.length == 1 &&
-          LocalData.items[0].itemName === QuickAddLabel
-            ? nav.navigate(Screen.QuickAdd)
-            : nav.navigate(Screen.Contribution);
-        }, AnimKeyboardDuration);
-      }}>
-      <Layout style={Styles.header}>
-        <Layout style={Styles.topLeft}>
-          <Avatar
-            style={Styles.avatar}
-            size="medium"
-            source={{
-              uri: getProfilePic(vr.buyerId),
-            }}
-            shape="round"
-          />
-          <Text numberOfLines={1} category="h6">
-            {vr.memo}
+  render() {
+    return (
+      <ThemedCard
+        style={Styles.contribCard}
+        onPress={() => {
+          resetVR();
+          LocalData.currentVR = JSONCopy(this.vr);
+          LocalData.currentVRCopy = JSONCopy(this.vr);
+          LocalData.items = JSONCopy(this.vr.items);
+          updateComponent(LocalData.container);
+
+          setTimeout(() => {
+            LocalData.items.length == 1 &&
+            LocalData.items[0].itemName === QuickAddLabel
+              ? this.nav.navigate(Screen.QuickAdd)
+              : this.nav.navigate(Screen.Contribution);
+          }, AnimKeyboardDuration);
+        }}>
+        <Layout style={Styles.header}>
+          <Layout style={Styles.topLeft}>
+            <Avatar
+              style={Styles.avatar}
+              size="medium"
+              source={{
+                uri: getProfilePic(this.vr.buyerId),
+              }}
+              shape="round"
+            />
+            <Text numberOfLines={1} category="h6">
+              {this.vr.memo}
+            </Text>
+          </Layout>
+          <Layout style={Styles.topRight}>
+            <Text numberOfLines={1} category="h6">
+              {getMoneyFormatString(this.vr.total)}
+            </Text>
+          </Layout>
+        </Layout>
+        <Layout style={Styles.footer}>
+          <Layout style={Styles.topLeft}>
+            {Object.keys(this.vr.totalSplit).map(userId => {
+              if (this.vr.totalSplit[userId] != 0) {
+                return (
+                  <Fragment key={userId}>
+                    <Avatar
+                      style={Styles.avatar}
+                      size="tiny"
+                      source={{
+                        uri: getProfilePic(userId),
+                      }}
+                      shape="round"
+                    />
+                  </Fragment>
+                );
+              }
+            })}
+          </Layout>
+          <Text style={Styles.splitText}>
+            {moment(new Date(this.vr.timestamp)).format('MMM. D, h:mm a')}
           </Text>
         </Layout>
-        <Layout style={Styles.topRight}>
-          <Text numberOfLines={1} category="h6">
-            {getMoneyFormatString(vr.total)}
-          </Text>
-        </Layout>
-      </Layout>
-      <Layout style={Styles.footer}>
-        <Layout style={Styles.topLeft}>
-          {Object.keys(vr.totalSplit).map(userId => {
-            if (vr.totalSplit[userId] != 0) {
-              return (
-                <Fragment key={userId}>
-                  <Avatar
-                    style={Styles.avatar}
-                    size="tiny"
-                    source={{
-                      uri: getProfilePic(userId),
-                    }}
-                    shape="round"
-                  />
-                </Fragment>
-              );
-            }
-          })}
-        </Layout>
-        <Text style={Styles.splitText}>
-          {moment(new Date(vr.timestamp)).format('MMM. D, h:mm a')}
-        </Text>
-      </Layout>
-    </ThemedCard>
-  );
-};
+      </ThemedCard>
+    );
+  }
+}
 
 class ItemCard extends Component {
   RENDER_HEIGHT = 56;

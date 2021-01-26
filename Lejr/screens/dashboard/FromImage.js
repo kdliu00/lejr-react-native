@@ -33,27 +33,27 @@ export default class FromImage extends Component {
       isProcessing: false,
       isConfirm: false,
     };
-    this.data = null;
+    this.croppedImage = null;
   }
 
   componentDidMount() {
     console.log('Arrived at FromImage');
   }
 
-  processImage(data) {
-    console.log('Processing image: ' + data.croppedImage);
+  processImage(croppedImage) {
+    console.log('Processing image: ' + croppedImage);
 
-    Image.getSize(data.croppedImage, (width, height) =>
+    Image.getSize(croppedImage, (width, height) =>
       ImageResizer.createResizedImage(
-        data.croppedImage,
-        3 * width,
-        3 * height,
+        croppedImage,
+        Math.round(2.5 * width),
+        Math.round(2.5 * height),
         'PNG',
         100,
         0,
         null,
         false,
-        {mode: 'cover'},
+        {mode: 'stretch'},
       )
         .then(response => {
           vision()
@@ -96,7 +96,7 @@ export default class FromImage extends Component {
                   k = j;
                   let candTextLine = JSONCopy(textLines[j]);
                   let threshold =
-                    0.6 *
+                    0.5 *
                     pointDistance(
                       refTextLine.bounds.midUp,
                       refTextLine.bounds.midLow,
@@ -227,7 +227,7 @@ export default class FromImage extends Component {
               if (scanError) {
                 Alert.alert(
                   'Possible Scan Error',
-                  'There may be a missing item or one of the scanned items was incorrect. You may need to edit incorrect items or rescan your receipt.',
+                  'You may need to edit incorrect items or rescan your receipt.',
                   [
                     {
                       text: 'Okay',
@@ -254,13 +254,13 @@ export default class FromImage extends Component {
 
   render() {
     return (
-      <Layout style={{flex: 1}}>
+      <Layout style={Styles.flex1}>
         <Layout style={Styles.scanner}>
           {this.state.isConfirm ? (
             <Image
-              style={{flex: 1}}
+              style={Styles.flex1}
               resizeMode={'contain'}
-              source={{uri: this.data.croppedImage}}
+              source={{uri: this.croppedImage}}
             />
           ) : this.state.isProcessing ? (
             <Layout style={Styles.center}>
@@ -270,7 +270,8 @@ export default class FromImage extends Component {
             <DocumentScanner
               style={Styles.scanner}
               onPictureTaken={data => {
-                this.data = data;
+                console.log('Picture taken');
+                this.croppedImage = data.croppedImage;
                 MergeState(this, {isConfirm: true});
               }}
               overlayColor="rgba(125,112,240,0.5)"
@@ -283,13 +284,12 @@ export default class FromImage extends Component {
         </Layout>
         <Layout style={Styles.marginBottom}>
           {this.state.isConfirm ? (
-            <Layout
-              style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
+            <Layout style={Styles.rowButtons}>
               <IconButton
                 status="danger"
                 icon={CloseIcon}
                 onPress={() => {
-                  this.data = null;
+                  this.croppedImage = null;
                   MergeState(this, {isConfirm: false});
                 }}
               />
@@ -297,7 +297,7 @@ export default class FromImage extends Component {
                 status="success"
                 icon={ConfirmIcon}
                 onPress={() => {
-                  this.processImage(this.data);
+                  this.processImage(this.croppedImage);
                   MergeState(this, {isConfirm: false, isProcessing: true});
                 }}
               />
@@ -322,6 +322,9 @@ export default class FromImage extends Component {
 }
 
 const Styles = StyleSheet.create({
+  flex1: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     alignItems: 'center',
@@ -341,6 +344,10 @@ const Styles = StyleSheet.create({
     fontWeight: 'bold',
     marginHorizontal: 30,
     marginBottom: 30,
+  },
+  rowButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
   },
   scanner: {
     flex: 4,

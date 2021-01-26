@@ -270,14 +270,14 @@ function getItemFromTextLine(textLine: TextLine, ref1: Point, ref2: Point) {
             }
           }
         } else {
-          //look for more cents or decimal, return null on else
+          //look for more cents or decimal, return null on else if not space
           if (!isNaN(parseInt(curChar))) {
             priceConstruct = curChar + priceConstruct;
             numCents += 1;
-          } else if (curChar === '.') {
-            priceConstruct = curChar + priceConstruct;
+          } else if (curChar === '.' || curChar === ',') {
+            priceConstruct = '.' + priceConstruct;
             sawDecimal = true;
-          } else {
+          } else if (curChar !== ' ') {
             return null;
           }
         }

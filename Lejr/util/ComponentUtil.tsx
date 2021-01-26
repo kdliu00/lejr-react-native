@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, {Component} from 'react';
 import {Layout, withStyles, Text, Button} from '@ui-kitten/components';
 import {RectButton, ScrollView} from 'react-native-gesture-handler';
 import Slider from '@react-native-community/slider';

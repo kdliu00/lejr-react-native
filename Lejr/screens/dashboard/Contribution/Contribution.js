@@ -10,6 +10,7 @@ import {
   deleteAllItems,
   filterItemCosts,
   getKeyForCurrentGroupItems,
+  getTax,
   LocalData,
 } from '../../../util/LocalData';
 import {Screen} from '../../../util/Constants';
@@ -55,6 +56,13 @@ export default class Contribution extends Component {
         <SafeAreaView style={Styles.container}>
           <ThemedLayout style={Styles.banner}>
             <TotalText ref={this.totalRef} />
+            <Text
+              style={[
+                Styles.placeholderText,
+                {marginTop: 5, marginBottom: -5},
+              ]}>
+              Tax: {getMoneyFormatString(getTax())}
+            </Text>
           </ThemedLayout>
           {LocalData.items.length !== 0 && (
             <Text appearance="hint" style={Styles.placeholderText}>
@@ -89,10 +97,9 @@ export default class Contribution extends Component {
               </ThemedScroll>
             )}
           </ThemedLayout>
-          <Layout style={Styles.banner}>
+          <Layout style={[Styles.banner, Styles.row]}>
             {LocalData.currentVR ? (
               <IconButton
-                style={Styles.button}
                 status="basic"
                 icon={BackIcon}
                 onPress={() => this.props.navigation.goBack()}
@@ -162,7 +169,11 @@ class TotalText extends Component {
   render() {
     return (
       <Text style={Styles.titleText} category="h4">
-        Subtotal: {getMoneyFormatString(getTotal(filterItemCosts()))}
+        Total:{' '}
+        {getMoneyFormatString(
+          parseFloat(getTotal(filterItemCosts())) +
+            parseFloat(getTax(LocalData.currentVR)),
+        )}
       </Text>
     );
   }
@@ -188,6 +199,8 @@ const Styles = StyleSheet.create({
     marginVertical: 10,
     alignItems: 'center',
     justifyContent: 'space-around',
+  },
+  row: {
     flexDirection: 'row',
   },
   placeholderText: {
