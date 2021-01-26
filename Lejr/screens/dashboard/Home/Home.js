@@ -150,20 +150,17 @@ export default class Home extends Component {
           </Animated.View>
           <Layout style={Styles.row}>
             <IconButton
-              style={[Styles.container, Styles.squared]}
               status="basic"
               icon={GearIcon}
               onPress={() => this.props.navigation.navigate(Screen.Settings)}
             />
             <IconButton
-              style={[Styles.container, Styles.squared]}
               icon={AddIcon}
               onPress={() => {
                 this.toggleAddOptsSelect();
               }}
             />
             <IconButton
-              style={[Styles.container, Styles.squared]}
               status="info"
               icon={CameraIcon}
               onPress={() => {
@@ -188,6 +185,7 @@ export default class Home extends Component {
           </Animated.View>
           <Layout style={[Styles.banner, Styles.row]}>
             <IconButton
+              style={{flex: 0}}
               status="warning"
               icon={PeopleIcon}
               onPress={() => this.props.navigation.navigate(Screen.GroupMenu)}
@@ -201,6 +199,7 @@ export default class Home extends Component {
               </Text>
             </ThemedCard>
             <IconButton
+              style={{flex: 0}}
               status="success"
               icon={InviteIcon}
               onPress={() =>
@@ -261,7 +260,7 @@ const Styles = StyleSheet.create({
     alignItems: 'center',
   },
   groupLabel: {
-    paddingVertical: 10,
+    paddingVertical: 14,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -308,8 +307,5 @@ const Styles = StyleSheet.create({
     marginTop: 20,
     textAlign: 'center',
     fontWeight: 'bold',
-  },
-  squared: {
-    borderRadius: 0,
   },
 });

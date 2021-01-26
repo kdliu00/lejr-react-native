@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleSheet} from 'react-native';
-import {Button, Layout, Spinner, Text} from '@ui-kitten/components';
+import {Button, Layout, Spinner} from '@ui-kitten/components';
 import {Component} from 'react';
 import FormStyles from '../../util/FormStyles';
 import {Screen} from '../../util/Constants';
@@ -15,26 +15,25 @@ import {
   pointToLineDistance,
   errorLog,
   getItemFromTextLine,
+  TextRef,
 } from '../../util/UtilityMethods';
 import {Item} from '../../util/DataObjects';
-import {
-  isPossibleObjectEmpty,
-  LocalData,
-  updateComponent,
-} from '../../util/LocalData';
+import {LocalData, updateComponent} from '../../util/LocalData';
 import ImageResizer from 'react-native-image-resizer';
 import DocumentScanner from '@woonivers/react-native-document-scanner';
-import {Fragment} from 'react';
 import {Alert} from 'react-native';
-
-const MAX_DIM = 2400;
+import {IconButton} from '../../util/ComponentUtil';
+import {CloseIcon, ConfirmIcon} from '../../util/Icons';
+import {Image} from 'react-native';
 
 export default class FromImage extends Component {
   constructor() {
     super();
     this.state = {
       isProcessing: false,
+      isConfirm: false,
     };
+    this.data = null;
   }
 
   componentDidMount() {
@@ -44,175 +43,226 @@ export default class FromImage extends Component {
   processImage(data) {
     console.log('Processing image: ' + data.croppedImage);
 
-    ImageResizer.createResizedImage(
-      data.croppedImage,
-      MAX_DIM,
-      MAX_DIM,
-      'PNG',
-      100,
-      0,
-      null,
-      false,
-      {mode: 'cover'},
-    )
-      .then(response => {
-        vision()
-          .textRecognizerProcessImage(response.path)
-          .then(result => {
-            //format result into text lines
-            let textLines = [];
-            result.blocks.forEach(block => {
-              block.lines.forEach(line => {
-                let bounds = new Bounds(
-                  new Point(line.cornerPoints[0][0], line.cornerPoints[0][1]),
-                  new Point(line.cornerPoints[1][0], line.cornerPoints[1][1]),
-                  new Point(line.cornerPoints[2][0], line.cornerPoints[2][1]),
-                  new Point(line.cornerPoints[3][0], line.cornerPoints[3][1]),
-                );
-                let textLine = new TextLine(line.text, bounds);
-                textLines.push(textLine);
+    Image.getSize(data.croppedImage, (width, height) =>
+      ImageResizer.createResizedImage(
+        data.croppedImage,
+        3 * width,
+        3 * height,
+        'PNG',
+        100,
+        0,
+        null,
+        false,
+        {mode: 'cover'},
+      )
+        .then(response => {
+          vision()
+            .textRecognizerProcessImage(response.path)
+            .then(result => {
+              console.log('Processing text');
+
+              //format result into text lines
+              let textLines = [];
+              result.blocks.forEach(block => {
+                block.lines.forEach(line => {
+                  let bounds = new Bounds(
+                    new Point(line.cornerPoints[0][0], line.cornerPoints[0][1]),
+                    new Point(line.cornerPoints[1][0], line.cornerPoints[1][1]),
+                    new Point(line.cornerPoints[2][0], line.cornerPoints[2][1]),
+                    new Point(line.cornerPoints[3][0], line.cornerPoints[3][1]),
+                  );
+                  let textLine = new TextLine(line.text, bounds);
+                  textLines.push(textLine);
+                });
               });
-            });
 
-            //sort by vertical
-            textLines.sort((a, b) => a.bounds.center.y - b.bounds.center.y);
+              //sort by vertical
+              textLines.sort((a, b) => a.bounds.center.y - b.bounds.center.y);
 
-            //reformat by merging lines
-            let mergedTextLines = [];
-            var k = 0;
-            while (k < textLines.length) {
-              var refTextLine = JSONCopy(textLines[k]);
-              k += 1;
-              for (let j = k; j < textLines.length; j++) {
-                k = j;
-                let candTextLine = JSONCopy(textLines[j]);
-                let threshold =
-                  0.5 *
-                  pointDistance(
-                    refTextLine.bounds.midUp,
-                    refTextLine.bounds.midLow,
-                  );
-                var candRefDist = 0;
-                if (
-                  refTextLine.bounds.midLeft.x < candTextLine.bounds.midLeft.x
-                ) {
-                  candRefDist = pointToLineDistance(
-                    candTextLine.bounds.midLeft,
-                    refTextLine.bounds.midLeft,
-                    refTextLine.bounds.midRight,
-                  );
-                } else {
-                  candRefDist = pointToLineDistance(
-                    candTextLine.bounds.midRight,
-                    refTextLine.bounds.midLeft,
-                    refTextLine.bounds.midRight,
-                  );
-                }
-                if (candRefDist <= threshold) {
-                  var newBounds = null;
-                  var newText = null;
+              //reformat by merging lines
+              let mergedTextLines = [];
+              var k = 0;
+              while (k < textLines.length) {
+                var textRefs = [];
+                var refTextLine = JSONCopy(textLines[k]);
+                textRefs.push(
+                  new TextRef(
+                    refTextLine.bounds.center.x,
+                    refTextLine.text.trim(),
+                  ),
+                );
+                k += 1;
+                for (let j = k; j < textLines.length; j++) {
+                  k = j;
+                  let candTextLine = JSONCopy(textLines[j]);
+                  let threshold =
+                    0.6 *
+                    pointDistance(
+                      refTextLine.bounds.midUp,
+                      refTextLine.bounds.midLow,
+                    );
+                  var candRefDist = 0;
                   if (
                     refTextLine.bounds.midLeft.x < candTextLine.bounds.midLeft.x
                   ) {
-                    newBounds = new Bounds(
-                      refTextLine.bounds.upLeft,
-                      candTextLine.bounds.upRight,
-                      candTextLine.bounds.lowRight,
-                      refTextLine.bounds.lowLeft,
+                    candRefDist = pointToLineDistance(
+                      candTextLine.bounds.midLeft,
+                      refTextLine.bounds.midLeft,
+                      refTextLine.bounds.midRight,
                     );
-                    newText = [refTextLine.text, candTextLine.text].join(' ');
                   } else {
-                    newBounds = new Bounds(
-                      candTextLine.bounds.upLeft,
-                      refTextLine.bounds.upRight,
-                      refTextLine.bounds.lowRight,
-                      candTextLine.bounds.lowLeft,
+                    candRefDist = pointToLineDistance(
+                      candTextLine.bounds.midRight,
+                      refTextLine.bounds.midLeft,
+                      refTextLine.bounds.midRight,
                     );
-                    newText = [candTextLine.text, refTextLine.text].join(' ');
                   }
-                  refTextLine = new TextLine(newText, newBounds);
-                } else {
-                  break;
+                  if (candRefDist <= threshold) {
+                    var newBounds = null;
+                    if (
+                      refTextLine.bounds.midLeft.x <
+                      candTextLine.bounds.midLeft.x
+                    ) {
+                      if (
+                        refTextLine.bounds.midRight.x >
+                        candTextLine.bounds.midRight.x
+                      ) {
+                        newBounds = refTextLine.bounds;
+                      } else {
+                        newBounds = new Bounds(
+                          refTextLine.bounds.upLeft,
+                          candTextLine.bounds.upRight,
+                          candTextLine.bounds.lowRight,
+                          refTextLine.bounds.lowLeft,
+                        );
+                      }
+                    } else {
+                      newBounds = new Bounds(
+                        candTextLine.bounds.upLeft,
+                        refTextLine.bounds.upRight,
+                        refTextLine.bounds.lowRight,
+                        candTextLine.bounds.lowLeft,
+                      );
+                    }
+                    textRefs.push(
+                      new TextRef(
+                        candTextLine.bounds.center.x,
+                        candTextLine.text.trim(),
+                      ),
+                    );
+                    refTextLine = new TextLine('', newBounds);
+                  } else {
+                    break;
+                  }
+                }
+                textRefs = textRefs
+                  .sort((a, b) => a.x - b.x)
+                  .map(textRef => textRef.text);
+                mergedTextLines.push(
+                  new TextLine(textRefs.join(' '), refTextLine.bounds),
+                );
+              }
+
+              //log the lines
+              let logText = [];
+              mergedTextLines.forEach(textLine => {
+                logText.push(textLine.text);
+              });
+              console.log('Parsed text:\n' + logText.join('\n'));
+
+              //calculate default split
+              var scanError = false;
+              var itemList = [];
+              let defaultSplit = {};
+              let userIds = Object.keys(LocalData.currentGroup.members);
+              userIds.forEach(userId => {
+                defaultSplit[userId] = Math.round(10000 / userIds.length) / 100;
+              });
+
+              //find items
+              var ref1 = null;
+              var ref2 = null;
+              for (let i = 0; i < mergedTextLines.length; i++) {
+                let textLine = mergedTextLines[i];
+                let itemProps = getItemFromTextLine(textLine, ref1, ref2);
+                if (itemProps != null) {
+                  ref1 = itemProps.newRef1;
+                  ref2 = itemProps.newRef2;
+                }
+                if (itemProps != null) {
+                  if (!itemProps.itemName.toLowerCase().includes('subtotal')) {
+                    if (
+                      itemProps.itemName.toLowerCase().includes('total') ||
+                      itemProps.itemName.toLowerCase().includes('balance')
+                    ) {
+                      let scannedTotal =
+                        parseFloat(
+                          itemList.reduce((a, b) => a + b.itemCost, 0),
+                        ) + parseFloat(LocalData.tax);
+                      let detectedTotal = parseFloat(itemProps.itemCost);
+                      console.log('Scanned total: ' + scannedTotal);
+                      console.log('Detected total: ' + detectedTotal);
+                      scanError = scannedTotal !== detectedTotal;
+                      break;
+                    } else if (
+                      itemProps.itemName.toLowerCase().includes('tax')
+                    ) {
+                      LocalData.tax = itemProps.itemCost;
+                    } else {
+                      let item = new Item(
+                        itemProps.itemName,
+                        parseFloat(itemProps.itemCost),
+                        JSONCopy(defaultSplit),
+                        textLine.text,
+                      );
+                      itemList.push(item);
+                    }
+                  }
                 }
               }
-              mergedTextLines.push(refTextLine);
-            }
 
-            //log the lines
-            let logText = [];
-            mergedTextLines.forEach(textLine => {
-              logText.push(textLine.text);
-            });
-            console.log('Parsed text:\n' + logText.join('\n'));
+              LocalData.items = itemList;
+              updateComponent(LocalData.container);
 
-            //calculate default split
-            var scanError = false;
-            var itemList = [];
-            let defaultSplit = {};
-            let userIds = Object.keys(LocalData.currentGroup.members);
-            userIds.forEach(userId => {
-              defaultSplit[userId] = Math.round(10000 / userIds.length) / 100;
-            });
-
-            //find items
-            mergedTextLines.forEach(textLine => {
-              let itemProps = getItemFromTextLine(textLine);
-              if (itemProps != null) {
-                if (
-                  itemProps.itemName.toLowerCase().includes('total') ||
-                  itemProps.itemName.toLowerCase().includes('balance')
-                ) {
-                  let scannedTotal =
-                    itemList.reduce((a, b) => a + b.itemCost, 0) +
-                    LocalData.tax;
-                  scanError = scannedTotal != parseFloat(itemProps.itemCost);
-                } else if (itemProps.itemName.toLowerCase().includes('tax')) {
-                  LocalData.tax = itemProps.itemCost;
-                } else {
-                  let item = new Item(
-                    itemProps.itemName,
-                    parseFloat(itemProps.itemCost),
-                    JSONCopy(defaultSplit),
-                    textLine.text,
-                  );
-                  itemList.push(item);
-                }
+              if (scanError) {
+                Alert.alert(
+                  'Possible Scan Error',
+                  'There may be a missing item or one of the scanned items was incorrect. You may need to edit incorrect items or rescan your receipt.',
+                  [
+                    {
+                      text: 'Okay',
+                    },
+                  ],
+                  {cancelable: false},
+                );
               }
+
+              MergeState(this, {isProcessing: false});
+              LocalData.isCamera = false;
+              console.log('Finished processing');
+              this.props.navigation.replace(Screen.Contribution);
+            })
+            .catch(err => {
+              errorLog(err);
             });
-
-            LocalData.items = itemList;
-            updateComponent(LocalData.container);
-
-            if (scanError) {
-              Alert.alert(
-                'Possible Scan Error',
-                'There may be a missing or extra item, or one of the scanned items was incorrect.',
-                [
-                  {
-                    text: 'Okay',
-                  },
-                ],
-              );
-            }
-
-            MergeState(this, {isProcessing: false});
-            LocalData.isCamera = false;
-            this.props.navigation.replace(Screen.Contribution);
-          })
-          .catch(err => {
-            errorLog(err);
-          });
-      })
-      .catch(err => {
-        errorLog(err);
-      });
+        })
+        .catch(err => {
+          errorLog(err);
+        }),
+    );
   }
 
   render() {
     return (
       <Layout style={{flex: 1}}>
         <Layout style={Styles.scanner}>
-          {this.state.isProcessing ? (
+          {this.state.isConfirm ? (
+            <Image
+              style={{flex: 1}}
+              resizeMode={'contain'}
+              source={{uri: this.data.croppedImage}}
+            />
+          ) : this.state.isProcessing ? (
             <Layout style={Styles.center}>
               <Spinner size="large" />
             </Layout>
@@ -220,26 +270,51 @@ export default class FromImage extends Component {
             <DocumentScanner
               style={Styles.scanner}
               onPictureTaken={data => {
-                MergeState(this, {isProcessing: true});
-                this.processImage(data);
+                this.data = data;
+                MergeState(this, {isConfirm: true});
               }}
               overlayColor="rgba(125,112,240,0.5)"
               enableTorch={false}
+              quality={1}
               detectionCountBeforeCapture={5}
-              detectionRefreshRateInMS={200}
+              detectionRefreshRateInMS={50}
             />
           )}
         </Layout>
         <Layout style={Styles.marginBottom}>
-          <Button
-            style={FormStyles.button}
-            appearance="outline"
-            disabled={this.state.isProcessing}
-            onPress={() => {
-              this.props.navigation.goBack();
-            }}>
-            Cancel
-          </Button>
+          {this.state.isConfirm ? (
+            <Layout
+              style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
+              <IconButton
+                status="danger"
+                icon={CloseIcon}
+                onPress={() => {
+                  this.data = null;
+                  MergeState(this, {isConfirm: false});
+                }}
+              />
+              <IconButton
+                status="success"
+                icon={ConfirmIcon}
+                onPress={() => {
+                  this.processImage(this.data);
+                  MergeState(this, {isConfirm: false, isProcessing: true});
+                }}
+              />
+            </Layout>
+          ) : (
+            !this.state.isProcessing && (
+              <Button
+                style={FormStyles.button}
+                appearance="outline"
+                disabled={this.state.isProcessing}
+                onPress={() => {
+                  this.props.navigation.goBack();
+                }}>
+                Cancel
+              </Button>
+            )
+          )}
         </Layout>
       </Layout>
     );

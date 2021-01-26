@@ -99,7 +99,6 @@ export default class Contribution extends Component {
               />
             ) : (
               <IconButton
-                style={Styles.button}
                 status="danger"
                 icon={TrashIcon}
                 onPress={() =>
@@ -127,7 +126,6 @@ export default class Contribution extends Component {
               />
             )}
             <IconButton
-              style={Styles.button}
               icon={AddCircleIcon}
               onPress={() => {
                 LocalData.items = removeNullsFromList(LocalData.items);
@@ -138,7 +136,6 @@ export default class Contribution extends Component {
               }}
             />
             <IconButton
-              style={Styles.button}
               status="info"
               icon={CameraIcon}
               onPress={() => {
@@ -147,7 +144,6 @@ export default class Contribution extends Component {
               }}
             />
             <IconButton
-              style={Styles.button}
               status="success"
               icon={SaveIcon}
               onPress={() => {
@@ -166,7 +162,7 @@ class TotalText extends Component {
   render() {
     return (
       <Text style={Styles.titleText} category="h4">
-        Total: {getMoneyFormatString(getTotal(filterItemCosts()))}
+        Subtotal: {getMoneyFormatString(getTotal(filterItemCosts()))}
       </Text>
     );
   }
@@ -193,9 +189,6 @@ const Styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     flexDirection: 'row',
-  },
-  button: {
-    flex: 1,
   },
   placeholderText: {
     textAlign: 'center',

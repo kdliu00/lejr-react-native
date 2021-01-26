@@ -9,6 +9,8 @@ export {
   CameraIcon,
   GoogleIcon,
   EmailIcon,
+  CloseIcon,
+  ConfirmIcon,
   AddCircleIcon,
   BackIcon,
   TrashIcon,
@@ -28,6 +30,11 @@ const SaveIcon = (props: any) => <Icon {...props} name="save-outline" />;
 
 const GoogleIcon = (props: any) => <Icon {...props} name="google" />;
 const EmailIcon = (props: any) => <Icon {...props} name="email" />;
+
+const CloseIcon = (props: any) => <Icon {...props} name="close-outline" />;
+const ConfirmIcon = (props: any) => (
+  <Icon {...props} name="checkmark-outline" />
+);
 
 const InviteIcon = (props: any) => (
   <Icon {...props} name="person-add-outline" />

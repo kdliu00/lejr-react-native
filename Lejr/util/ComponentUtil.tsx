@@ -97,6 +97,7 @@ const ThemedCard = withStyles(CardWrapper, theme => ({
 const IconButton = (props: any) => {
   return (
     <Button
+      style={{flex: 1, borderRadius: 0}}
       {...props}
       activeOpacity={1}
       appearance="ghost"

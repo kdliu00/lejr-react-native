@@ -19,6 +19,7 @@ export {
   TextLine,
   Bounds,
   Point,
+  TextRef,
   getItemFromTextLine,
   warnLog,
   errorLog,
@@ -201,17 +202,46 @@ class Point {
   }
 }
 
-function getItemFromTextLine(textLine: TextLine) {
+class TextRef {
+  x: number;
+  text: string;
+
+  constructor(x: number, text: string) {
+    this.x = x;
+    this.text = text;
+  }
+}
+
+function getItemFromTextLine(textLine: TextLine, ref1: Point, ref2: Point) {
   let reversedString = [...textLine.text].reverse();
   var sawDecimal = false;
   var sawOnes = false;
   var sawCents = false;
+  var numCents = 0;
+  var done = false;
   var priceConstruct = '';
   var k = 0;
+  //if not same column probably not item
+  if (ref1 != null) {
+    //height of line
+    let threshold =
+      3 * pointDistance(textLine.bounds.midUp, textLine.bounds.midLow);
+    if (ref2 != null) {
+      if (
+        pointToLineDistance(textLine.bounds.midRight, ref1, ref2) > threshold
+      ) {
+        return null;
+      }
+    } else {
+      if (Math.abs(ref1.x - textLine.bounds.midRight.x) > threshold) {
+        return null;
+      }
+    }
+  }
   while (k < reversedString.length) {
     k += 1;
-    let curChar = reversedString[k];
-    if (k > 5 && !sawDecimal) {
+    let curChar = reversedString[k - 1];
+    if ((k > 8 && !sawDecimal) || numCents > 2) {
       //if we haven't seen a decimal point by now, probably not an item
       return null;
     } else {
@@ -222,6 +252,7 @@ function getItemFromTextLine(textLine: TextLine) {
             if (!isNaN(parseInt(curChar))) {
               priceConstruct = curChar + priceConstruct;
             } else {
+              done = true;
               break;
             }
           } else {
@@ -229,10 +260,12 @@ function getItemFromTextLine(textLine: TextLine) {
             if (!isNaN(parseInt(curChar))) {
               priceConstruct = curChar + priceConstruct;
               sawOnes = true;
-            } else if (
-              curChar.normalize() != ' '.normalize() &&
-              curChar.normalize() != '.'.normalize()
-            ) {
+              if (ref1 == null) {
+                ref1 = textLine.bounds.midRight;
+              } else {
+                ref2 = textLine.bounds.midRight;
+              }
+            } else if (curChar != ' ' && curChar != '.') {
               return null;
             }
           }
@@ -240,7 +273,8 @@ function getItemFromTextLine(textLine: TextLine) {
           //look for more cents or decimal, return null on else
           if (!isNaN(parseInt(curChar))) {
             priceConstruct = curChar + priceConstruct;
-          } else if (curChar.normalize() === '.'.normalize()) {
+            numCents += 1;
+          } else if (curChar === '.') {
             priceConstruct = curChar + priceConstruct;
             sawDecimal = true;
           } else {
@@ -251,18 +285,27 @@ function getItemFromTextLine(textLine: TextLine) {
         //look for cents, discard non-numerals
         if (!isNaN(parseInt(curChar))) {
           priceConstruct = curChar + priceConstruct;
+          numCents += 1;
           sawCents = true;
         }
       }
     }
   }
+  if (!done) {
+    return null;
+  }
   let name = reversedString
     .reverse()
     .slice(0, -k + 1)
     .join('')
-    .replace(/[0-9]/g, '')
+    .replace(/[0-9\$\.]/g, '')
     .trim();
-  return {itemName: name, itemCost: priceConstruct};
+  return {
+    itemName: name,
+    itemCost: priceConstruct,
+    newRef1: ref1,
+    newRef2: ref2,
+  };
 }
 
 function warnLog(message: any) {

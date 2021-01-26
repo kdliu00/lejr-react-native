@@ -120,7 +120,8 @@ export default class ContribDetails extends Component {
               <Text style={Styles.centerText} category="h5">
                 Total:{' '}
                 {getMoneyFormatString(
-                  nearestHundredth(getTotal(filterItemCosts())),
+                  parseFloat(this.currentTotal) +
+                    parseFloat(getTax(LocalData.currentVR)),
                 )}
               </Text>
               <Text style={Styles.centerText}>
