@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from 'react';
 import {StyleSheet, SafeAreaView, Dimensions, Alert} from 'react-native';
-import {Layout, Text} from '@ui-kitten/components';
+import {Card, Layout, Modal, Text} from '@ui-kitten/components';
 import {
   IconButton,
   ThemedLayout,
@@ -18,6 +18,8 @@ import {BlankCard, ItemCard} from '../../../util/ContributionUI';
 import {
   getMoneyFormatString,
   getTotal,
+  MergeState,
+  nearestHundredth,
   removeNullsFromList,
   StoreData,
 } from '../../../util/UtilityMethods';
@@ -27,13 +29,20 @@ import {
   SaveIcon,
   BackIcon,
   CameraIcon,
+  CloseIcon,
+  ConfirmIcon,
 } from '../../../util/Icons';
 import {Item} from '../../../util/DataObjects';
+import {TextInput} from 'react-native-gesture-handler';
 
 export default class Contribution extends Component {
   constructor() {
     super();
     this.totalRef = React.createRef();
+    this.state = {
+      taxModal: false,
+    };
+    this.tempTax = 0;
   }
 
   componentDidMount() {
@@ -56,17 +65,67 @@ export default class Contribution extends Component {
         <SafeAreaView style={Styles.container}>
           <ThemedLayout style={Styles.banner}>
             <TotalText ref={this.totalRef} />
-            <Text
-              style={[
-                Styles.placeholderText,
-                {marginTop: 5, marginBottom: -5},
-              ]}>
-              Tax: {getMoneyFormatString(getTax())}
-            </Text>
+            <Layout style={Styles.row}>
+              <Text
+                style={Styles.subtitle}
+                onPress={() => {
+                  this.tempTax = getTax(LocalData.currentVR);
+                  MergeState(this, {taxModal: true});
+                }}>
+                Tax: {getMoneyFormatString(getTax(LocalData.currentVR))}
+              </Text>
+            </Layout>
           </ThemedLayout>
+          <Modal
+            visible={this.state.taxModal}
+            backdropStyle={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}
+            onBackdropPress={() => {
+              this.tempTax = getTax(LocalData.currentVR);
+              MergeState(this, {taxModal: false});
+            }}>
+            <Card
+              disabled={true}
+              style={{justifyContent: 'center', borderRadius: 8}}>
+              <Text>Please enter the correct tax amount.</Text>
+              <TextInput
+                style={{textAlign: 'center'}}
+                keyboardType="numeric"
+                onChangeText={text => {
+                  this.tempTax = nearestHundredth(parseFloat(text));
+                }}
+                onSubmitEditing={() => {
+                  LocalData.tax = this.tempTax;
+                  if (LocalData.currentVR) {
+                    LocalData.currentVR.tax = LocalData.tax;
+                  }
+                  MergeState(this, {taxModal: false});
+                }}
+                autoFocus
+              />
+              <Layout style={Styles.row}>
+                <IconButton
+                  status="danger"
+                  icon={CloseIcon}
+                  onPress={() => MergeState(this, {taxModal: false})}
+                />
+                <IconButton
+                  status="success"
+                  icon={ConfirmIcon}
+                  onPress={() => {
+                    LocalData.tax = this.tempTax;
+                    if (LocalData.currentVR) {
+                      LocalData.currentVR.tax = LocalData.tax;
+                    }
+                    MergeState(this, {taxModal: false});
+                  }}
+                />
+              </Layout>
+            </Card>
+          </Modal>
+
           {LocalData.items.length !== 0 && (
             <Text appearance="hint" style={Styles.placeholderText}>
-              Slide left to delete.
+              Swipe left to delete. Tap on tax to edit.
             </Text>
           )}
           <ThemedLayout style={Styles.itemList}>
@@ -215,5 +274,9 @@ const Styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     flex: 1,
     marginTop: 10,
+  },
+  subtitle: {
+    marginTop: 5,
+    marginBottom: -5,
   },
 });

@@ -85,6 +85,9 @@ function getTotal(list: number[]) {
  * @param num number to round
  */
 function nearestHundredth(num: number) {
+  if (isNaN(num)) {
+    return 0;
+  }
   return Math.round(100 * num) / 100;
 }
 

@@ -55,7 +55,7 @@ export default class Invitations extends Component {
               </Text>
             ) : (
               <Text style={Styles.text} appearance="hint">
-                Slide right to accept, left to delete.
+                Swipe right to accept, left to delete.
               </Text>
             )}
           </Layout>
