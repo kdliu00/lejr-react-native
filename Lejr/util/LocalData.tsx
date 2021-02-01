@@ -211,6 +211,9 @@ function uploadVirtualReceipt(
               throw new Error(ErrorCode.DoesNotExist);
             }
 
+            //reset tax
+            LocalData.tax = 0;
+
             //get group data
             let groupData = Group.firestoreConverter.fromFirestore(groupDoc);
             Object.keys(groupData.members).forEach(userId => {
@@ -222,7 +225,7 @@ function uploadVirtualReceipt(
 
               //determine the change in balance
               if (vr.buyerId == userId) {
-                dBalance += nearestHundredth(vr.total + vr.tax);
+                dBalance += nearestHundredth(vr.total + getTax(vr));
                 if (isOld) {
                   dBalanceOld += nearestHundredth(
                     LocalData.currentVRCopy.total +
@@ -245,7 +248,6 @@ function uploadVirtualReceipt(
           .then(
             () => {
               console.log('Update group balances complete');
-              LocalData.tax = 0;
               callback();
             },
             error => {
@@ -289,7 +291,7 @@ function getSplitValue(userId: string, vr: VirtualReceipt) {
 }
 
 function getTax(vr: VirtualReceipt) {
-  return vr ? (vr.tax ? vr.tax : LocalData.tax) : LocalData.tax;
+  return vr ? (vr.tax ? vr.tax : 0) : LocalData.tax;
 }
 
 function loadGroupAsMain(groupId: string, callback: () => void) {

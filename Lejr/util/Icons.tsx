@@ -7,6 +7,7 @@ export {
   PeopleIcon,
   GearIcon,
   CameraIcon,
+  PhotoIcon,
   GoogleIcon,
   EmailIcon,
   CloseIcon,
@@ -43,6 +44,7 @@ const AddIcon = (props: any) => <Icon {...props} name="plus-outline" />;
 const PeopleIcon = (props: any) => <Icon {...props} name="people-outline" />;
 const GearIcon = (props: any) => <Icon {...props} name="settings-2-outline" />;
 const CameraIcon = (props: any) => <Icon {...props} name="camera-outline" />;
+const PhotoIcon = (props: any) => <Icon {...props} name="image-outline" />;
 const BackIcon = (props: any) => <Icon {...props} name="arrow-back-outline" />;
 
 const AcceptIcon = (props: any) => <Icon {...props} name="checkmark-outline" />;

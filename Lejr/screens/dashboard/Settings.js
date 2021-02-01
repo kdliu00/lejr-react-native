@@ -123,7 +123,6 @@ export default class Settings extends Component {
                         cropperCircleOverlay: true,
                         height: IMAGE_HEIGHT,
                         width: IMAGE_WIDTH,
-                        forceJpg: true,
                       }).then(
                         image => this.processImage(image),
                         error => {
@@ -145,7 +144,6 @@ export default class Settings extends Component {
                         cropperCircleOverlay: true,
                         height: IMAGE_HEIGHT,
                         width: IMAGE_WIDTH,
-                        forceJpg: true,
                       }).then(
                         image => this.processImage(image),
                         error => {

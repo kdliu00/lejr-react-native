@@ -10,6 +10,9 @@ target 'Lejr' do
 
   pod 'RNBugfender', :path => '../node_modules/@bugfender/rn-bugfender'
 
+  pod 'RNImageRotate', :path => '../node_modules/react-native-image-rotate'
+
+
   target 'LejrTests' do
     inherit! :complete
     # Pods for testing

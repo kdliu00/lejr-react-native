@@ -22,6 +22,7 @@ import {
   nearestHundredth,
   removeNullsFromList,
   StoreData,
+  warnLog,
 } from '../../../util/UtilityMethods';
 import {
   AddCircleIcon,
@@ -34,6 +35,7 @@ import {
 } from '../../../util/Icons';
 import {Item} from '../../../util/DataObjects';
 import {TextInput} from 'react-native-gesture-handler';
+import ImageCropPicker from 'react-native-image-crop-picker';
 
 export default class Contribution extends Component {
   constructor() {
@@ -206,7 +208,21 @@ export default class Contribution extends Component {
               icon={CameraIcon}
               onPress={() => {
                 LocalData.items = removeNullsFromList(LocalData.items);
-                this.props.navigation.navigate(Screen.FromImage);
+                LocalData.isCamera = true;
+                ImageCropPicker.openCamera({
+                  mediaType: 'photo',
+                  cropping: false,
+                })
+                  .then(image => {
+                    LocalData.isCamera = false;
+                    this.props.navigation.navigate(Screen.FromImage, {
+                      image: image.path,
+                    });
+                  })
+                  .catch(error => {
+                    LocalData.isCamera = false;
+                    warnLog(error.message);
+                  });
               }}
             />
             <IconButton

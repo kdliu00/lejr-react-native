@@ -7,6 +7,8 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import io.codebakery.imagerotate.ImageRotatePackage;
+import com.parsempo.ImageCropTools.ImageCropToolsPackage;
 import com.bugfender.react.RNBugfenderPackage;
 import com.bugfender.react.RNBugfenderPackage;
 import com.facebook.react.ReactInstanceManager;

@@ -25,8 +25,10 @@ import {
   GearIcon,
   InviteIcon,
   PeopleIcon,
+  PhotoIcon,
 } from '../../../util/Icons';
 import {Fragment} from 'react';
+import ImageCropPicker from 'react-native-image-crop-picker';
 
 const GROUP_RENDER_HEIGHT = 150;
 const ADD_OPTS_RENDER_HEIGHT = 54;
@@ -165,7 +167,20 @@ export default class Home extends Component {
               icon={CameraIcon}
               onPress={() => {
                 resetVR();
-                this.props.navigation.navigate(Screen.FromImage);
+                LocalData.isCamera = true;
+                ImageCropPicker.openCamera({
+                  mediaType: 'photo',
+                  cropping: false,
+                })
+                  .then(image => {
+                    this.props.navigation.navigate(Screen.FromImage, {
+                      image: image.path,
+                    });
+                  })
+                  .catch(error => {
+                    LocalData.isCamera = false;
+                    warnLog(error.message);
+                  });
               }}
             />
           </Layout>

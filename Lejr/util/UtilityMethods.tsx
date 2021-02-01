@@ -10,12 +10,14 @@ export {
   RetrieveData,
   nearestHundredth,
   getTotal,
+  getAverage,
   getMoneyFormatString,
   removeNullsFromList,
   JSONCopy,
   pointToLineDistance,
   pointDistance,
   midpoint,
+  angleH,
   TextLine,
   Bounds,
   Point,
@@ -78,6 +80,17 @@ async function RetrieveData(key: string) {
  */
 function getTotal(list: number[]) {
   return list.reduce((a, b) => a + b, 0);
+}
+
+/**
+ * Gets average from list
+ * @param list list of numbers
+ */
+function getAverage(list: number[]) {
+  if (list.length == 0) {
+    return null;
+  }
+  return getTotal(list) / list.length;
 }
 
 /**
@@ -159,6 +172,12 @@ function pointDistance(p0: Point, p1: Point) {
  */
 function midpoint(p0: Point, p1: Point) {
   return new Point((p0.x + p1.x) / 2, (p0.y + p1.y) / 2);
+}
+
+function angleH(p0: Point, p1: Point) {
+  let dx = Math.abs(p0.x - p1.x);
+  let dy = p0.x < p1.x ? p1.y - p0.y : p0.y - p1.y;
+  return (Math.atan2(dy, dx) * 180) / Math.PI;
 }
 
 class TextLine {
