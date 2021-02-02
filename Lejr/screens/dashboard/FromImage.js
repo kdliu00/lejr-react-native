@@ -46,14 +46,14 @@ export default class FromImage extends Component {
     Image.getSize(croppedImage, (width, height) =>
       ImageResizer.createResizedImage(
         croppedImage,
-        Math.round(2.5 * width),
-        Math.round(2.5 * height),
+        Math.round(width < 2048 ? 2.5 * width : width),
+        Math.round(width < 2048 ? 2.5 * height : height),
         'PNG',
         100,
         0,
         null,
         false,
-        {mode: 'stretch'},
+        {mode: 'cover'},
       )
         .then(response => {
           vision()
@@ -277,8 +277,8 @@ export default class FromImage extends Component {
               overlayColor="rgba(125,112,240,0.5)"
               enableTorch={false}
               quality={1}
-              detectionCountBeforeCapture={5}
-              detectionRefreshRateInMS={50}
+              detectionCountBeforeCapture={3}
+              detectionRefreshRateInMS={150}
             />
           )}
         </Layout>
