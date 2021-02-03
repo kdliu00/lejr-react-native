@@ -712,14 +712,24 @@ PODS:
   - RNGoogleSignin (4.0.3):
     - GoogleSignIn (~> 5.0.0)
     - React
-  - RNPdfScanner (2.1.1):
-    - React
+  - RNImageCropPicker (0.35.2):
+    - React-Core
+    - React-RCTImage
+    - RNImageCropPicker/QBImagePickerController (= 0.35.2)
+    - TOCropViewController
+  - RNImageCropPicker/QBImagePickerController (0.35.2):
+    - React-Core
+    - React-RCTImage
+    - TOCropViewController
   - RNReanimated (1.13.1):
+    - React
+  - RNRectangleScanner (1.0.10):
     - React
   - RNScreens (2.13.0):
     - React-Core
   - RNSVG (9.13.6):
     - React
+  - TOCropViewController (2.6.0)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -785,8 +795,9 @@ DEPENDENCIES:
   - "RNFBStorage (from `../node_modules/@react-native-firebase/storage`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - "RNGoogleSignin (from `../node_modules/@react-native-community/google-signin`)"
-  - "RNPdfScanner (from `../node_modules/@woonivers/react-native-document-scanner/ios`)"
+  - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
+  - RNRectangleScanner (from `../node_modules/react-native-rectangle-scanner/ios`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -831,6 +842,7 @@ SPEC REPOS:
     - OpenSSL-Universal
     - PromisesObjC
     - Protobuf
+    - TOCropViewController
     - YogaKit
 
 EXTERNAL SOURCES:
@@ -912,10 +924,12 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNGoogleSignin:
     :path: "../node_modules/@react-native-community/google-signin"
-  RNPdfScanner:
-    :path: "../node_modules/@woonivers/react-native-document-scanner/ios"
+  RNImageCropPicker:
+    :path: "../node_modules/react-native-image-crop-picker"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
+  RNRectangleScanner:
+    :path: "../node_modules/react-native-rectangle-scanner/ios"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   RNSVG:
@@ -1001,10 +1015,12 @@ SPEC CHECKSUMS:
   RNFBStorage: 70f4fd4eaf43de4563498fc97c8479cb12ffdf60
   RNGestureHandler: 7a5833d0f788dbd107fbb913e09aa0c1ff333c39
   RNGoogleSignin: ccf71ee4b6cfd324fd788a41e457e2043838c0d9
-  RNPdfScanner: 3cb94a7536fcccd9597d25bdfadd19e613efcbd7
+  RNImageCropPicker: 9e0bf18cf4184a846fed55747c8e622208b39947
   RNReanimated: dd8c286ab5dd4ba36d3a7fef8bff7e08711b5476
+  RNRectangleScanner: f735b7425c64ab1c4f6930fc334e30b2c78aa4a5
   RNScreens: 13f23e5498fb4aa749d19a5eda7f8792fbb9d01f
   RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
+  TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
   Yoga: 7d13633d129fd179e01b8953d38d47be90db185a
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
