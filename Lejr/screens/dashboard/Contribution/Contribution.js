@@ -34,6 +34,7 @@ import {
 } from '../../../util/Icons';
 import {Item} from '../../../util/DataObjects';
 import {TextInput} from 'react-native-gesture-handler';
+import {Platform} from 'react-native';
 
 export default class Contribution extends Component {
   constructor() {
@@ -86,9 +87,19 @@ export default class Contribution extends Component {
             <Card
               disabled={true}
               style={{justifyContent: 'center', borderRadius: 8}}>
-              <Text>Please enter the correct tax amount.</Text>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  marginTop: Platform.OS === 'ios' ? 15 : 0,
+                }}>
+                Please enter the correct tax amount:
+              </Text>
               <TextInput
-                style={{textAlign: 'center'}}
+                style={{
+                  textAlign: 'center',
+                  marginTop: Platform.OS === 'ios' ? 20 : 0,
+                  marginBottom: Platform.OS === 'ios' ? 15 : 0,
+                }}
                 keyboardType="numeric"
                 onChangeText={text => {
                   this.tempTax = nearestHundredth(parseFloat(text));

@@ -10,7 +10,7 @@ import {
   swapGroup,
   resetVR,
 } from '../../../util/LocalData';
-import {Screen, AnimDefaultDuration} from '../../../util/Constants';
+import {Screen, AnimDefaultDuration, Minus} from '../../../util/Constants';
 import {
   ThemedLayout,
   ThemedCard,
@@ -219,8 +219,8 @@ class BalanceText extends Component {
   render() {
     let curBalance = getBalanceString(LocalData.user.userId);
     let text = '';
-    if (curBalance.startsWith('-')) {
-      text = 'You owe this group ' + curBalance.replace('-', '');
+    if (curBalance.startsWith(Minus)) {
+      text = 'You owe this group ' + curBalance.replace(Minus, '');
     } else {
       text = 'This group owes you ' + curBalance;
     }

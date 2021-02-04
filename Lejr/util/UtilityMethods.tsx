@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Alert} from 'react-native';
-import {Key} from './Constants';
+import {Key, Minus} from './Constants';
 import Bugfender from '@bugfender/rn-bugfender';
 
 export {
@@ -107,7 +107,7 @@ function getMoneyFormatString(amount: number) {
       returnString += '0';
     }
   }
-  return amount < 0 ? '—$' + returnString : '$' + returnString;
+  return amount < 0 ? Minus + '$' + returnString : '$' + returnString;
 }
 
 /**

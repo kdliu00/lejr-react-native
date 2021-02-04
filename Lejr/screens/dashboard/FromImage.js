@@ -53,8 +53,8 @@ export default class FromImage extends Component {
     Image.getSize(croppedImage, (width, height) =>
       ImageResizer.createResizedImage(
         croppedImage,
-        Math.round(width < 2048 ? 2.5 * width : width),
-        Math.round(width < 2048 ? 2.5 * height : height),
+        Math.round(width < 2048 ? 2048 : width),
+        Math.round(width < 2048 ? (width / 2048) * height : height),
         'PNG',
         100,
         0,

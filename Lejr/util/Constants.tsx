@@ -2,6 +2,7 @@ export {
   AnimDefaultDuration,
   AnimKeyboardDuration,
   QuickAddLabel,
+  Minus,
   defaultProfilePic,
   iOSWebClientId,
   androidWebClientId,
@@ -17,6 +18,7 @@ const AnimDefaultDuration = 400;
 const AnimKeyboardDuration = 200;
 
 const QuickAddLabel = 'QUICK ADD ITEM';
+const Minus = '—';
 
 const defaultProfilePic =
   'https://firebasestorage.googleapis.com/v0/b/lejr-fa6e3.appspot.com/o/default-profile-pic.jpg?alt=media&token=1ae60215-ca49-4da5-b759-d2fb56e33dd2';
