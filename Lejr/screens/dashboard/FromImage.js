@@ -20,11 +20,14 @@ import {
 import {Item} from '../../util/DataObjects';
 import {LocalData, updateComponent} from '../../util/LocalData';
 import ImageResizer from 'react-native-image-resizer';
-import DocumentScanner from '@woonivers/react-native-document-scanner';
 import {Alert} from 'react-native';
 import {IconButton} from '../../util/ComponentUtil';
 import {CloseIcon, ConfirmIcon} from '../../util/Icons';
 import {Image} from 'react-native';
+import Scanner, {RectangleOverlay} from 'react-native-rectangle-scanner';
+import {Dimensions} from 'react-native';
+import {StatusBar} from 'react-native';
+import {Platform} from 'react-native';
 
 export default class FromImage extends Component {
   constructor() {
@@ -32,8 +35,12 @@ export default class FromImage extends Component {
     this.state = {
       isProcessing: false,
       isConfirm: false,
+      pictureTaken: false,
+      detectedRectangle: null,
+      cameraReady: false,
+      previewHeightPercent: 1,
+      previewWidthPercent: 1,
     };
-    this.croppedImage = null;
   }
 
   componentDidMount() {
@@ -227,7 +234,7 @@ export default class FromImage extends Component {
               if (scanError) {
                 Alert.alert(
                   'Possible Scan Error',
-                  'You may need to edit incorrect items or rescan your receipt.',
+                  'You may need to add/edit items or rescan your receipt.',
                   [
                     {
                       text: 'Okay',
@@ -237,7 +244,7 @@ export default class FromImage extends Component {
                 );
               }
 
-              MergeState(this, {isProcessing: false});
+              // MergeState(this, {isProcessing: false});
               LocalData.isCamera = false;
               console.log('Finished processing');
               this.props.navigation.replace(Screen.Contribution);
@@ -252,105 +259,210 @@ export default class FromImage extends Component {
     );
   }
 
+  onDeviceSetup(deviceDetails) {
+    MergeState(this, {
+      previewHeightPercent: deviceDetails.previewHeightPercent,
+      previewWidthPercent: deviceDetails.previewWidthPercent,
+    });
+    if (!deviceDetails.hasCamera) {
+      Alert.alert(
+        'No Camera Detected',
+        'This device does not have a camera.',
+        [
+          {
+            text: 'Okay',
+          },
+        ],
+        {cancelable: false},
+      );
+    } else if (!deviceDetails.permissionToUseCamera) {
+      Alert.alert(
+        'Camera Permission Error',
+        'Please allow Lejr access to your device camera.',
+        [
+          {
+            text: 'Okay',
+          },
+        ],
+        {cancelable: false},
+      );
+    } else {
+      console.log('Device setup complete');
+      MergeState(this, {cameraReady: true});
+    }
+  }
+
+  getPreviewSize() {
+    const dimensions = Dimensions.get('window');
+    // We use set margin amounts because for some reasons the percentage values don't align the camera preview in the center correctly.
+    const heightMargin = 0;
+    // ((1 - this.state.previewHeightPercent) * dimensions.height) / 2;
+    const heightScalar = 1;
+    const widthScalar =
+      (heightScalar / this.state.previewHeightPercent) *
+      this.state.previewWidthPercent;
+    const widthMargin = ((1 - widthScalar) * dimensions.width) / 2;
+    // ((1 - this.state.previewWidthPercent) * dimensions.width) / 2;
+    // if (dimensions.height > dimensions.width) {
+    //   // Portrait
+    //   return {
+    //     height: heightScalar,
+    //     width: this.state.previewWidthPercent,
+    //     marginTop: heightMargin,
+    //     marginLeft: widthMargin,
+    //   };
+    // }
+
+    // // Landscape
+    // return {
+    //   width: this.state.previewHeightPercent,
+    //   height: this.state.previewWidthPercent,
+    //   marginTop: widthMargin,
+    //   marginLeft: heightMargin,
+    // };
+    return {
+      height: heightScalar,
+      width: widthScalar,
+      marginTop: heightMargin,
+      marginLeft: widthMargin,
+    };
+  }
+
   render() {
+    let previewSize = this.getPreviewSize();
     return (
-      <Layout style={Styles.flex1}>
-        <Layout style={Styles.scanner}>
-          {this.state.isConfirm ? (
-            <Image
-              style={Styles.flex1}
-              resizeMode={'contain'}
-              source={{uri: this.croppedImage}}
-            />
-          ) : this.state.isProcessing ? (
-            <Layout style={Styles.center}>
-              <Spinner size="large" />
-            </Layout>
-          ) : (
-            <DocumentScanner
-              style={Styles.scanner}
-              onPictureTaken={data => {
-                console.log('Picture taken');
+      <Layout style={Styles.container}>
+        {this.state.isConfirm ? (
+          <Image
+            style={Styles.preview}
+            resizeMode={'contain'}
+            source={{uri: this.croppedImage}}
+          />
+        ) : this.state.isProcessing ? (
+          <Layout style={[Styles.container, Styles.center]}>
+            <Spinner size="large" />
+          </Layout>
+        ) : (
+          <Layout
+            style={{
+              marginTop: previewSize.marginTop,
+              marginLeft: previewSize.marginLeft,
+              height: `${previewSize.height * 100}%`,
+              width: `${previewSize.width * 100}%`,
+            }}>
+            <Scanner
+              style={Styles.container}
+              onPictureProcessed={data => {
+                console.log('Retrieved cropped image');
                 this.croppedImage = data.croppedImage;
-                MergeState(this, {isConfirm: true});
+                MergeState(this, {isProcessing: false, isConfirm: true});
               }}
-              overlayColor="rgba(125,112,240,0.5)"
               enableTorch={false}
-              quality={1}
-              detectionCountBeforeCapture={3}
-              detectionRefreshRateInMS={150}
+              filterId={1}
+              ref={ref => (this.camera = ref)}
+              capturedQuality={1}
+              onRectangleDetected={({detectedRectangle}) =>
+                this.setState({detectedRectangle})
+              }
+              onDeviceSetup={deviceDetails => this.onDeviceSetup(deviceDetails)}
             />
-          )}
-        </Layout>
-        <Layout style={Styles.marginBottom}>
-          {this.state.isConfirm ? (
-            <Layout style={Styles.rowButtons}>
-              <IconButton
-                status="danger"
-                icon={CloseIcon}
-                onPress={() => {
-                  this.croppedImage = null;
-                  MergeState(this, {isConfirm: false});
-                }}
-              />
-              <IconButton
-                status="success"
-                icon={ConfirmIcon}
-                onPress={() => {
-                  this.processImage(this.croppedImage);
-                  MergeState(this, {isConfirm: false, isProcessing: true});
-                }}
-              />
+            <RectangleOverlay
+              detectedRectangle={this.state.detectedRectangle}
+              previewRatio={previewSize}
+              backgroundColor="rgba(125,112,240,0.5)"
+              borderColor="rgb(125,112,240)"
+              borderWidth={4}
+              // == These let you auto capture and change the overlay style on detection ==
+              detectedBackgroundColor="rgba(155,221,13,0.5)"
+              detectedBorderWidth={6}
+              detectedBorderColor="rgb(155,221,13)"
+              onDetectedCapture={() => this.camera.capture()}
+              allowDetection
+            />
+            {!this.state.cameraReady && (
+              <Layout style={[Styles.overlay, Styles.blackBg]} />
+            )}
+          </Layout>
+        )}
+        {this.state.isConfirm ? (
+          <Layout style={Styles.rowButtons}>
+            <IconButton
+              style={Styles.confirmButton}
+              appearance="filled"
+              status="danger"
+              icon={CloseIcon}
+              onPress={() => {
+                this.croppedImage = null;
+                MergeState(this, {isConfirm: false});
+              }}
+            />
+            <IconButton
+              style={Styles.confirmButton}
+              appearance="filled"
+              status="success"
+              icon={ConfirmIcon}
+              onPress={() => {
+                this.processImage(this.croppedImage);
+                MergeState(this, {isConfirm: false, isProcessing: true});
+              }}
+            />
+          </Layout>
+        ) : (
+          !this.state.isProcessing && (
+            <Layout style={Styles.overlay}>
+              <Layout style={Styles.rowButtons}>
+                <Button
+                  status="danger"
+                  style={FormStyles.button}
+                  disabled={this.state.isProcessing}
+                  onPress={() => {
+                    this.props.navigation.goBack();
+                  }}>
+                  Cancel
+                </Button>
+              </Layout>
             </Layout>
-          ) : (
-            !this.state.isProcessing && (
-              <Button
-                style={FormStyles.button}
-                appearance="outline"
-                disabled={this.state.isProcessing}
-                onPress={() => {
-                  this.props.navigation.goBack();
-                }}>
-                Cancel
-              </Button>
-            )
-          )}
-        </Layout>
+          )
+        )}
       </Layout>
     );
   }
 }
 
 const Styles = StyleSheet.create({
-  flex1: {
-    flex: 1,
-  },
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'column-reverse',
   },
-  marginBottom: {
+  blackBg: {
+    backgroundColor: 'black',
+  },
+  preview: {
+    flex: 4,
+  },
+  center: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  rowButtons: {
+    backgroundColor: 'rgba(0,0,0,0)',
     alignItems: 'center',
     marginTop: 20,
     marginBottom: 50,
-  },
-  center: {
-    alignItems: 'center',
-  },
-  boldText: {
-    textAlign: 'center',
-    fontWeight: 'bold',
-    marginHorizontal: 30,
-    marginBottom: 30,
-  },
-  rowButtons: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
   },
-  scanner: {
-    flex: 4,
-    justifyContent: 'center',
+  overlay: {
+    flex: 1,
+    flexDirection: 'column-reverse',
+    backgroundColor: 'rgba(0,0,0,0)',
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  confirmButton: {
+    borderRadius: 8,
+    width: 100,
   },
 });

@@ -98,11 +98,11 @@ const IconButton = (props: any) => {
   return (
     <Button
       style={{flex: 1, borderRadius: 0}}
-      {...props}
       activeOpacity={1}
       appearance="ghost"
       accessoryLeft={props.icon}
       size="large"
+      {...props}
     />
   );
 };
