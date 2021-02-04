@@ -12,6 +12,8 @@ target 'Lejr' do
 
   pod 'react-native-camera', :path => '../node_modules/react-native-camera'
 
+  pod 'ReactNativeART', :path => '../node_modules/@react-native-community/art'
+
   target 'LejrTests' do
     inherit! :complete
     # Pods for testing

@@ -330,9 +330,10 @@ function loadGroupAsMain(groupId: string, callback: () => void) {
           //settle lock management
           if (!isPossibleObjectEmpty(LocalData.groupMenu)) {
             Object.keys(LocalData.currentGroup.settleLocks).forEach(userId => {
-              LocalData.groupMenu.entryCallbacks[userId](
-                LocalData.currentGroup.settleLocks[userId],
-              );
+              let callback = LocalData.groupMenu.entryCallbacks[userId];
+              if (!isPossibleObjectEmpty(callback)) {
+                callback(LocalData.currentGroup.settleLocks[userId]);
+              }
             });
           }
           if (
@@ -659,6 +660,7 @@ async function joinGroup(groupId: string) {
 }
 
 function swapGroup(groupId: string, callback: () => void) {
+  console.log('Swapping to group: ' + groupId);
   resetVR();
   LocalData.currentGroup = null;
   LocalData.virtualReceipts = null;
