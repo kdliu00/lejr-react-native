@@ -26,6 +26,7 @@ import {default as theme} from './resources/eva-theme.json';
 import {bugfenderAppId, Screen} from './util/Constants';
 import {
   detachListeners,
+  disengageSettleLocks,
   getKeyForCurrentGroupItems,
   getUserInvitations,
   isPossibleObjectEmpty,
@@ -77,6 +78,8 @@ AppState.addEventListener('change', state => {
         detachListeners();
         if (!isPossibleObjectEmpty(LocalData.groupMenu)) {
           LocalData.groupMenu.cancelSettle();
+        } else if (!isPossibleObjectEmpty(LocalData.currentGroup)) {
+          disengageSettleLocks();
         }
         StoreData(getKeyForCurrentGroupItems(), LocalData.items);
       }

@@ -29,7 +29,11 @@ import {
   uploadVirtualReceipt,
 } from '../../../util/LocalData';
 import {TwoColCheck} from '../../../util/ContributionUI';
-import {AnimKeyboardDuration, QuickAddLabel} from '../../../util/Constants';
+import {
+  AnimKeyboardDuration,
+  ErrorCode,
+  QuickAddLabel,
+} from '../../../util/Constants';
 import {ScrollView} from 'react-native-gesture-handler';
 import {Item, VirtualReceipt} from '../../../util/DataObjects';
 import {Fragment} from 'react';
@@ -245,7 +249,10 @@ export default class QuickAdd extends Component {
                               );
                             },
                             error => {
-                              errorLog('Received error: ' + error);
+                              if (error !== ErrorCode.DatabaseError) {
+                                errorLog('Received error: ' + error);
+                              }
+                              MergeState(this, {isSubmitting: false});
                               MergeState(this, {isSubmitting: false});
                             },
                           );

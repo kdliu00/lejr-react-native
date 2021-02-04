@@ -313,10 +313,10 @@ function getItemFromTextLine(textLine: TextLine, ref1: Point, ref2: Point) {
 
 function warnLog(message: any) {
   console.warn(message);
-  Bugfender.w(Key.Warn, message);
+  Bugfender.w(Key.Warn, message.toString());
 }
 
 function errorLog(message: any) {
   console.error(message);
-  Bugfender.e(Key.Error, message);
+  Bugfender.e(Key.Error, message.toString());
 }

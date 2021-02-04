@@ -235,12 +235,6 @@ export default class FromImage extends Component {
                 Alert.alert(
                   'Possible Scan Error',
                   'You may need to add/edit items or rescan your receipt.',
-                  [
-                    {
-                      text: 'Okay',
-                    },
-                  ],
-                  {cancelable: false},
                 );
               }
 
@@ -265,26 +259,11 @@ export default class FromImage extends Component {
       previewWidthPercent: deviceDetails.previewWidthPercent,
     });
     if (!deviceDetails.hasCamera) {
-      Alert.alert(
-        'No Camera Detected',
-        'This device does not have a camera.',
-        [
-          {
-            text: 'Okay',
-          },
-        ],
-        {cancelable: false},
-      );
+      Alert.alert('No Camera Detected', 'This device does not have a camera.');
     } else if (!deviceDetails.permissionToUseCamera) {
       Alert.alert(
         'Camera Permission Error',
         'Please allow Lejr access to your device camera.',
-        [
-          {
-            text: 'Okay',
-          },
-        ],
-        {cancelable: false},
       );
     } else {
       console.log('Device setup complete');
@@ -388,7 +367,7 @@ export default class FromImage extends Component {
           <Layout style={Styles.rowButtons}>
             <IconButton
               style={Styles.confirmButton}
-              appearance="filled"
+              appearance="outline"
               status="danger"
               icon={CloseIcon}
               onPress={() => {
@@ -398,7 +377,7 @@ export default class FromImage extends Component {
             />
             <IconButton
               style={Styles.confirmButton}
-              appearance="filled"
+              appearance="outline"
               status="success"
               icon={ConfirmIcon}
               onPress={() => {
@@ -413,6 +392,7 @@ export default class FromImage extends Component {
               <Layout style={Styles.rowButtons}>
                 <Button
                   status="danger"
+                  appearance="filled"
                   style={FormStyles.button}
                   disabled={this.state.isProcessing}
                   onPress={() => {
@@ -446,8 +426,8 @@ const Styles = StyleSheet.create({
   rowButtons: {
     backgroundColor: 'rgba(0,0,0,0)',
     alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 50,
+    marginTop: 40,
+    marginBottom: 60,
     flexDirection: 'row',
     justifyContent: 'space-evenly',
   },

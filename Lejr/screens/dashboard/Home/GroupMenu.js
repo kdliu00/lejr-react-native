@@ -2,6 +2,7 @@ import {Button, Layout, Text} from '@ui-kitten/components';
 import React, {Component} from 'react';
 import {Fragment} from 'react';
 import {Alert} from 'react-native';
+import {BackHandler} from 'react-native';
 import {SafeAreaView, StyleSheet} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {IconButton} from '../../../util/ComponentUtil';
@@ -39,6 +40,7 @@ export default class GroupMenu extends Component {
   }
 
   componentWillUnmount() {
+    disengageSettleLocks();
     LocalData.groupMenu = null;
   }
 
@@ -202,14 +204,6 @@ function handleLeaveGroup(callback) {
     Alert.alert(
       'Unable to Leave Group',
       'Your balance in the group must be zero in order to leave.',
-      [
-        {
-          text: 'Okay',
-          onPress: () => {
-            console.log('Cancelled intent to leave group');
-          },
-        },
-      ],
     );
   }
 }

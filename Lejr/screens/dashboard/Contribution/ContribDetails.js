@@ -31,7 +31,7 @@ import {
   uploadVirtualReceipt,
 } from '../../../util/LocalData';
 import {OneColText} from '../../../util/ContributionUI';
-import {AnimKeyboardDuration} from '../../../util/Constants';
+import {AnimKeyboardDuration, ErrorCode} from '../../../util/Constants';
 import {ScrollView} from 'react-native-gesture-handler';
 import {VirtualReceipt} from '../../../util/DataObjects';
 import {Fragment} from 'react';
@@ -194,7 +194,9 @@ export default class ContribDetails extends Component {
                               );
                             },
                             error => {
-                              errorLog('Received error: ' + error);
+                              if (error !== ErrorCode.DatabaseError) {
+                                errorLog('Received error: ' + error);
+                              }
                               MergeState(this, {isSubmitting: false});
                             },
                           );

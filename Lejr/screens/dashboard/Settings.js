@@ -47,8 +47,6 @@ export default class Settings extends Component {
       Alert.alert(
         'Image Error',
         'The image provided was not in the correct format.',
-        [{text: 'Okay'}],
-        {cancelable: false},
       );
       return;
     }

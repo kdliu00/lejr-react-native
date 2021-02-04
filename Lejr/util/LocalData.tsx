@@ -190,6 +190,19 @@ function uploadVirtualReceipt(
 ) {
   console.log('Uploading virtual receipt');
 
+  let settler = LocalData.currentGroup.settler;
+  if (settler) {
+    let name = LocalData.currentGroup.members[settler].name;
+    Alert.alert(
+      'Group Locked',
+      'This group is locked because ' +
+        name +
+        ' wants to settle balances. When a group is locked, no new purchases can be uploaded and existing purchases cannot be edited.',
+    );
+    errorCallback(ErrorCode.DatabaseError);
+    return;
+  }
+
   let isOld = Boolean(vr.virtualReceiptId);
   let docId = isOld
     ? vr.virtualReceiptId

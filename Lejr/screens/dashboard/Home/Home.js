@@ -27,6 +27,11 @@ import {
   PeopleIcon,
 } from '../../../util/Icons';
 import {Fragment} from 'react';
+import {BackHandler} from 'react-native';
+
+BackHandler.addEventListener('hardwareBackPress', () => {
+  return true;
+});
 
 const GROUP_RENDER_HEIGHT = 150;
 const ADD_OPTS_RENDER_HEIGHT = 54;
