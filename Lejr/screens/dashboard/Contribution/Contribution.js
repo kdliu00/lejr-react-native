@@ -19,7 +19,6 @@ import {
   getMoneyFormatString,
   getTotal,
   JSONCopy,
-  MergeState,
   nearestHundredth,
   removeNullsFromList,
   StoreData,
@@ -72,7 +71,7 @@ export default class Contribution extends Component {
                 style={Styles.subtitle}
                 onPress={() => {
                   this.tempTax = getTax(LocalData.currentVR);
-                  MergeState(this, {taxModal: true});
+                  this.setState({taxModal: true});
                 }}>
                 Tax: {getMoneyFormatString(getTax(LocalData.currentVR))}
               </Text>
@@ -83,7 +82,7 @@ export default class Contribution extends Component {
             backdropStyle={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}
             onBackdropPress={() => {
               this.tempTax = getTax(LocalData.currentVR);
-              MergeState(this, {taxModal: false});
+              this.setState({taxModal: false});
             }}>
             <Card
               disabled={true}
@@ -110,7 +109,7 @@ export default class Contribution extends Component {
                   if (LocalData.currentVR) {
                     LocalData.currentVR.tax = JSONCopy(LocalData.tax);
                   }
-                  MergeState(this, {taxModal: false});
+                  this.setState({taxModal: false});
                 }}
                 autoFocus
               />
@@ -118,7 +117,7 @@ export default class Contribution extends Component {
                 <IconButton
                   status="danger"
                   icon={CloseIcon}
-                  onPress={() => MergeState(this, {taxModal: false})}
+                  onPress={() => this.setState({taxModal: false})}
                 />
                 <IconButton
                   status="success"
@@ -128,7 +127,7 @@ export default class Contribution extends Component {
                     if (LocalData.currentVR) {
                       LocalData.currentVR.tax = JSONCopy(LocalData.tax);
                     }
-                    MergeState(this, {taxModal: false});
+                    this.setState({taxModal: false});
                   }}
                 />
               </Layout>

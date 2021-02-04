@@ -16,7 +16,6 @@ import {
   errorLog,
   getTotal,
   JSONCopy,
-  MergeState,
   removeNullsFromList,
 } from '../../../util/UtilityMethods';
 import FormStyles from '../../../util/FormStyles';
@@ -123,8 +122,8 @@ export default class QuickAdd extends Component {
                 validationSchema={this.validationSchema}
                 fieldKey="memo"
                 fieldParams={text => ({memo: text})}
-                setField={value => MergeState(this, {memo: value})}
-                setFieldError={value => MergeState(this, {memoError: value})}
+                setField={value => this.setState({memo: value})}
+                setFieldError={value => this.setState({memoError: value})}
                 placeholder="memo"
                 onSubmitEditing={() => {
                   Keyboard.dismiss();
@@ -139,8 +138,8 @@ export default class QuickAdd extends Component {
                 validationSchema={this.validationSchema}
                 fieldKey="total"
                 fieldParams={text => ({total: text})}
-                setField={value => MergeState(this, {total: value})}
-                setFieldError={value => MergeState(this, {totalError: value})}
+                setField={value => this.setState({total: value})}
+                setFieldError={value => this.setState({totalError: value})}
                 placeholder="total"
                 onSubmitEditing={() => {
                   Keyboard.dismiss();
@@ -197,7 +196,7 @@ export default class QuickAdd extends Component {
                 <Button
                   style={FormStyles.button}
                   onPress={() => {
-                    MergeState(this, {isSubmitting: true});
+                    this.setState({isSubmitting: true});
                     this.validationSchema
                       .validate({
                         memo: this.state.memo,
@@ -252,12 +251,12 @@ export default class QuickAdd extends Component {
                               if (error !== ErrorCode.DatabaseError) {
                                 errorLog('Received error: ' + error);
                               }
-                              MergeState(this, {isSubmitting: false});
-                              MergeState(this, {isSubmitting: false});
+                              this.setState({isSubmitting: false});
+                              this.setState({isSubmitting: false});
                             },
                           );
                         } else {
-                          MergeState(this, {isSubmitting: false});
+                          this.setState({isSubmitting: false});
                         }
                       });
                   }}>

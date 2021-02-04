@@ -2,13 +2,12 @@ import {Button, Layout, Text} from '@ui-kitten/components';
 import React, {Component} from 'react';
 import {Fragment} from 'react';
 import {Alert} from 'react-native';
-import {BackHandler} from 'react-native';
 import {SafeAreaView, StyleSheet} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {IconButton} from '../../../util/ComponentUtil';
 import {Screen} from '../../../util/Constants';
 import {Balance, TwoColText} from '../../../util/ContributionUI';
-import {LeaveIcon, RemoveIcon} from '../../../util/Icons';
+import {LeaveIcon} from '../../../util/Icons';
 import {
   disengageSettleLocks,
   engageSettleLocks,
@@ -20,7 +19,6 @@ import {
 import {ButtonSpinner} from '../../../util/TextInputUI';
 import {
   getMoneyFormatString,
-  MergeState,
   nearestHundredth,
 } from '../../../util/UtilityMethods';
 
@@ -53,7 +51,7 @@ export default class GroupMenu extends Component {
           text: 'Yes',
           onPress: () => {
             console.log('Submitted intent to settle');
-            MergeState(this, {isSubmitting: true});
+            this.setState({isSubmitting: true});
             engageSettleLocks();
           },
         },
@@ -69,7 +67,7 @@ export default class GroupMenu extends Component {
 
   cancelSettle() {
     disengageSettleLocks();
-    MergeState(this, {isSubmitting: false});
+    this.setState({isSubmitting: false});
   }
 
   settle() {
@@ -82,7 +80,7 @@ export default class GroupMenu extends Component {
     LocalData.currentGroup.settler = null;
     pushGroupData();
     console.log('Settle balances success');
-    MergeState(this, {isSubmitting: false});
+    this.setState({isSubmitting: false});
     this.props.navigation.popToTop();
   }
 
@@ -207,8 +205,6 @@ function handleLeaveGroup(callback) {
     );
   }
 }
-
-function handleRemoveMember() {}
 
 function getTotalExpenses() {
   var total = 0;

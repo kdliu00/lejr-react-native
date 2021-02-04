@@ -72,6 +72,7 @@ enum Screen {
   ContribDetails = 'ContribDetails',
   GroupMenu = 'GroupMenu',
   QuickAdd = 'QuickAdd',
+  QRScanner = 'QRScanner',
 }
 
 enum ErrorCode {

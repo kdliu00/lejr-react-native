@@ -15,7 +15,7 @@ import {TouchableWithoutFeedback} from 'react-native';
 import {Alert} from 'react-native';
 
 import storage from '@react-native-firebase/storage';
-import {MergeState, warnLog} from '../../util/UtilityMethods';
+import {warnLog} from '../../util/UtilityMethods';
 
 const IMAGE_WIDTH = 96;
 const IMAGE_HEIGHT = 96;
@@ -54,7 +54,7 @@ export default class Settings extends Component {
     let userProfilePath = LocalData.user.userId + '.jpg';
     const storageRef = storage().ref(userProfilePath);
 
-    MergeState(this, {profileUpdating: true});
+    this.setState({profileUpdating: true});
 
     storageRef.putFile(image.path).then(
       snapshot => {
@@ -67,7 +67,7 @@ export default class Settings extends Component {
             pushUserData();
             updateComponent(LocalData.home);
             if (this._mounted) {
-              MergeState(this, {profileUpdating: false});
+              this.setState({profileUpdating: false});
               this.forceUpdate();
             }
             LocalData.isCamera = false;
@@ -94,12 +94,22 @@ export default class Settings extends Component {
             onPress={() => signOut()}>
             Sign out
           </Button>
-          <Button
-            style={Styles.button}
-            appearance="outline"
-            onPress={() => this.props.navigation.navigate(Screen.CreateGroup)}>
-            Create group
-          </Button>
+          <Layout style={Styles.buttonRow}>
+            <Button
+              style={Styles.button}
+              appearance="outline"
+              onPress={() =>
+                this.props.navigation.navigate(Screen.CreateGroup)
+              }>
+              Create group
+            </Button>
+            <Button
+              style={Styles.button}
+              appearance="outline"
+              onPress={() => this.props.navigation.navigate(Screen.QRScanner)}>
+              Scan QR Code
+            </Button>
+          </Layout>
           <SeeInvitations navigation={this.props.navigation} />
           <Text>{LocalData.user.email}</Text>
           <Text category="h6">{LocalData.user.name}</Text>
@@ -186,8 +196,12 @@ const Styles = StyleSheet.create({
     marginBottom: 60,
     marginTop: 80,
   },
+  buttonRow: {
+    flexDirection: 'row',
+  },
   button: {
     margin: 10,
+    width: 140,
   },
   spinner: {
     marginBottom: 48,

@@ -7,6 +7,8 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.zoontek.rnpermissions.RNPermissionsPackage;
+import org.reactnative.camera.RNCameraPackage;
 import com.bugfender.react.RNBugfenderPackage;
 import com.bugfender.react.RNBugfenderPackage;
 import com.facebook.react.ReactInstanceManager;

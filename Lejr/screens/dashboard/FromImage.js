@@ -1,13 +1,11 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {StyleSheet} from 'react-native';
 import {Button, Layout, Spinner} from '@ui-kitten/components';
-import {Component} from 'react';
 import FormStyles from '../../util/FormStyles';
 import {Screen} from '../../util/Constants';
 import vision from '@react-native-firebase/ml-vision';
 import {
   JSONCopy,
-  MergeState,
   Bounds,
   TextLine,
   Point,
@@ -26,8 +24,6 @@ import {CloseIcon, ConfirmIcon} from '../../util/Icons';
 import {Image} from 'react-native';
 import Scanner, {RectangleOverlay} from 'react-native-rectangle-scanner';
 import {Dimensions} from 'react-native';
-import {StatusBar} from 'react-native';
-import {Platform} from 'react-native';
 
 export default class FromImage extends Component {
   constructor() {
@@ -35,6 +31,7 @@ export default class FromImage extends Component {
     this.state = {
       isProcessing: false,
       isConfirm: false,
+      disableCancel: false,
       pictureTaken: false,
       detectedRectangle: null,
       cameraReady: false,
@@ -238,7 +235,6 @@ export default class FromImage extends Component {
                 );
               }
 
-              // MergeState(this, {isProcessing: false});
               LocalData.isCamera = false;
               console.log('Finished processing');
               this.props.navigation.replace(Screen.Contribution);
@@ -254,10 +250,6 @@ export default class FromImage extends Component {
   }
 
   onDeviceSetup(deviceDetails) {
-    MergeState(this, {
-      previewHeightPercent: deviceDetails.previewHeightPercent,
-      previewWidthPercent: deviceDetails.previewWidthPercent,
-    });
     if (!deviceDetails.hasCamera) {
       Alert.alert('No Camera Detected', 'This device does not have a camera.');
     } else if (!deviceDetails.permissionToUseCamera) {
@@ -267,7 +259,11 @@ export default class FromImage extends Component {
       );
     } else {
       console.log('Device setup complete');
-      MergeState(this, {cameraReady: true});
+      this.setState({
+        cameraReady: true,
+        previewHeightPercent: deviceDetails.previewHeightPercent,
+        previewWidthPercent: deviceDetails.previewWidthPercent,
+      });
     }
   }
 
@@ -308,6 +304,7 @@ export default class FromImage extends Component {
   }
 
   render() {
+    console.log(this.state);
     let previewSize = this.getPreviewSize();
     return (
       <Layout style={Styles.container}>
@@ -334,7 +331,7 @@ export default class FromImage extends Component {
               onPictureProcessed={data => {
                 console.log('Retrieved cropped image');
                 this.croppedImage = data.croppedImage;
-                MergeState(this, {isProcessing: false, isConfirm: true});
+                this.setState({isProcessing: false, isConfirm: true});
               }}
               enableTorch={false}
               filterId={1}
@@ -343,7 +340,7 @@ export default class FromImage extends Component {
               onRectangleDetected={({detectedRectangle}) =>
                 this.setState({detectedRectangle})
               }
-              onDeviceSetup={deviceDetails => this.onDeviceSetup(deviceDetails)}
+              onDeviceSetup={this.onDeviceSetup.bind(this)}
             />
             <RectangleOverlay
               detectedRectangle={this.state.detectedRectangle}
@@ -355,7 +352,10 @@ export default class FromImage extends Component {
               detectedBackgroundColor="rgba(155,221,13,0.5)"
               detectedBorderWidth={6}
               detectedBorderColor="rgb(155,221,13)"
-              onDetectedCapture={() => this.camera.capture()}
+              onDetectedCapture={() => {
+                this.setState({disableCancel: true});
+                this.camera.capture();
+              }}
               allowDetection
             />
             {!this.state.cameraReady && (
@@ -372,7 +372,7 @@ export default class FromImage extends Component {
               icon={CloseIcon}
               onPress={() => {
                 this.croppedImage = null;
-                MergeState(this, {isConfirm: false});
+                this.setState({isConfirm: false, disableCancel: false});
               }}
             />
             <IconButton
@@ -382,7 +382,7 @@ export default class FromImage extends Component {
               icon={ConfirmIcon}
               onPress={() => {
                 this.processImage(this.croppedImage);
-                MergeState(this, {isConfirm: false, isProcessing: true});
+                this.setState({isConfirm: false, isProcessing: true});
               }}
             />
           </Layout>
@@ -394,7 +394,7 @@ export default class FromImage extends Component {
                   status="danger"
                   appearance="filled"
                   style={FormStyles.button}
-                  disabled={this.state.isProcessing}
+                  disabled={this.state.isProcessing || this.state.disableCancel}
                   onPress={() => {
                     this.props.navigation.goBack();
                   }}>

@@ -20,7 +20,6 @@ import * as yup from 'yup';
 import {
   getTotal,
   JSONCopy,
-  MergeState,
   nearestHundredth,
   StoreData,
 } from '../../../util/UtilityMethods';
@@ -124,10 +123,8 @@ export default class NewItem extends Component {
                 validationSchema={this.validationSchema}
                 fieldKey="itemName"
                 fieldParams={text => ({itemName: text})}
-                setField={value => MergeState(this, {itemName: value})}
-                setFieldError={value =>
-                  MergeState(this, {itemNameError: value})
-                }
+                setField={value => this.setState({itemName: value})}
+                setFieldError={value => this.setState({itemNameError: value})}
                 placeholder="item"
                 onSubmitEditing={() => {
                   Keyboard.dismiss();
@@ -142,10 +139,8 @@ export default class NewItem extends Component {
                 validationSchema={this.validationSchema}
                 fieldKey="itemCost"
                 fieldParams={text => ({itemCost: text})}
-                setField={value => MergeState(this, {itemCost: value})}
-                setFieldError={value =>
-                  MergeState(this, {itemCostError: value})
-                }
+                setField={value => this.setState({itemCost: value})}
+                setFieldError={value => this.setState({itemCostError: value})}
                 placeholder="cost"
                 onSubmitEditing={() => {
                   Keyboard.dismiss();
@@ -192,7 +187,7 @@ export default class NewItem extends Component {
                 <Button
                   style={FormStyles.button}
                   onPress={() => {
-                    MergeState(this, {isSubmitting: true});
+                    this.setState({isSubmitting: true});
                     this.validationSchema
                       .validate({
                         itemName: this.state.itemName,
@@ -213,7 +208,7 @@ export default class NewItem extends Component {
                         );
                         if (valid) {
                           if (total !== 100) {
-                            MergeState(this, {isSubmitting: false});
+                            this.setState({isSubmitting: false});
                             Alert.alert(
                               'Percentage Error',
                               'These percentages add up to ' +
@@ -246,7 +241,7 @@ export default class NewItem extends Component {
                             );
                           }
                         } else {
-                          MergeState(this, {isSubmitting: false});
+                          this.setState({isSubmitting: false});
                         }
                       });
                   }}>

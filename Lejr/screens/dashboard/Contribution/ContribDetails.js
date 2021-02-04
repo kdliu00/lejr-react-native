@@ -16,7 +16,6 @@ import {
   errorLog,
   getMoneyFormatString,
   getTotal,
-  MergeState,
   nearestHundredth,
   removeNullsFromList,
 } from '../../../util/UtilityMethods';
@@ -105,8 +104,8 @@ export default class ContribDetails extends Component {
                 validationSchema={this.validationSchema}
                 fieldKey="memo"
                 fieldParams={text => ({memo: text})}
-                setField={value => MergeState(this, {memo: value})}
-                setFieldError={value => MergeState(this, {memoError: value})}
+                setField={value => this.setState({memo: value})}
+                setFieldError={value => this.setState({memoError: value})}
                 placeholder="memo"
                 onSubmitEditing={() => {
                   Keyboard.dismiss();
@@ -156,7 +155,7 @@ export default class ContribDetails extends Component {
                 <Button
                   style={FormStyles.button}
                   onPress={() => {
-                    MergeState(this, {isSubmitting: true});
+                    this.setState({isSubmitting: true});
                     this.validationSchema
                       .validate({
                         memo: this.state.memo,
@@ -197,11 +196,11 @@ export default class ContribDetails extends Component {
                               if (error !== ErrorCode.DatabaseError) {
                                 errorLog('Received error: ' + error);
                               }
-                              MergeState(this, {isSubmitting: false});
+                              this.setState({isSubmitting: false});
                             },
                           );
                         } else {
-                          MergeState(this, {isSubmitting: false});
+                          this.setState({isSubmitting: false});
                         }
                       });
                   }}>

@@ -10,7 +10,7 @@ import {
   InputField,
 } from '../util/TextInputUI';
 import FormStyles from '../util/FormStyles';
-import {MergeState, warnLog} from '../util/UtilityMethods';
+import {warnLog} from '../util/UtilityMethods';
 import {Component} from 'react';
 import {SeeInvitations} from '../util/ContributionUI';
 
@@ -75,8 +75,8 @@ export default class CreateGroup extends Component {
               validationSchema={this.validationSchema}
               fieldKey="groupName"
               fieldParams={text => ({groupName: text})}
-              setField={value => MergeState(this, {groupName: value})}
-              setFieldError={value => MergeState(this, {groupNameError: value})}
+              setField={value => this.setState({groupName: value})}
+              setFieldError={value => this.setState({groupNameError: value})}
               placeholder="group name"
               onSubmitEditing={() => {
                 Keyboard.dismiss();
@@ -112,7 +112,7 @@ export default class CreateGroup extends Component {
                   <Button
                     style={FormStyles.button}
                     onPress={() => {
-                      MergeState(this, {isCreating: true});
+                      this.setState({isCreating: true});
                       this.validationSchema
                         .validate({groupName: this.state.groupName})
                         .catch(error =>
@@ -136,11 +136,11 @@ export default class CreateGroup extends Component {
                                 warnLog(
                                   'Group creation failed: ' + error.message,
                                 );
-                                MergeState(this, {isCreating: false});
+                                this.setState({isCreating: false});
                               },
                             );
                           } else {
-                            MergeState(this, {isCreating: false});
+                            this.setState({isCreating: false});
                           }
                         });
                     }}>

@@ -5,7 +5,7 @@ import {GoogleSignin} from '@react-native-community/google-signin';
 import {Alert} from 'react-native';
 import {Layout, Button, Spinner} from '@ui-kitten/components';
 import {iOSWebClientId, androidWebClientId, Screen} from '../util/Constants';
-import {MergeState, warnLog} from '../util/UtilityMethods';
+import {warnLog} from '../util/UtilityMethods';
 import {EmailIcon, GoogleIcon} from '../util/Icons';
 import AppleLogo from '../resources/apple_sign_in.svg';
 import {appleAuth} from '@invertase/react-native-apple-authentication';
@@ -58,7 +58,7 @@ export default class Login extends Component {
               )}
               onPress={() => {
                 console.log('Going to Apple login');
-                MergeState(this, {isLoggingIn: true});
+                this.setState({isLoggingIn: true});
                 onAppleButtonPress()
                   .then(
                     () => console.log('Signed in with Apple'),
@@ -66,7 +66,7 @@ export default class Login extends Component {
                       onLoginError(error);
                     },
                   )
-                  .finally(() => MergeState(this, {isLoggingIn: false}));
+                  .finally(() => this.setState({isLoggingIn: false}));
               }}
               disabled={this.state.isLoggingIn}>
               Sign in with Apple
@@ -83,7 +83,7 @@ export default class Login extends Component {
             )}
             onPress={() => {
               console.log('Going to Google login');
-              MergeState(this, {isLoggingIn: true});
+              this.setState({isLoggingIn: true});
               onGoogleButtonPress()
                 .then(
                   () => console.log('Signed in with Google'),
@@ -91,7 +91,7 @@ export default class Login extends Component {
                     onLoginError(error);
                   },
                 )
-                .finally(() => MergeState(this, {isLoggingIn: false}));
+                .finally(() => this.setState({isLoggingIn: false}));
             }}
             disabled={this.state.isLoggingIn}>
             Sign in with Google

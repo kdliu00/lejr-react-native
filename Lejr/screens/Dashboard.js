@@ -15,6 +15,7 @@ import {Component} from 'react';
 import ContribDetails from './dashboard/Contribution/ContribDetails';
 import GroupMenu from './dashboard/Home/GroupMenu';
 import QuickAdd from './dashboard/Contribution/QuickAdd';
+import QRScanner from './dashboard/QRScanner';
 
 const ModalStack = createStackNavigator();
 
@@ -41,6 +42,7 @@ const DashboardScreen = () => (
     <ModalStack.Screen name={Screen.Contribution} component={Contribution} />
     <ModalStack.Screen name={Screen.FromImage} component={FromImage} />
     <ModalStack.Screen name={Screen.Settings} component={Settings} />
+    <ModalStack.Screen name={Screen.QRScanner} component={QRScanner} />
     <ModalStack.Screen
       name={Screen.ContribDetails}
       component={ContribDetails}

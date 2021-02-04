@@ -12,7 +12,7 @@ import {
 import {LocalData} from '../util/LocalData';
 import FormStyles from '../util/FormStyles';
 import {Screen} from '../util/Constants';
-import {MergeState, warnLog} from '../util/UtilityMethods';
+import {warnLog} from '../util/UtilityMethods';
 
 export default class EmailLogin extends Component {
   constructor(props) {
@@ -127,7 +127,7 @@ export default class EmailLogin extends Component {
                       .then(valid => {
                         if (valid) {
                           signUp(this.state.email, this.state.password, value =>
-                            MergeState(this, {isSubmitting: value}),
+                            this.setState({isSubmitting: value}),
                           );
                         }
                       });
@@ -153,7 +153,7 @@ export default class EmailLogin extends Component {
                       .then(valid => {
                         if (valid) {
                           signIn(this.state.email, this.state.password, value =>
-                            MergeState(this, {isSubmitting: value}),
+                            this.setState({isSubmitting: value}),
                           );
                         }
                       });
@@ -171,9 +171,9 @@ export default class EmailLogin extends Component {
                 validationSchema={this.validationSchema}
                 fieldKey="confirmPassword"
                 fieldParams={text => ({confirmPassword: text})}
-                setField={value => MergeState(this, {confirmPassword: value})}
+                setField={value => this.setState({confirmPassword: value})}
                 setFieldError={value =>
-                  MergeState(this, {confirmPasswordError: value})
+                  this.setState({confirmPasswordError: value})
                 }
                 placeholder="confirm password"
                 onSubmitEditing={() => {
@@ -194,8 +194,8 @@ export default class EmailLogin extends Component {
               validationSchema={this.validationSchema}
               fieldKey="password"
               fieldParams={text => ({password: text})}
-              setField={value => MergeState(this, {password: value})}
-              setFieldError={value => MergeState(this, {passwordError: value})}
+              setField={value => this.setState({password: value})}
+              setFieldError={value => this.setState({passwordError: value})}
               placeholder="password"
               onSubmitEditing={() => {
                 if (this.showConfirm) {
@@ -218,8 +218,8 @@ export default class EmailLogin extends Component {
               validationSchema={this.validationSchema}
               fieldKey="email"
               fieldParams={text => ({email: text})}
-              setField={value => MergeState(this, {email: value})}
-              setFieldError={value => MergeState(this, {emailError: value})}
+              setField={value => this.setState({email: value})}
+              setFieldError={value => this.setState({emailError: value})}
               placeholder="username@email.com"
               onSubmitEditing={() => {
                 this.passwordRef.current.focus();

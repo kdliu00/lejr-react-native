@@ -11,7 +11,7 @@ import * as yup from 'yup';
 import {Screen, ErrorCode} from '../../../util/Constants';
 import {StyleSheet} from 'react-native';
 import {pushInvite, LocalData} from '../../../util/LocalData';
-import {MergeState, warnLog} from '../../../util/UtilityMethods';
+import {warnLog} from '../../../util/UtilityMethods';
 
 export default class InviteToGroup extends Component {
   constructor(props) {
@@ -70,7 +70,7 @@ export default class InviteToGroup extends Component {
                         )
                         .then(valid => {
                           if (valid) {
-                            MergeState(this, {isInviting: true});
+                            this.setState({isInviting: true});
                             var newState = {};
                             pushInvite(
                               LocalData.user.name,
@@ -80,7 +80,7 @@ export default class InviteToGroup extends Component {
                                 newState.message = 'Invite sent!';
                                 this.emailRef.current.clear();
                                 newState.isInviting = false;
-                                MergeState(this, newState);
+                                this.setState(newState);
                               },
                             ).catch(error => {
                               warnLog(error.message);
@@ -101,7 +101,7 @@ export default class InviteToGroup extends Component {
                                   break;
                               }
                               newState.isInviting = false;
-                              MergeState(this, newState);
+                              this.setState(newState);
                             });
                           }
                         });
@@ -121,8 +121,8 @@ export default class InviteToGroup extends Component {
                 validationSchema={this.validationSchema}
                 fieldKey="email"
                 fieldParams={text => ({email: text})}
-                setField={value => MergeState(this, {email: value})}
-                setFieldError={value => MergeState(this, {emailError: value})}
+                setField={value => this.setState({email: value})}
+                setFieldError={value => this.setState({emailError: value})}
                 placeholder="username@email.com"
                 onSubmitEditing={() => {
                   Keyboard.dismiss();

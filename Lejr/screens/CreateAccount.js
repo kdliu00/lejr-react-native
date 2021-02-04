@@ -7,7 +7,6 @@ import {LocalData} from '../util/LocalData';
 import {User} from '../util/DataObjects';
 import FormStyles from '../util/FormStyles';
 import {defaultProfilePic, Screen} from '../util/Constants';
-import {MergeState} from '../util/UtilityMethods';
 import {Component} from 'react';
 
 export default class CreateAccount extends Component {
@@ -91,8 +90,8 @@ export default class CreateAccount extends Component {
               validationSchema={this.validationSchema}
               fieldKey="last"
               fieldParams={text => ({last: text})}
-              setField={value => MergeState(this, {lastName: value})}
-              setFieldError={value => MergeState(this, {lastNameError: value})}
+              setField={value => this.setState({lastName: value})}
+              setFieldError={value => this.setState({lastNameError: value})}
               placeholder="last name"
               onSubmitEditing={() => {
                 Keyboard.dismiss();
@@ -105,8 +104,8 @@ export default class CreateAccount extends Component {
               validationSchema={this.validationSchema}
               fieldKey="first"
               fieldParams={text => ({first: text})}
-              setField={value => MergeState(this, {firstName: value})}
-              setFieldError={value => MergeState(this, {firstNameError: value})}
+              setField={value => this.setState({firstName: value})}
+              setFieldError={value => this.setState({firstNameError: value})}
               placeholder="first name"
               onSubmitEditing={() => {
                 this.lastNameRef.current.focus();
