@@ -12,11 +12,11 @@ import {Screen, ErrorCode} from '../../../util/Constants';
 import {StyleSheet} from 'react-native';
 import {pushInvite, LocalData} from '../../../util/LocalData';
 import {warnLog} from '../../../util/UtilityMethods';
+import QRCode from 'react-qr-code';
 
 export default class InviteToGroup extends Component {
   constructor(props) {
     super();
-    this.groupName = props.route.params.groupName;
     this.state = {
       isInviting: false,
       message: '',
@@ -46,11 +46,11 @@ export default class InviteToGroup extends Component {
             <Layout style={FormStyles.buttonStyle}>
               <Button
                 style={FormStyles.button}
-                onPress={() => this.props.navigation.navigate(Screen.Home)}
+                onPress={() => this.props.navigation.goBack()}
                 appearance="outline">
-                Cancel
+                Back
               </Button>
-              <Layout>
+              {/* <Layout>
                 {this.state.isInviting ? (
                   <Button
                     style={FormStyles.button}
@@ -109,10 +109,10 @@ export default class InviteToGroup extends Component {
                     Invite
                   </Button>
                 )}
-              </Layout>
+              </Layout> */}
             </Layout>
             <Layout style={FormStyles.fieldStyle}>
-              <Text style={Styles.text} status={this.state.textStatus}>
+              {/* <Text style={Styles.text} status={this.state.textStatus}>
                 {this.state.message}
               </Text>
               <InputField
@@ -129,11 +129,12 @@ export default class InviteToGroup extends Component {
                 }}
                 value={this.state.email}
                 autoFocus
-              />
+              /> */}
               <Text style={Styles.text}>
-                You can invite others to {this.groupName} using the email
-                associated with their account
+                Use Lejr to scan this QR code and join{' '}
+                {LocalData.currentGroup.groupName}.
               </Text>
+              <QRCode value={LocalData.currentGroup.groupId} />
             </Layout>
           </SafeAreaView>
         </Layout>
@@ -149,8 +150,7 @@ const Styles = StyleSheet.create({
   },
   text: {
     textAlign: 'center',
-    marginTop: 10,
-    marginLeft: 20,
-    marginRight: 20,
+    marginTop: 20,
+    marginHorizontal: 30,
   },
 });

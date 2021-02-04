@@ -48,7 +48,6 @@ export default class Home extends Component {
     };
     this.groupSelectExpanded = false;
     this.addOptsExpanded = false;
-    this.selectedGroup = LocalData.currentGroup.groupName;
     this.GroupElements = LocalData.user.groups
       .filter(groupInfo => groupInfo.groupId !== LocalData.currentGroup.groupId)
       .map(groupInfo => {
@@ -200,7 +199,7 @@ export default class Home extends Component {
               customBackground="background-basic-color-2"
               onPress={() => this.toggleGroupSelect()}>
               <Text numberOfLines={1} category="h5">
-                {this.selectedGroup}
+                {LocalData.currentGroup.groupName}
               </Text>
             </ThemedCard>
             <IconButton
@@ -208,9 +207,7 @@ export default class Home extends Component {
               status="success"
               icon={InviteIcon}
               onPress={() =>
-                this.props.navigation.navigate(Screen.InviteToGroup, {
-                  groupName: this.selectedGroup,
-                })
+                this.props.navigation.navigate(Screen.InviteToGroup)
               }
             />
           </Layout>

@@ -1,26 +1,26 @@
 package com.kdlg.lejr;
 
-import androidx.multidex.MultiDexApplication;
 import android.content.Context;
-
+import androidx.multidex.MultiDexApplication;
+import com.bugfender.react.RNBugfenderPackage;
+import com.bugfender.react.RNBugfenderPackage;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
-import com.zoontek.rnpermissions.RNPermissionsPackage;
-import org.reactnative.camera.RNCameraPackage;
-import com.bugfender.react.RNBugfenderPackage;
-import com.bugfender.react.RNBugfenderPackage;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import org.reactnative.camera.RNCameraPackage;
 
 // import com.reactnativecommunity.cameraroll.CameraRollPackage;
 
-public class MainApplication extends MultiDexApplication implements ReactApplication {
+public class MainApplication
+  extends MultiDexApplication
+  implements ReactApplication {
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
@@ -52,7 +52,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
   @Override
   public void onCreate() {
     super.onCreate();
-    SoLoader.init(this, /* native exopackage */ false);
+    SoLoader.init(this, /* native exopackage */false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
     FacebookSdk.sdkInitialize(getApplicationContext());
     AppEventsLogger.activateApp(this);
@@ -66,7 +66,10 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
    * @param context
    * @param reactInstanceManager
    */
-  private static void initializeFlipper(Context context, ReactInstanceManager reactInstanceManager) {
+  private static void initializeFlipper(
+    Context context,
+    ReactInstanceManager reactInstanceManager
+  ) {
     if (BuildConfig.DEBUG) {
       try {
         /*
@@ -74,8 +77,13 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
          * Flipper library is not available in release mode
          */
         Class<?> aClass = Class.forName("com.lejr.ReactNativeFlipper");
-        aClass.getMethod("initializeFlipper", Context.class, ReactInstanceManager.class).invoke(null, context,
-            reactInstanceManager);
+        aClass
+          .getMethod(
+            "initializeFlipper",
+            Context.class,
+            ReactInstanceManager.class
+          )
+          .invoke(null, context, reactInstanceManager);
       } catch (ClassNotFoundException e) {
         e.printStackTrace();
       } catch (NoSuchMethodException e) {

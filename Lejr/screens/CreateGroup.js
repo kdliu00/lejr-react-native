@@ -27,6 +27,7 @@ export default class CreateGroup extends Component {
       groupName: yup
         .string()
         .label('Group name')
+        .max(18, 'Group name too long')
         .required(),
     });
 
@@ -62,8 +63,7 @@ export default class CreateGroup extends Component {
                   Create a group
                 </Text>
                 <Text style={Styles.text}>
-                  You can create a group here by entering a group name and
-                  pressing Create.
+                  Please enter a name for your group.
                 </Text>
               </Layout>
             )}

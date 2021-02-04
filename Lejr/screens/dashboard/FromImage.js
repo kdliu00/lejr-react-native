@@ -24,6 +24,7 @@ import {CloseIcon, ConfirmIcon} from '../../util/Icons';
 import {Image} from 'react-native';
 import Scanner, {RectangleOverlay} from 'react-native-rectangle-scanner';
 import {Dimensions} from 'react-native';
+import {Platform} from 'react-native';
 
 export default class FromImage extends Component {
   constructor() {
@@ -268,14 +269,15 @@ export default class FromImage extends Component {
   }
 
   getPreviewSize() {
-    const dimensions = Dimensions.get('window');
+    const dimensions = Dimensions.get('screen');
     // We use set margin amounts because for some reasons the percentage values don't align the camera preview in the center correctly.
     const heightMargin = 0;
     // ((1 - this.state.previewHeightPercent) * dimensions.height) / 2;
     const heightScalar = 1;
     const widthScalar =
       (heightScalar / this.state.previewHeightPercent) *
-      this.state.previewWidthPercent;
+      this.state.previewWidthPercent *
+      (Platform.OS === 'android' ? 1.2 : 1); //the preview window is weird on android
     const widthMargin = ((1 - widthScalar) * dimensions.width) / 2;
     // ((1 - this.state.previewWidthPercent) * dimensions.width) / 2;
     // if (dimensions.height > dimensions.width) {
@@ -304,7 +306,6 @@ export default class FromImage extends Component {
   }
 
   render() {
-    console.log(this.state);
     let previewSize = this.getPreviewSize();
     return (
       <Layout style={Styles.container}>
@@ -356,7 +357,7 @@ export default class FromImage extends Component {
                 this.setState({disableCancel: true});
                 this.camera.capture();
               }}
-              allowDetection
+              // allowDetection
             />
             {!this.state.cameraReady && (
               <Layout style={[Styles.overlay, Styles.blackBg]} />
