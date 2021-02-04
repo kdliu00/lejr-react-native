@@ -18,6 +18,7 @@ import {BlankCard, ItemCard} from '../../../util/ContributionUI';
 import {
   getMoneyFormatString,
   getTotal,
+  JSONCopy,
   MergeState,
   nearestHundredth,
   removeNullsFromList,
@@ -90,7 +91,7 @@ export default class Contribution extends Component {
               <Text
                 style={{
                   textAlign: 'center',
-                  marginTop: Platform.OS === 'ios' ? 15 : 0,
+                  marginTop: 15,
                 }}>
                 Please enter the correct tax amount:
               </Text>
@@ -107,7 +108,7 @@ export default class Contribution extends Component {
                 onSubmitEditing={() => {
                   LocalData.tax = this.tempTax;
                   if (LocalData.currentVR) {
-                    LocalData.currentVR.tax = LocalData.tax;
+                    LocalData.currentVR.tax = JSONCopy(LocalData.tax);
                   }
                   MergeState(this, {taxModal: false});
                 }}
@@ -125,7 +126,7 @@ export default class Contribution extends Component {
                   onPress={() => {
                     LocalData.tax = this.tempTax;
                     if (LocalData.currentVR) {
-                      LocalData.currentVR.tax = LocalData.tax;
+                      LocalData.currentVR.tax = JSONCopy(LocalData.tax);
                     }
                     MergeState(this, {taxModal: false});
                   }}
