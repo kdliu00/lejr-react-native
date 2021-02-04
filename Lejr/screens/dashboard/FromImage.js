@@ -357,7 +357,7 @@ export default class FromImage extends Component {
                 this.setState({disableCancel: true});
                 this.camera.capture();
               }}
-              // allowDetection
+              allowDetection
             />
             {!this.state.cameraReady && (
               <Layout style={[Styles.overlay, Styles.blackBg]} />
