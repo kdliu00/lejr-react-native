@@ -132,8 +132,8 @@ android {
         applicationId "com.kdlg.lejr"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 30
-        versionName "0.3.4"
+        versionCode 31
+        versionName "0.3.5"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
         missingDimensionStrategy 'react-native-camera', 'general'
