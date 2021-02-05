@@ -39,7 +39,6 @@ import {Alert} from 'react-native';
 import {StoreData} from './util/UtilityMethods';
 import {LogBox} from 'react-native';
 import Bugfender from '@bugfender/rn-bugfender';
-import SplashScreen from 'react-native-splash-screen';
 
 LogBox.ignoreAllLogs();
 
@@ -112,7 +111,6 @@ BackHandler.addEventListener('hardwareBackPress', () => {
 export default class App extends Component {
   componentDidMount() {
     console.log('Arrived at App');
-    SplashScreen.hide();
   }
 
   render() {
