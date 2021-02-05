@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {
   KeyboardAvoidingView,
   StyleSheet,
@@ -39,6 +39,7 @@ import {Alert} from 'react-native';
 import {StoreData} from './util/UtilityMethods';
 import {LogBox} from 'react-native';
 import Bugfender from '@bugfender/rn-bugfender';
+import SplashScreen from 'react-native-splash-screen';
 
 LogBox.ignoreAllLogs();
 
@@ -108,36 +109,41 @@ BackHandler.addEventListener('hardwareBackPress', () => {
   return true;
 });
 
-export default function App() {
-  console.log('Arrived at App');
+export default class App extends Component {
+  componentDidMount() {
+    console.log('Arrived at App');
+    SplashScreen.hide();
+  }
 
-  return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={Styles.container}>
-      <StatusBar
-        barStyle={Platform.OS === 'ios' ? 'dark-content' : 'light-content'}
-      />
-      <IconRegistry icons={EvaIconsPack} />
-      <ApplicationProvider {...eva} theme={{...eva.light, ...theme}}>
-        <NavigationContainer>
-          <RootStack.Navigator
-            mode="modal"
-            screenOptions={{headerShown: false, gestureEnabled: false}}>
-            <RootStack.Screen
-              name={Screen.Parent}
-              component={ParentStack}
-              options={{headerShown: false}}
-            />
-            <RootStack.Screen
-              name={Screen.Invitations}
-              component={Invitations}
-            />
-          </RootStack.Navigator>
-        </NavigationContainer>
-      </ApplicationProvider>
-    </KeyboardAvoidingView>
-  );
+  render() {
+    return (
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={Styles.container}>
+        <StatusBar
+          barStyle={Platform.OS === 'ios' ? 'dark-content' : 'light-content'}
+        />
+        <IconRegistry icons={EvaIconsPack} />
+        <ApplicationProvider {...eva} theme={{...eva.light, ...theme}}>
+          <NavigationContainer>
+            <RootStack.Navigator
+              mode="modal"
+              screenOptions={{headerShown: false, gestureEnabled: false}}>
+              <RootStack.Screen
+                name={Screen.Parent}
+                component={ParentStack}
+                options={{headerShown: false}}
+              />
+              <RootStack.Screen
+                name={Screen.Invitations}
+                component={Invitations}
+              />
+            </RootStack.Navigator>
+          </NavigationContainer>
+        </ApplicationProvider>
+      </KeyboardAvoidingView>
+    );
+  }
 }
 
 const ParentStack = () => {
