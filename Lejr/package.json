@@ -46,7 +46,6 @@
     "react-native-rectangle-scanner": "^1.0.10",
     "react-native-safe-area-context": "^3.1.8",
     "react-native-screens": "^2.11.0",
-    "react-native-splash-screen": "^3.2.0",
     "react-native-svg": "^9.13.6",
     "react-native-svg-transformer": "^0.14.3",
     "react-native-windows": "^0.63.20",
