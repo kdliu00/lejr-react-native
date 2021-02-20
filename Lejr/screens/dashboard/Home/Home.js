@@ -17,7 +17,7 @@ import {
   ThemedScroll,
   IconButton,
 } from '../../../util/ComponentUtil';
-import {RetrieveData, warnLog} from '../../../util/UtilityMethods';
+import {JSONCopy, RetrieveData, warnLog} from '../../../util/UtilityMethods';
 import Animated, {Easing} from 'react-native-reanimated';
 import {
   AddIcon,
@@ -119,10 +119,10 @@ export default class Home extends Component {
               {LocalData.virtualReceipts.map(virtualReceipt => {
                 return (
                   <Fragment key={virtualReceipt.virtualReceiptId}>
-                    <ContributionCard
-                      vr={virtualReceipt}
-                      nav={this.props.navigation}
-                    />
+                    {new ContributionCard(
+                      virtualReceipt,
+                      this.props.navigation,
+                    ).render()}
                   </Fragment>
                 );
               })}

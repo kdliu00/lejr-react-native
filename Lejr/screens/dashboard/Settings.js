@@ -10,7 +10,6 @@ import {
   updatePicUrlForGroup,
 } from '../../util/LocalData';
 import {Screen} from '../../util/Constants';
-import {SeeInvitations} from '../../util/ContributionUI';
 import {TouchableWithoutFeedback} from 'react-native';
 import {Alert} from 'react-native';
 
@@ -110,7 +109,7 @@ export default class Settings extends Component {
               Scan QR Code
             </Button>
           </Layout>
-          <SeeInvitations navigation={this.props.navigation} />
+          {/* <SeeInvitations navigation={this.props.navigation} /> */}
           <Text>{LocalData.user.email}</Text>
           <Text category="h6">{LocalData.user.name}</Text>
           <TouchableWithoutFeedback
@@ -198,6 +197,7 @@ const Styles = StyleSheet.create({
   },
   buttonRow: {
     flexDirection: 'row',
+    marginTop: 20,
   },
   button: {
     margin: 10,

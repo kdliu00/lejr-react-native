@@ -73,6 +73,7 @@ enum Screen {
   GroupMenu = 'GroupMenu',
   QuickAdd = 'QuickAdd',
   QRScanner = 'QRScanner',
+  NoGroup = 'NoGroup',
 }
 
 enum ErrorCode {

@@ -39,6 +39,8 @@ import {Alert} from 'react-native';
 import {StoreData} from './util/UtilityMethods';
 import {LogBox} from 'react-native';
 import Bugfender from '@bugfender/rn-bugfender';
+import NoGroup from './screens/NoGroup';
+import QRScanner from './screens/QRScanner';
 
 LogBox.ignoreAllLogs();
 
@@ -136,6 +138,7 @@ export default class App extends Component {
                 name={Screen.Invitations}
                 component={Invitations}
               />
+              <RootStack.Screen name={Screen.QRScanner} component={QRScanner} />
             </RootStack.Navigator>
           </NavigationContainer>
         </ApplicationProvider>
@@ -154,6 +157,7 @@ const ParentStack = () => {
       <Stack.Screen name={Screen.EmailLogin} component={EmailLogin} />
       <Stack.Screen name={Screen.CreateAccount} component={CreateAccount} />
       <Stack.Screen name={Screen.CreateGroup} component={CreateGroup} />
+      <Stack.Screen name={Screen.NoGroup} component={NoGroup} />
       <Stack.Screen name={Screen.Dashboard} component={Dashboard} />
     </Stack.Navigator>
   );

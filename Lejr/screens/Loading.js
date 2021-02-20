@@ -42,7 +42,7 @@ export default class Loading extends Component {
     getUserInvitations(LocalData.user.userId);
     LocalData.container = null;
     if (isPossibleObjectEmpty(LocalData.user.groups)) {
-      this.props.navigation.navigate(Screen.CreateGroup, {welcome: true});
+      this.props.navigation.navigate(Screen.NoGroup);
     } else if (!LocalData.currentGroup) {
       RetrieveData(Key.CurrentGroup).then(value => {
         loadGroupAsMain(

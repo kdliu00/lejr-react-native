@@ -29,6 +29,8 @@ import Contribution from '../screens/dashboard/Contribution/Contribution';
 import Invitations from '../screens/dashboard/Home/Invitations';
 import GroupMenu from '../screens/dashboard/Home/GroupMenu';
 import {Component} from 'react';
+import {ContributionCard} from './ContributionUI';
+import {Fragment} from 'react';
 
 export {
   LocalData,
@@ -385,7 +387,6 @@ function getVirtualReceiptsForGroup(groupId: string, callback: () => void) {
     .collection(Key.VirtualReceipts)
     .orderBy(Key.Timestamp, 'desc')
     .where('timestamp', '>=', LocalData.currentGroup.lastSettleDate)
-    .limit(20)
     .onSnapshot(
       querySnapshot => {
         LocalData.virtualReceipts = [];
@@ -394,12 +395,10 @@ function getVirtualReceiptsForGroup(groupId: string, callback: () => void) {
           LocalData.virtualReceipts.push(vr);
         });
         console.log('Virtual receipts updated');
-        if (LocalData.home != null) {
+        if (LocalData.home != null && LocalData.home._mounted) {
           console.log('Updating home screen');
-          if (LocalData.home != null && LocalData.home._mounted) {
-            LocalData.home.forceUpdate();
-            LocalData.home.balanceRef.current.forceUpdate();
-          }
+          LocalData.home.forceUpdate();
+          LocalData.home.balanceRef.current.forceUpdate();
         }
         callback();
       },
@@ -465,6 +464,10 @@ function engageSettleLocks() {
 
 function disengageSettleLocks() {
   console.log('Disengaging settle locks');
+  if (isPossibleObjectEmpty(LocalData.currentGroup)) {
+    console.log('No current group to disengage');
+    return;
+  }
   if (isPossibleObjectEmpty(LocalData.currentGroup.settleLocks)) {
     LocalData.currentGroup.settleLocks = new Map();
   }

@@ -2,10 +2,10 @@ import React, {Component} from 'react';
 import {StyleSheet} from 'react-native';
 import {Button, Layout, Spinner} from '@ui-kitten/components';
 import {QRScannerView} from 'react-native-qrcode-scanner-view';
-import {AnimDefaultDuration, ErrorCode, Screen} from '../../util/Constants';
+import {AnimDefaultDuration, ErrorCode, Screen} from '../util/Constants';
 import {Fragment} from 'react';
-import {joinGroup, swapGroup} from '../../util/LocalData';
-import {warnLog} from '../../util/UtilityMethods';
+import {joinGroup, swapGroup} from '../util/LocalData';
+import {warnLog} from '../util/UtilityMethods';
 import {Alert} from 'react-native';
 
 export default class QRScanner extends Component {

@@ -38,14 +38,13 @@ export {
   SeeInvitations,
 };
 
-class ContributionCard extends Component {
+class ContributionCard {
   vr: VirtualReceipt;
   nav: any;
 
-  constructor(props: any) {
-    super(props);
-    this.vr = props.vr;
-    this.nav = props.nav;
+  constructor(vr: VirtualReceipt, nav: any) {
+    this.vr = vr;
+    this.nav = nav;
   }
 
   render() {
