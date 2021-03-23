@@ -425,7 +425,7 @@ const Styles = StyleSheet.create({
     alignItems: 'center',
   },
   rowButtons: {
-    backgroundColor: 'rgba(0,0,0,0)',
+    backgroundColor: 'transparent',
     alignItems: 'center',
     marginTop: 40,
     marginBottom: 60,
@@ -435,7 +435,7 @@ const Styles = StyleSheet.create({
   overlay: {
     flex: 1,
     flexDirection: 'column-reverse',
-    backgroundColor: 'rgba(0,0,0,0)',
+    backgroundColor: 'transparent',
     bottom: 0,
     left: 0,
     position: 'absolute',

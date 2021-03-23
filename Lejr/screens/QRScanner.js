@@ -57,7 +57,7 @@ export default class QRScanner extends Component {
                     flex: 1,
                     alignItems: 'center',
                     flexDirection: 'column-reverse',
-                    backgroundColor: 'rgba(0,0,0,0)',
+                    backgroundColor: 'transparent',
                   }}>
                   <Button
                     disabled={this.state.isProcessing}
@@ -75,7 +75,7 @@ export default class QRScanner extends Component {
                 borderColor: '#7D70F0',
               }}
               hintText=""
-              maskColor="rgba(0,0,0,0)"
+              maskColor="transparent"
               isShowScanBar={false}
             />
             {!this.state.ready && <Layout style={Styles.overlay} />}

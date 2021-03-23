@@ -17,7 +17,7 @@ import {
   ThemedScroll,
   IconButton,
 } from '../../../util/ComponentUtil';
-import {JSONCopy, RetrieveData, warnLog} from '../../../util/UtilityMethods';
+import {RetrieveData, warnLog} from '../../../util/UtilityMethods';
 import Animated, {Easing} from 'react-native-reanimated';
 import {
   AddIcon,
@@ -34,7 +34,7 @@ BackHandler.addEventListener('hardwareBackPress', () => {
 });
 
 const GROUP_RENDER_HEIGHT = 150;
-const ADD_OPTS_RENDER_HEIGHT = 54;
+const ADD_OPTS_RENDER_HEIGHT = 60;
 
 export default class Home extends Component {
   constructor() {
@@ -262,7 +262,7 @@ const Styles = StyleSheet.create({
     alignItems: 'center',
   },
   groupLabel: {
-    paddingVertical: 14,
+    paddingVertical: 12,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -292,13 +292,14 @@ const Styles = StyleSheet.create({
     margin: 4,
   },
   row: {
-    marginTop: 5,
+    marginTop: 4,
     alignItems: 'center',
     justifyContent: 'space-between',
     alignSelf: 'center',
     flexDirection: 'row',
   },
   button: {
+    marginTop: 6,
     width: 120,
     marginHorizontal: 20,
   },
